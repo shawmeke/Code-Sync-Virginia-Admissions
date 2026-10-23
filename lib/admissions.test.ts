@@ -1,0 +1,172 @@
+/// <reference types="node" />
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+
+import { alignWithCollege, describeAlignment, rangePosition } from './admissions.ts';
+import { getCollege } from '../data/colleges.ts';
+import type { College } from '../types/college.ts';
+import type { StudentProfile } from '../types/student.ts';
+
+const uva = getCollege('uva')!;
+const vt = getCollege('vt')!;
+const odu = getCollege('odu')!;
+
+const blank: StudentProfile = {
+  gpa: null,
+  test: null,
+  classRankTopPercent: null,
+  rigor: null,
+  intendedMajor: null,
+  residency: null,
+};
+
+const metric = (p: StudentProfile, c: College, key: string) =>
+  alignWithCollege(p, c).metrics.find((m) => m.metric === key)!;
+
+test('range edges count as within the middle 50%', () => {
+  const range = { p25: 1410, p75: 1540 };
+  assert.equal(rangePosition(1400, range), 'below');
+  assert.equal(rangePosition(1410, range), 'within');
+  assert.equal(rangePosition(1540, range), 'within');
+  assert.equal(rangePosition(1550, range), 'above');
+});
+
+test('SAT is placed against the college range and cites it', () => {
+  const m = metric({ ...blank, test: { type: 'SAT', score: 1450 } }, uva, 'test');
+  assert.equal(m.status, 'compared');
+  assert.equal(m.position, 'within');
+  assert.equal(m.stat, uva.sat);
+  assert.match(m.summary, /1410–1540/);
+  // UVA's SAT total is built from section ranges, and that must be disclosed.
+  assert.ok(m.caveats.some((c) => c.includes('section ranges')));
+});
+
+test('ACT is compared against the ACT range, not the SAT range', () => {
+  const m = metric({ ...blank, test: { type: 'ACT', score: 21 } }, odu, 'test');
+  assert.equal(m.position, 'below');
+  assert.match(m.summary, /22–27/);
+});
+
+test('a range from few submitters carries a warning', () => {
+  const m = metric({ ...blank, test: { type: 'SAT', score: 1200 } }, odu, 'test');
+  assert.ok(m.caveats.some((c) => c.includes('Only 7%')));
+});
+
+test('no test score at a test-optional school is not counted against the student', () => {
+  const a = alignWithCollege(blank, uva);
+  const m = a.metrics.find((x) => x.metric === 'test')!;
+  assert.equal(m.status, 'student-missing');
+  assert.equal(m.position, null);
+  assert.match(m.summary, /test-optional/);
+  assert.equal(a.positions.below, 0);
+});
+
+test('a college with no test data says so instead of guessing', () => {
+  const m = metric({ ...blank, test: { type: 'SAT', score: 1300 } }, vt, 'test');
+  assert.equal(m.status, 'college-missing');
+  assert.equal(m.position, null);
+});
+
+test('unweighted GPA is placed using the published GPA groups', () => {
+  const m = metric({ ...blank, gpa: { value: 3.6, scale: 4, weighted: false } }, odu, 'gpa');
+  assert.equal(m.status, 'compared');
+  assert.equal(m.position, 'within');
+  // 4.0 (19%) + 3.75–3.99 (13%) are above; 3.25 and below (15+13+25+0) are below.
+  assert.match(m.summary, /3\.50–3\.74 group/);
+  assert.match(m.summary, /32% were in a higher group and 53% in a lower one/);
+  assert.ok(m.caveats.some((c) => c.includes("doesn't say whether")));
+});
+
+test('a 4.0 unweighted GPA is above the middle 50% at ODU', () => {
+  const m = metric({ ...blank, gpa: { value: 4.0, scale: 4, weighted: false } }, odu, 'gpa');
+  assert.equal(m.position, 'above');
+});
+
+test('GPAs between published groups land in the lower group', () => {
+  const m = metric({ ...blank, gpa: { value: 3.745, scale: 4, weighted: false } }, odu, 'gpa');
+  assert.match(m.summary, /3\.50–3\.74 group/);
+});
+
+test('a weighted 5.0-scale GPA is flagged, not silently dropped or mixed in', () => {
+  const a = alignWithCollege({ ...blank, gpa: { value: 4.6, scale: 5, weighted: true } }, odu);
+  const m = a.metrics.find((x) => x.metric === 'gpa')!;
+  assert.equal(m.status, 'incompatible');
+  assert.equal(m.position, null);
+  assert.match(m.summary, /weighted GPA on a 5\.0 scale/);
+  assert.match(m.summary, /unweighted GPA on a 4\.0 scale/);
+});
+
+test('a GPA average alone gives a comparison but no middle-50% position', () => {
+  const averageOnly: College = { ...odu, gpaBands: null };
+  const m = metric({ ...blank, gpa: { value: 3.2, scale: 4, weighted: false } }, averageOnly, 'gpa');
+  assert.equal(m.status, 'compared');
+  assert.equal(m.position, null);
+  assert.match(m.summary, /below the average of 3\.43/);
+});
+
+test('class rank uses cumulative shares from the college', () => {
+  // Top 20%: 12% were in the top 10% (ahead), 65% were outside the top 25% (behind).
+  const m = metric({ ...blank, classRankTopPercent: 20 }, odu, 'classRank');
+  assert.equal(m.status, 'compared');
+  assert.equal(m.position, 'within');
+  assert.match(m.summary, /12% of .* were in the top 10%/);
+  assert.match(m.summary, /65% were outside the top 25%/);
+  assert.ok(m.caveats.some((c) => c.includes('Only 75%')));
+});
+
+test('top 5% at ODU is above the middle 50%', () => {
+  const m = metric({ ...blank, classRankTopPercent: 5 }, odu, 'classRank');
+  assert.equal(m.position, 'above');
+});
+
+test('UVA class rank is used even though only the top-tenth share is published', () => {
+  const inTopTenth = metric({ ...blank, classRankTopPercent: 5 }, uva, 'classRank');
+  assert.equal(inTopTenth.position, 'within');
+
+  const outside = metric({ ...blank, classRankTopPercent: 40 }, uva, 'classRank');
+  assert.equal(outside.position, 'below');
+  // The top-quarter share is unknown, so the top-tenth share is a lower bound.
+  assert.match(outside.summary, /At least 90%/);
+  assert.ok(outside.caveats.some((c) => c.includes('Only 30%')));
+});
+
+test('course rigor is context only and never earns a position', () => {
+  const a = alignWithCollege({ ...blank, rigor: { advancedTaken: 8, advancedAvailable: 8 } }, uva);
+  const m = a.metrics.find((x) => x.metric === 'rigor')!;
+  assert.equal(m.status, 'context-only');
+  assert.equal(m.position, null);
+  assert.equal(a.comparedCount, 0);
+  assert.match(describeAlignment(a), /Not enough published data/);
+});
+
+test('an engineering major sees the Virginia Tech engineering note', () => {
+  const a = alignWithCollege({ ...blank, intendedMajor: 'Mechanical Engineering' }, vt);
+  assert.equal(a.programNotes.length, 1);
+  assert.equal(alignWithCollege({ ...blank, intendedMajor: 'History' }, vt).programNotes.length, 0);
+});
+
+test('summary line counts positions without predicting admission', () => {
+  const a = alignWithCollege(
+    { ...blank, test: { type: 'SAT', score: 1300 }, gpa: { value: 4.0, scale: 4, weighted: false }, classRankTopPercent: 20 },
+    odu,
+  );
+  assert.equal(a.comparedCount, 3);
+  assert.deepEqual(a.positions, { below: 0, within: 1, above: 2 });
+  assert.equal(describeAlignment(a), 'Compared on 3 of 3 measures: 2 above, 1 within the middle 50%.');
+});
+
+test('no output uses chance, odds or probability language', () => {
+  const full: StudentProfile = {
+    gpa: { value: 3.9, scale: 4, weighted: false },
+    test: { type: 'SAT', score: 1500 },
+    classRankTopPercent: 3,
+    rigor: { advancedTaken: 6, advancedAvailable: 10 },
+    intendedMajor: 'Computer Engineering',
+    residency: 'virginia',
+  };
+  for (const c of [uva, vt, odu]) {
+    const a = alignWithCollege(full, c);
+    const text = [describeAlignment(a), ...a.metrics.flatMap((m) => [m.summary, ...m.caveats]), ...a.contextNotes].join(' ');
+    assert.doesNotMatch(text, /chance|odds|probab|likely|guarantee/i);
+  }
+});
