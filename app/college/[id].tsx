@@ -1,6 +1,6 @@
-import { Link, Stack, useLocalSearchParams } from 'expo-router';
+import { Link, router, Stack, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, Platform, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 import { AlignmentDots } from '@/components/AlignmentDots';
 import { MatchScore, MetricRow } from '@/components/Comparison';
@@ -40,6 +40,9 @@ export default function CollegeScreen() {
   const theme = useTheme();
   const { profile, ready, saved, toggleSaved } = useProfile();
   const [tab, setTab] = useState<Tab>('overview');
+  const { width, height } = useWindowDimensions();
+  // In landscape the photo would fill the screen, so it gets shorter.
+  const photoHeight = width > height ? Math.min(210, Math.round(height * 0.35)) : 210;
   const college = getCollege(id);
 
   if (!college) {
@@ -69,8 +72,25 @@ export default function CollegeScreen() {
       <Stack.Screen
         options={{
           title: 'College details',
+          // The web's built-in back arrow is a 30px target; this one is 44.
+          // Phones keep the system back button and its swipe gesture.
+          ...(Platform.OS === 'web' && {
+            headerLeft: () => (
+              <Pressable
+                onPress={() => (router.canGoBack() ? router.back() : router.replace('/search'))}
+                accessibilityRole="button"
+                accessibilityLabel="Go back"
+                style={styles.headerButton}>
+                <Icon name="back" color={theme.ink} size={24} />
+              </Pressable>
+            ),
+          }),
           headerRight: () => (
-            <Pressable onPress={() => toggleSaved(college.id)} accessibilityRole="button" accessibilityLabel={saveLabel} hitSlop={10}>
+            <Pressable
+              onPress={() => toggleSaved(college.id)}
+              accessibilityRole="button"
+              accessibilityLabel={saveLabel}
+              style={styles.headerButton}>
               <Icon name={isSaved ? 'heartFilled' : 'heart'} color={theme.accent} size={24} />
             </Pressable>
           ),
@@ -81,7 +101,7 @@ export default function CollegeScreen() {
         <View>
           <Image
             source={photo.image}
-            style={styles.photo}
+            style={[styles.photo, { height: photoHeight }]}
             resizeMode="cover"
             accessibilityLabel={`${photo.title}. Photo by ${photo.artist}.`}
           />
@@ -296,7 +316,8 @@ export default function CollegeScreen() {
 const styles = StyleSheet.create({
   content: { paddingBottom: spacing.xl * 2, maxWidth: 720, width: '100%', alignSelf: 'center' },
   missing: { flex: 1, padding: spacing.lg },
-  photo: { width: '100%', height: 210 },
+  photo: { width: '100%' },
+  headerButton: { minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
   credit: { fontFamily: fonts.body, fontSize: 11, marginTop: spacing.xs },
   hero: { paddingHorizontal: spacing.lg, marginBottom: spacing.lg },
   heroOverlap: { marginTop: -44 },

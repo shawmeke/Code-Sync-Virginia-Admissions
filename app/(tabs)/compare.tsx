@@ -53,10 +53,21 @@ export default function CompareScreen() {
           ))}
         </View>
         {ready && (
-          <CompareRow label="Your Academic Match" values={[a, b].map((c) => (match(c) === null ? 'Not enough data' : String(match(c))))} highlight />
+          <CompareRow
+            label="Your Academic Match"
+            schools={[a.name, b.name]}
+            values={[a, b].map((c) => (match(c) === null ? 'Not enough data' : String(match(c))))}
+            highlight
+          />
         )}
         {ROWS.map((r, i) => (
-          <CompareRow key={r.label} label={r.label} values={[r.value(a), r.value(b)]} last={i === ROWS.length - 1} />
+          <CompareRow
+            key={r.label}
+            label={r.label}
+            schools={[a.name, b.name]}
+            values={[r.value(a), r.value(b)]}
+            last={i === ROWS.length - 1}
+          />
         ))}
       </View>
       <Text style={[styles.note, { color: theme.muted }]}>
@@ -97,10 +108,16 @@ function Picker({ label, value, other, onChange }: { label: string; value: strin
   );
 }
 
-function CompareRow({ label, values, highlight, last }: { label: string; values: string[]; highlight?: boolean; last?: boolean }) {
+type CompareRowProps = { label: string; schools: string[]; values: string[]; highlight?: boolean; last?: boolean };
+
+// One row of the table. Screen readers hear it as one sentence that names
+// each school, since the column headers aren't read with each cell.
+function CompareRow({ label, schools, values, highlight, last }: CompareRowProps) {
   const theme = useTheme();
   return (
     <View
+      accessible
+      accessibilityLabel={`${label}: ${schools.map((s, i) => `${s} ${values[i]}`).join(', ')}`}
       style={[
         styles.row,
         highlight && { backgroundColor: theme.accentSoft },

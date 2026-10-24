@@ -13,6 +13,7 @@ const ICONS = {
   home: { ios: 'house', android: 'home', web: 'home' },
   info: { ios: 'info.circle', android: 'info', web: 'info' },
   chevron: { ios: 'chevron.right', android: 'chevron_right', web: 'chevron_right' },
+  back: { ios: 'chevron.left', android: 'arrow_back', web: 'arrow_back' },
   envelope: { ios: 'envelope.open', android: 'drafts', web: 'drafts' },
   graduation: { ios: 'graduationcap', android: 'school', web: 'school' },
   percent: { ios: 'percent', android: 'percent', web: 'percent' },
