@@ -32,13 +32,7 @@ export default function Root({ children }: { children: ReactNode }) {
 
 // Used only if the web build switches to static rendering; the client-only
 // build gets the same focus and overflow rules from components/webStyles.web.ts.
-const responsiveBackground = `/* Hallmark · shape: app screen · genre: editorial · theme: brand (Almanac material) · redesign: full · tokens: constants/theme.ts */
-/* Hallmark · pre-emit critique: P3 H3 E4 S4 R4 V4 · weakest: H, an app has no hero; the welcome screen carries the brand */
-/* Hallmark · waive 26b · pressed and disabled states live in React Native Pressable style functions, which the linter can't read */
-/* Hallmark · dropped onPress={() => setFilter(f.key)}, onPress={() => setSort(s.key)} · moved into components/Controls.tsx Segmented onSelect, behavior unchanged */
-/* Hallmark · answered F1 · straight apostrophes kept in app copy for now; listed for the owner */
-/* Hallmark · waive 34 · body keeps overflow hidden from expo-router's ScrollViewStyleReset, which React Native web scrolling needs; html clips and no screen scrolls sideways (checked in Chromium at 390px) */
-/* Hallmark · answered 26a · the focus ring is injected at runtime by components/webStyles.web.ts; checked in Chromium: Tab gives a 2px #1e5537 outline */
+const responsiveBackground = `
 :root { --color-paper: ${themes.light.paper}; --color-focus: ${themes.light.focus}; }
 @media (prefers-color-scheme: dark) { :root { --color-paper: ${themes.dark.paper}; --color-focus: ${themes.dark.focus}; } }
 html, body { overflow-x: clip; }

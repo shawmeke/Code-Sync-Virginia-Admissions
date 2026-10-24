@@ -1,10 +1,4 @@
-import { HankenGrotesk_500Medium, HankenGrotesk_600SemiBold } from '@expo-google-fonts/hanken-grotesk';
-import { IBMPlexMono_400Regular, IBMPlexMono_500Medium } from '@expo-google-fonts/ibm-plex-mono';
-import {
-  Newsreader_400Regular,
-  Newsreader_400Regular_Italic,
-  Newsreader_500Medium,
-} from '@expo-google-fonts/newsreader';
+import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold } from '@expo-google-fonts/inter';
 import { useFonts } from 'expo-font';
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -34,13 +28,10 @@ export default function RootLayout() {
   const theme = themes[colorScheme];
   const base = colorScheme === 'dark' ? DarkTheme : DefaultTheme;
   const [loaded, error] = useFonts({
-    HankenGrotesk_500Medium,
-    HankenGrotesk_600SemiBold,
-    Newsreader_400Regular,
-    Newsreader_400Regular_Italic,
-    Newsreader_500Medium,
-    IBMPlexMono_400Regular,
-    IBMPlexMono_500Medium,
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
+    Inter_700Bold,
   });
 
   // If a font fails to load, the app still opens in the system face.
@@ -55,20 +46,21 @@ export default function RootLayout() {
     <ThemeProvider
       value={{
         ...base,
-        colors: { ...base.colors, background: theme.paper, primary: theme.accent, card: theme.paper, border: theme.rule2 },
+        colors: { ...base.colors, background: theme.paper, primary: theme.accent, card: theme.paper, border: theme.rule },
       }}>
       <ProfileProvider>
         <Stack
           screenOptions={{
             headerStyle: { backgroundColor: theme.paper },
             headerTintColor: theme.ink,
-            headerTitleStyle: { fontFamily: fonts.display, fontSize: 18 },
+            headerTitleStyle: { fontFamily: fonts.control, fontSize: 17 },
             headerShadowVisible: false,
             headerBackTitle: 'Back',
           }}>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="welcome" options={{ headerShown: false, animation: 'fade' }} />
-          <Stack.Screen name="college/[id]" options={{ title: '' }} />
+          <Stack.Screen name="college/[id]" options={{ title: 'College details' }} />
+          <Stack.Screen name="about" options={{ title: 'About the data' }} />
         </Stack>
       </ProfileProvider>
     </ThemeProvider>

@@ -148,7 +148,7 @@ export default function ProfileScreen() {
 
       <Button
         label={ready ? 'See how I compare' : hasData ? 'Fix the items above to compare' : 'Enter a GPA, test score or class rank'}
-        onPress={() => router.navigate('/')}
+        onPress={() => router.navigate('/search')}
         disabled={!ready}
       />
 

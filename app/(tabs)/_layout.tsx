@@ -1,6 +1,6 @@
-import { SymbolView } from 'expo-symbols';
 import { Tabs } from 'expo-router';
 
+import { Icon } from '@/components/Icon';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
 import { fonts, rules, useTheme } from '@/constants/theme';
 
@@ -12,11 +12,11 @@ export default function TabLayout() {
       screenOptions={{
         tabBarActiveTintColor: theme.accent,
         tabBarInactiveTintColor: theme.muted,
-        tabBarStyle: { backgroundColor: theme.paper, borderTopColor: theme.rule2, borderTopWidth: rules.hair },
-        tabBarLabelStyle: { fontFamily: fonts.control, fontSize: 12 },
+        tabBarStyle: { backgroundColor: theme.sheet, borderTopColor: theme.rule, borderTopWidth: rules.hair },
+        tabBarLabelStyle: { fontFamily: fonts.bodyMedium, fontSize: 11 },
         headerStyle: { backgroundColor: theme.paper },
         headerTintColor: theme.ink,
-        headerTitleStyle: { fontFamily: fonts.display, fontSize: 18 },
+        headerTitleStyle: { fontFamily: fonts.control, fontSize: 17 },
         headerShadowVisible: false,
         // Disable the static render of the header on web
         // to prevent a hydration error in React Navigation v6.
@@ -24,35 +24,19 @@ export default function TabLayout() {
       }}>
       <Tabs.Screen
         name="index"
-        options={{
-          title: 'Colleges',
-          headerTitle: 'Code-Sync',
-          tabBarIcon: ({ color }) => (
-            <SymbolView
-              name={{ ios: 'building.columns', android: 'account_balance', web: 'account_balance' }}
-              tintColor={color}
-              size={26}
-            />
-          ),
-        }}
+        options={{ title: 'Home', headerShown: false, tabBarIcon: ({ color }) => <Icon name="home" color={color} size={24} /> }}
+      />
+      <Tabs.Screen
+        name="search"
+        options={{ title: 'Search', headerTitle: 'College search', tabBarIcon: ({ color }) => <Icon name="search" color={color} size={24} /> }}
+      />
+      <Tabs.Screen
+        name="compare"
+        options={{ title: 'Compare', headerTitle: 'Compare schools', tabBarIcon: ({ color }) => <Icon name="compare" color={color} size={24} /> }}
       />
       <Tabs.Screen
         name="profile"
-        options={{
-          title: 'Your profile',
-          tabBarIcon: ({ color }) => (
-            <SymbolView name={{ ios: 'person.crop.circle', android: 'person', web: 'person' }} tintColor={color} size={26} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="about"
-        options={{
-          title: 'About the data',
-          tabBarIcon: ({ color }) => (
-            <SymbolView name={{ ios: 'info.circle', android: 'info', web: 'info' }} tintColor={color} size={26} />
-          ),
-        }}
+        options={{ title: 'Profile', headerTitle: 'My profile', tabBarIcon: ({ color }) => <Icon name="person" color={color} size={24} /> }}
       />
     </Tabs>
   );

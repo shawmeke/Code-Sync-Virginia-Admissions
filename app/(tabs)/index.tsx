@@ -1,148 +1,163 @@
-import { Link, Redirect } from 'expo-router';
-import { useMemo, useState } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Link, Redirect, type Href } from 'expo-router';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { CollegeCard } from '@/components/CollegeCard';
-import { Segmented } from '@/components/Controls';
+import { BrandMark } from '@/components/BrandMark';
+import { Icon, type IconName } from '@/components/Icon';
 import { useProfile } from '@/components/ProfileContext';
-import { fonts, radius, rules, spacing, type, useTheme } from '@/constants/theme';
+import { SchoolBadge } from '@/components/SchoolBadge';
+import { cardShadow, fonts, radius, rules, spacing, type, useTheme } from '@/constants/theme';
 import { colleges } from '@/data/colleges';
 import { alignWithCollege } from '@/lib/admissions';
-import type { College } from '@/types/college';
 
-type ControlFilter = 'all' | College['control'];
-type SortOrder = 'match' | 'name';
-
-const FILTERS: { key: ControlFilter; label: string }[] = [
-  { key: 'all', label: 'All' },
-  { key: 'public', label: 'Public' },
-  { key: 'private', label: 'Private' },
+const ACTIONS: { label: string; icon: IconName; href: Href }[] = [
+  { label: 'My profile', icon: 'person', href: '/profile' },
+  { label: 'College search', icon: 'search', href: '/search' },
+  { label: 'Compare schools', icon: 'compare', href: '/compare' },
+  { label: 'Saved schools', icon: 'heart', href: '/search?filter=saved' },
 ];
 
-const SORTS: { key: SortOrder; label: string }[] = [
-  { key: 'match', label: 'Best match' },
-  { key: 'name', label: 'A–Z' },
-];
-
-export default function CollegesScreen() {
+// The home screen: a feature card that leads to your profile (or your top
+// match once you have one), four quick actions, and the schools in the app.
+export default function HomeScreen() {
   const theme = useTheme();
-  const [query, setQuery] = useState('');
-  const [filter, setFilter] = useState<ControlFilter>('all');
-  const [sort, setSort] = useState<SortOrder>('match');
+  const insets = useSafeAreaInsets();
   const { profile, ready, seenWelcome } = useProfile();
-
-  const results = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    // Colleges with no Academic Match go last when sorting by match.
-    const score = (c: College) => (ready ? (alignWithCollege(profile, c).match?.score ?? -1) : -1);
-    return colleges
-      .filter((c) => filter === 'all' || c.control === filter)
-      .filter((c) => !q || c.name.toLowerCase().includes(q) || c.city.toLowerCase().includes(q))
-      .sort((a, b) =>
-        ready && sort === 'match' ? score(b) - score(a) || a.name.localeCompare(b.name) : a.name.localeCompare(b.name),
-      );
-  }, [query, filter, sort, profile, ready]);
 
   if (!seenWelcome) return <Redirect href="/welcome" />;
 
+  const ranked = colleges
+    .map((c) => ({ college: c, score: ready ? (alignWithCollege(profile, c).match?.score ?? null) : null }))
+    .sort((a, b) => (b.score ?? -1) - (a.score ?? -1) || a.college.name.localeCompare(b.college.name));
+
   return (
-    <FlatList
+    <ScrollView
       style={{ backgroundColor: theme.paper }}
-      contentContainerStyle={styles.content}
-      data={results}
-      keyExtractor={(c) => c.id}
-      renderItem={({ item }) => <CollegeCard college={item} />}
-      keyboardShouldPersistTaps="handled"
-      keyboardDismissMode="on-drag"
-      ListHeaderComponent={
-        <View>
-          <Text style={[styles.intro, { color: theme.ink2 }]}>
-            Published admissions figures for Virginia colleges, with the source and year for each number. Score ranges
-            show the middle 50% of students.
+      contentContainerStyle={[styles.content, { paddingTop: insets.top + spacing.lg }]}>
+      <View style={styles.header}>
+        <View style={styles.headerText}>
+          <Text style={[styles.hello, { color: theme.ink }]} accessibilityRole="header">
+            Code-Sync
           </Text>
-          {!ready && (
-            <Link href="/profile" asChild>
-              <Pressable accessibilityRole="link" style={styles.promptPress}>
-                {({ pressed }) => (
+          <Text style={[styles.sub, { color: theme.muted }]}>Virginia college admissions, from official data</Text>
+        </View>
+        <BrandMark size={44} color={theme.gold} trackColor={theme.rule2} ink={theme.accent} />
+      </View>
+
+      <Link href={ready ? '/search' : '/profile'} asChild>
+        <Pressable accessibilityRole="link" style={styles.featurePress}>
+          {({ pressed }) => (
+            <View style={[styles.feature, { backgroundColor: theme.hero, opacity: pressed ? 0.92 : 1 }]}>
+              <View style={styles.featureText}>
+                <Text style={[styles.featureTitle, { color: theme.heroInk }]}>
+                  {ready ? 'Your Academic Match is ready' : 'Find your best fit'}
+                </Text>
+                <Text style={[styles.featureBody, { color: theme.heroMuted }]}>
+                  {ready
+                    ? 'See how your numbers compare at each Virginia school, sorted by match.'
+                    : 'Add your GPA, test scores or class rank to see how you compare at Virginia colleges.'}
+                </Text>
+              </View>
+              <View style={[styles.featureArrow, { backgroundColor: theme.goldFill }]}>
+                <Icon name="chevron" color={theme.goldInk} size={16} />
+              </View>
+            </View>
+          )}
+        </Pressable>
+      </Link>
+
+      <Text style={[styles.sectionTitle, { color: theme.ink }]}>Quick actions</Text>
+      <View style={styles.actions}>
+        {ACTIONS.map((a) => (
+          <Link key={a.label} href={a.href} asChild>
+            <Pressable accessibilityRole="link" style={styles.action}>
+              {({ pressed }) => (
+                <>
                   <View
                     style={[
-                      styles.prompt,
-                      { backgroundColor: pressed ? theme.paper2 : theme.sheet, borderTopColor: theme.accent },
+                      styles.actionIcon,
+                      { backgroundColor: pressed ? theme.paper2 : theme.sheet, borderColor: theme.rule },
+                      cardShadow(theme),
                     ]}>
-                    <Text style={[styles.promptTitle, { color: theme.ink }]}>See how you compare</Text>
-                    <Text style={[styles.promptBody, { color: theme.ink2 }]}>
-                      Add your GPA, test scores or class rank to get an Academic Match for each college.
+                    <Icon name={a.icon} color={theme.accent} size={24} />
+                  </View>
+                  <Text style={[styles.actionLabel, { color: theme.ink2 }]}>{a.label}</Text>
+                </>
+              )}
+            </Pressable>
+          </Link>
+        ))}
+      </View>
+
+      <View style={styles.listHead}>
+        <Text style={[styles.sectionTitle, { color: theme.ink }]}>{ready ? 'Your top matches' : 'Virginia schools'}</Text>
+        <Link href="/search" style={[styles.seeAll, { color: theme.accent }]}>
+          See all
+        </Link>
+      </View>
+      <View style={[styles.list, { backgroundColor: theme.sheet, borderColor: theme.rule }, cardShadow(theme)]}>
+        {ranked.slice(0, 3).map(({ college, score }, i) => (
+          <Link key={college.id} href={{ pathname: '/college/[id]', params: { id: college.id } }} asChild>
+            <Pressable accessibilityRole="link">
+              {({ pressed }) => (
+                <View
+                  style={[
+                    styles.row,
+                    { backgroundColor: pressed ? theme.paper2 : 'transparent' },
+                    i > 0 && { borderTopColor: theme.rule, borderTopWidth: rules.hair },
+                  ]}>
+                  <SchoolBadge collegeId={college.id} size={38} />
+                  <View style={styles.rowText}>
+                    <Text style={[styles.rowName, { color: theme.ink }]}>{college.name}</Text>
+                    <Text style={[styles.rowMeta, { color: score === null ? theme.muted : theme.accent }]}>
+                      {score === null ? `${college.city}, VA` : `Match ${score}`}
                     </Text>
                   </View>
-                )}
-              </Pressable>
-            </Link>
-          )}
-          <TextInput
-            value={query}
-            onChangeText={setQuery}
-            placeholder="Search by name or city"
-            placeholderTextColor={theme.muted}
-            accessibilityLabel="Search colleges by name or city"
-            autoCorrect={false}
-            clearButtonMode="while-editing"
-            returnKeyType="search"
-            style={[styles.search, { backgroundColor: theme.sheet, borderColor: theme.muted, color: theme.ink }]}
-          />
-          <View style={styles.controls}>
-            <Segmented
-              label="Filter colleges"
-              options={FILTERS}
-              selected={filter}
-              onSelect={(k) => setFilter(k as ControlFilter)}
-            />
-            {ready && (
-              <Segmented label="Sort colleges" options={SORTS} selected={sort} onSelect={(k) => setSort(k as SortOrder)} />
-            )}
-          </View>
-          <View style={[styles.ledgerHead, { borderBottomColor: theme.ink }]}>
-            <Text style={[styles.ledgerLabel, { color: theme.muted }]}>
-              {results.length} {results.length === 1 ? 'college' : 'colleges'}
-            </Text>
-            {ready && <Text style={[styles.ledgerLabel, { color: theme.muted }]}>Your match</Text>}
-          </View>
-        </View>
-      }
-      ListEmptyComponent={
-        <Text style={[styles.empty, { color: theme.muted }]}>
-          {filter === 'private' && !query
-            ? 'No private colleges have been added yet.'
-            : 'No colleges match your search.'}
-        </Text>
-      }
-    />
+                  <Icon name="chevron" color={theme.muted} size={16} />
+                </View>
+              )}
+            </Pressable>
+          </Link>
+        ))}
+      </View>
+
+      <Link href="/about" style={[styles.about, { color: theme.muted }]}>
+        About the data and sources
+      </Link>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  content: { padding: spacing.lg, paddingBottom: spacing.xl * 2 },
-  intro: { fontFamily: fonts.body, fontSize: type.md, lineHeight: type.md * 1.5, marginBottom: spacing.lg },
-  promptPress: { marginBottom: spacing.lg },
-  prompt: { padding: spacing.md, borderTopWidth: rules.bar },
-  promptTitle: { fontFamily: fonts.display, fontSize: type.lg },
-  promptBody: { fontFamily: fonts.body, fontSize: type.md, lineHeight: type.md * 1.45, marginTop: 2 },
-  search: {
+  content: { paddingHorizontal: spacing.lg, paddingBottom: spacing.xl * 2, maxWidth: 720, width: '100%', alignSelf: 'center' },
+  header: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, marginBottom: spacing.lg },
+  headerText: { flex: 1 },
+  hello: { fontFamily: fonts.display, fontSize: type.xxl, letterSpacing: -0.5 },
+  sub: { fontFamily: fonts.body, fontSize: type.sm, marginTop: 2 },
+  featurePress: { marginBottom: spacing.xl },
+  feature: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, borderRadius: radius.card, padding: spacing.lg },
+  featureText: { flex: 1 },
+  featureTitle: { fontFamily: fonts.display, fontSize: type.lg },
+  featureBody: { fontFamily: fonts.body, fontSize: type.sm, lineHeight: type.sm * 1.45, marginTop: 4 },
+  featureArrow: { width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center' },
+  sectionTitle: { fontFamily: fonts.display, fontSize: type.lg, marginBottom: spacing.md },
+  actions: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: spacing.xl },
+  action: { width: '23%', alignItems: 'center' },
+  actionIcon: {
+    width: 58,
+    height: 58,
+    borderRadius: radius.card,
     borderWidth: rules.hair,
-    borderRadius: radius.control,
-    paddingHorizontal: spacing.md,
-    paddingVertical: 10,
-    fontFamily: fonts.body,
-    fontSize: type.md,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  controls: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md, marginTop: spacing.md },
-  ledgerHead: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: spacing.xl,
-    paddingBottom: spacing.xs,
-    paddingHorizontal: spacing.md,
-    borderBottomWidth: rules.bar,
-  },
-  ledgerLabel: { fontFamily: fonts.bodyMedium, fontSize: type.sm },
-  empty: { textAlign: 'center', marginTop: spacing.xl, fontFamily: fonts.body, fontSize: type.md },
+  actionLabel: { fontFamily: fonts.bodyMedium, fontSize: 12, textAlign: 'center', marginTop: spacing.sm },
+  listHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' },
+  seeAll: { fontFamily: fonts.control, fontSize: type.sm },
+  list: { borderRadius: radius.card, borderWidth: rules.hair, overflow: 'hidden' },
+  row: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, paddingHorizontal: spacing.lg, paddingVertical: spacing.md },
+  rowText: { flex: 1 },
+  rowName: { fontFamily: fonts.control, fontSize: type.md },
+  rowMeta: { fontFamily: fonts.bodyMedium, fontSize: type.sm, marginTop: 2 },
+  about: { fontFamily: fonts.bodyMedium, fontSize: type.sm, textAlign: 'center', marginTop: spacing.xl, textDecorationLine: 'underline' },
 });

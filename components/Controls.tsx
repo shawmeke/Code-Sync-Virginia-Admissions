@@ -5,15 +5,22 @@ import { fonts, radius, rules, spacing, type, useTheme } from '@/constants/theme
 type ButtonProps = {
   label: string;
   onPress: () => void;
-  variant?: 'primary' | 'secondary';
+  variant?: 'primary' | 'secondary' | 'onHero' | 'gold';
   disabled?: boolean;
 };
 
-// The app's two buttons: one filled forest green, one outlined in ink. Both
-// square at the 2px control radius, set in Hanken Grotesk.
+// The app's buttons: filled forest green, outlined, or white-outlined for use
+// on the deep green hero.
 export function Button({ label, onPress, variant = 'primary', disabled }: ButtonProps) {
   const theme = useTheme();
-  const primary = variant === 'primary';
+  const colors =
+    variant === 'primary'
+      ? { bg: theme.accent, pressedBg: theme.accent2, border: theme.accent, text: theme.accentInk }
+      : variant === 'gold'
+        ? { bg: theme.goldFill, pressedBg: theme.gold, border: theme.goldFill, text: theme.goldInk }
+        : variant === 'onHero'
+        ? { bg: 'transparent', pressedBg: theme.hero, border: theme.heroMuted, text: theme.heroInk }
+        : { bg: theme.sheet, pressedBg: theme.paper2, border: theme.rule2, text: theme.ink };
   return (
     <Pressable
       onPress={onPress}
@@ -22,16 +29,11 @@ export function Button({ label, onPress, variant = 'primary', disabled }: Button
       accessibilityState={{ disabled: !!disabled }}
       style={({ pressed }) => [
         styles.button,
-        primary
-          ? {
-              backgroundColor: disabled ? theme.paper2 : pressed ? theme.accent2 : theme.accent,
-              borderColor: disabled ? theme.rule : pressed ? theme.accent2 : theme.accent,
-            }
-          : { backgroundColor: pressed ? theme.paper2 : 'transparent', borderColor: theme.ink },
+        disabled
+          ? { backgroundColor: theme.paper2, borderColor: theme.rule }
+          : { backgroundColor: pressed ? colors.pressedBg : colors.bg, borderColor: colors.border },
       ]}>
-      <Text style={[styles.buttonText, { color: disabled ? theme.muted : primary ? theme.accentInk : theme.ink }]}>
-        {label}
-      </Text>
+      <Text style={[styles.buttonText, { color: disabled ? theme.muted : colors.text }]}>{label}</Text>
     </Pressable>
   );
 }
@@ -43,15 +45,12 @@ type SegmentedProps = {
   onSelect: (key: string) => void;
 };
 
-// A row of joined choices. The selected one fills forest green.
+// A row of choice pills. The selected one fills forest green.
 export function Segmented({ label, options, selected, onSelect }: SegmentedProps) {
   const theme = useTheme();
   return (
-    <View
-      style={[styles.segments, { borderColor: theme.rule2 }]}
-      accessibilityRole="radiogroup"
-      accessibilityLabel={label}>
-      {options.map((o, i) => {
+    <View style={styles.pills} accessibilityRole="radiogroup" accessibilityLabel={label}>
+      {options.map((o) => {
         const isSelected = o.key === selected;
         return (
           <Pressable
@@ -61,13 +60,12 @@ export function Segmented({ label, options, selected, onSelect }: SegmentedProps
             accessibilityLabel={o.label}
             accessibilityState={{ selected: isSelected }}
             style={({ pressed }) => [
-              styles.segment,
-              i > 0 && { borderLeftColor: theme.rule2, borderLeftWidth: rules.hair },
-              {
-                backgroundColor: isSelected ? theme.accent : pressed ? theme.paper2 : 'transparent',
-              },
+              styles.pill,
+              isSelected
+                ? { backgroundColor: theme.accent, borderColor: theme.accent }
+                : { backgroundColor: pressed ? theme.paper2 : theme.sheet, borderColor: theme.rule2 },
             ]}>
-            <Text style={[styles.segmentText, { color: isSelected ? theme.accentInk : theme.ink }]}>{o.label}</Text>
+            <Text style={[styles.pillText, { color: isSelected ? theme.accentInk : theme.ink }]}>{o.label}</Text>
           </Pressable>
         );
       })}
@@ -77,7 +75,7 @@ export function Segmented({ label, options, selected, onSelect }: SegmentedProps
 
 const styles = StyleSheet.create({
   button: {
-    minHeight: 48,
+    minHeight: 50,
     borderWidth: rules.hair,
     borderRadius: radius.control,
     paddingHorizontal: spacing.lg,
@@ -85,7 +83,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   buttonText: { fontFamily: fonts.control, fontSize: type.md },
-  segments: { flexDirection: 'row', alignSelf: 'flex-start', borderWidth: rules.hair, borderRadius: radius.control, overflow: 'hidden' },
-  segment: { minHeight: 40, paddingHorizontal: spacing.md, justifyContent: 'center' },
-  segmentText: { fontFamily: fonts.control, fontSize: type.sm },
+  pills: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
+  pill: { minHeight: 36, borderWidth: rules.hair, borderRadius: radius.pill, paddingHorizontal: 16, justifyContent: 'center' },
+  pillText: { fontFamily: fonts.control, fontSize: type.sm },
 });

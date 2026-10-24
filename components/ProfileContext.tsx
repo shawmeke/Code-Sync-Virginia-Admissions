@@ -9,6 +9,9 @@ type ProfileState = ParsedProfile & {
   // Whether the welcome screen has been dismissed since the app opened.
   seenWelcome: boolean;
   markWelcomeSeen: () => void;
+  // College ids the student saved, newest first. In memory only.
+  saved: string[];
+  toggleSaved: (collegeId: string) => void;
 };
 
 const ProfileContext = createContext<ProfileState | null>(null);
@@ -19,6 +22,7 @@ const ProfileContext = createContext<ProfileState | null>(null);
 export function ProfileProvider({ children }: { children: ReactNode }) {
   const [form, setForm] = useState<ProfileForm>(emptyProfileForm);
   const [seenWelcome, setSeenWelcome] = useState(false);
+  const [saved, setSaved] = useState<string[]>([]);
 
   const value = useMemo<ProfileState>(() => {
     return {
@@ -28,8 +32,10 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
       resetForm: () => setForm(emptyProfileForm),
       seenWelcome,
       markWelcomeSeen: () => setSeenWelcome(true),
+      saved,
+      toggleSaved: (id) => setSaved((list) => (list.includes(id) ? list.filter((x) => x !== id) : [id, ...list])),
     };
-  }, [form, seenWelcome]);
+  }, [form, seenWelcome, saved]);
 
   return <ProfileContext.Provider value={value}>{children}</ProfileContext.Provider>;
 }

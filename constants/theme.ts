@@ -1,58 +1,63 @@
-/* Hallmark · shape: app screen · genre: editorial · theme: brand (Almanac material) · redesign: full
- * paper: #dfe3da (sage stock) · accent: #1e5537 forest green, #9a720c gold · display: Hanken Grotesk · body: Newsreader
- * nav: kept (tabs + stack) · signature: the college ledger · states: profile empty, invalid, ready; college data missing per measure
- * axes: mid/grotesk-sans/chromatic-green · posture: restrained · contrast: pass · v2.0.0 */
-/* Hallmark · pre-emit critique: P3 H3 E4 S4 R4 V4 · weakest: H, an app has no hero; the welcome screen carries the brand instead */
-/* Hallmark · waive 10a · the score ring animates on mount because the user asked for it; it stays still under reduced motion */
-
 import { useColorScheme } from '@/components/useColorScheme';
 
-// The student's school colors, forest green and gold, set in the register of
-// a printed reference book: tinted paper, two rule weights, square corners,
-// figures in a mono face. Green marks actions and selection. Gold marks the
-// one thing a screen points at (you). Light-mode gold is deepened to #9a720c
-// so marks keep 3:1 contrast; bright gold appears only behind dark text.
+// The student's school colors, forest green and gold, in a clean card-based
+// app style: white rounded cards on a soft green-gray page. Green marks
+// actions and selection. Gold marks "you" (your match, your marker).
+// Light-mode gold is deepened to #9a720c so marks keep 3:1 contrast; bright
+// gold appears only behind dark text. Every color in the app comes from here.
 const light = {
-  paper: '#dfe3da',
-  paper2: '#d3d8cd',
-  sheet: '#f3f4ee',
+  paper: '#f4f6f2',
+  paper2: '#e9efe7',
+  sheet: '#ffffff',
   // The shaded middle-50% stretch of a percentile scale.
-  band: '#d3d8cd',
-  ink: '#0f1d15',
-  ink2: '#1f2f25',
-  muted: '#4b5a50',
-  rule: '#b8c0b3',
-  rule2: '#24362b',
+  band: '#e1eadf',
+  ink: '#13241a',
+  ink2: '#2b3b31',
+  muted: '#5c6b61',
+  rule: '#e3e8e1',
+  rule2: '#cdd6ca',
   accent: '#1e5537',
-  accent2: '#163f29',
-  accentInk: '#f6f3e6',
+  accent2: '#174429',
+  accentInk: '#ffffff',
+  // A pale green for selected chips and icon backgrounds.
+  accentSoft: '#e2eee5',
   gold: '#9a720c',
   goldFill: '#d4a82a',
-  goldInk: '#0f1d15',
+  goldInk: '#13241a',
+  // The deep green behind the welcome screen and feature cards.
+  hero: '#173f29',
+  heroInk: '#ffffff',
+  heroMuted: '#cfe0d4',
   focus: '#1e5537',
   warning: '#8a3b12',
-  warningSurface: '#f3e3d6',
+  warningSurface: '#f8e9dd',
+  shadow: '#13241a',
 };
 
 const dark: typeof light = {
-  paper: '#0d1611',
-  paper2: '#132019',
-  sheet: '#16241c',
-  band: '#2b4034',
-  ink: '#eef0e6',
-  ink2: '#d5dbcf',
-  muted: '#9caa9f',
-  rule: '#2a3b31',
-  rule2: '#c4ccbf',
+  paper: '#0c1510',
+  paper2: '#17271e',
+  sheet: '#13211a',
+  band: '#24372c',
+  ink: '#eef2ea',
+  ink2: '#d3dccf',
+  muted: '#9dada1',
+  rule: '#22342a',
+  rule2: '#2f4537',
   accent: '#7cc49a',
   accent2: '#93d2ac',
-  accentInk: '#0d1611',
+  accentInk: '#0c1510',
+  accentSoft: '#1d3728',
   gold: '#e2b84a',
   goldFill: '#e2b84a',
-  goldInk: '#0d1611',
+  goldInk: '#0c1510',
+  hero: '#123120',
+  heroInk: '#ffffff',
+  heroMuted: '#bcd2c3',
   focus: '#e2b84a',
   warning: '#f0a46b',
   warningSurface: '#33200f',
+  shadow: '#000000',
 };
 
 export type Theme = typeof light;
@@ -63,23 +68,42 @@ export function useTheme(): Theme {
   return themes[useColorScheme()];
 }
 
-// Each weight is its own family in React Native, so fontWeight is never set
-// alongside these. Hanken Grotesk sets heads and controls, Newsreader sets
-// prose and labels, IBM Plex Mono sets numerals and nothing else.
+// Initials badges in each school's colors: the school's primary color with
+// white letters (readable on every one of them) and a rim in its second color.
+export const schoolBadges: Record<string, { initials: string; fill: string; rim: string }> = {
+  uva: { initials: 'UVA', fill: '#232d4b', rim: '#e57200' },
+  vt: { initials: 'VT', fill: '#861f41', rim: '#e5751f' },
+  wm: { initials: 'W&M', fill: '#115740', rim: '#b9975b' },
+  jmu: { initials: 'JMU', fill: '#450084', rim: '#cbb677' },
+  odu: { initials: 'ODU', fill: '#003057', rim: '#7c878e' },
+};
+export const badgeInk = '#ffffff';
+
+// Inter throughout. Each weight is its own family in React Native, so
+// fontWeight is never set alongside these. Numbers use tabular figures.
 export const fonts = {
-  display: 'HankenGrotesk_600SemiBold',
-  control: 'HankenGrotesk_500Medium',
-  body: 'Newsreader_400Regular',
-  bodyMedium: 'Newsreader_500Medium',
-  bodyItalic: 'Newsreader_400Regular_Italic',
-  mono: 'IBMPlexMono_400Regular',
-  monoMedium: 'IBMPlexMono_500Medium',
+  display: 'Inter_700Bold',
+  control: 'Inter_600SemiBold',
+  body: 'Inter_400Regular',
+  bodyMedium: 'Inter_500Medium',
+  bodyItalic: 'Inter_400Regular',
+  mono: 'Inter_500Medium',
+  monoMedium: 'Inter_600SemiBold',
 };
 
-// A fixed app scale at about 1.18; body never below 16.
-export const type = { xs: 13, sm: 14, md: 16, lg: 19, xl: 22, xxl: 26, display: 34 };
+export const type = { xs: 13, sm: 14, md: 16, lg: 18, xl: 21, xxl: 26, display: 30 };
 
 export const spacing = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24 };
-// Square surfaces; 2px at most on a control.
-export const radius = { none: 0, control: 2 };
+export const radius = { none: 0, control: 10, card: 16, pill: 999 };
 export const rules = { hair: 1, bar: 2 };
+
+// A soft lift for cards, like the mockup.
+export function cardShadow(theme: Theme) {
+  return {
+    shadowColor: theme.shadow,
+    shadowOpacity: theme === dark ? 0.4 : 0.06,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+  };
+}

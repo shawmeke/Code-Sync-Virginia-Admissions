@@ -37,6 +37,10 @@ confidence.
   for Fall 2024). The app shows the rate for the student's own residency.
 - **Keeps student data private.** Nothing a student enters is saved or sent
   anywhere.
+- **Shows alignment at a glance.** Each school gets a dotted bar from "Below
+  typical" to "Above typical", with a gold mark at the student's match.
+- **Compares and saves schools.** A Compare tab puts two schools side by side,
+  and students can save schools while they browse.
 
 ## Universities included
 
@@ -82,3 +86,15 @@ npm test            # run the tests
   Common Data Set wasn't available yet.
 - Some colleges don't publish every figure. JMU, for example, publishes no
   GPA data.
+
+## Photo credits
+
+Campus photographs from Wikimedia Commons:
+
+- University of Virginia: [The Rotunda and Lawn University of Virginia Charlottesville VA March 2011](https://commons.wikimedia.org/wiki/File:The_Rotunda_and_Lawn_University_of_Virginia_Charlottesville_VA_March_2011.jpg) by Phil Roeder, [CC BY 2.0](https://creativecommons.org/licenses/by/2.0)
+- Virginia Tech: [Virginia Tech Burruss Hall from Drillfield](https://commons.wikimedia.org/wiki/File:Virginia_Tech_Burruss_Hall_from_Drillfield.JPG) by Eric T Gunther, [CC BY 3.0](https://creativecommons.org/licenses/by/3.0)
+- William & Mary: [The Wren Building (3501325643)](https://commons.wikimedia.org/wiki/File:The_Wren_Building_(3501325643).jpg) by benuski from Richmond, VA, USA, [CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0)
+- James Madison University: [Wilson Hall closeup](https://commons.wikimedia.org/wiki/File:Wilson_Hall_closeup.JPG) by Rtcpenguin, [CC BY-SA 2.5](https://creativecommons.org/licenses/by-sa/2.5)
+- Old Dominion University: [Kaufman Mall and the Webb University Center (cropped)](https://commons.wikimedia.org/wiki/File:Kaufman_Mall_and_the_Webb_University_Center_(cropped).JPG) by Cmett003, [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0)
+
+School badges are initials in each school's colors, not official logos.
