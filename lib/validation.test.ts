@@ -80,3 +80,20 @@ test('data checks catch a median outside its range and residency counts that exc
 test('a weighted 5.0 GPA is a valid entry', () => {
   assert.deepEqual(validateProfile({ ...blank, gpa: { value: 4.6, scale: 5, weighted: true } }), []);
 });
+
+test('data checks catch a negative application fee and an unknown factor importance', () => {
+  const ids = sources.map((s) => s.id);
+  const vt = colleges.find((c) => c.id === 'vt')!;
+  const a = vt.applying!;
+  const badFee = { ...vt, applying: { ...a, value: { ...a.value, fee: -5 } } };
+  assert.ok(validateCollege(badFee, ids).some((e) => e.includes('fee')));
+  const badFactor = {
+    ...vt,
+    applying: { ...a, value: { ...a.value, factors: { ...a.value.factors, gpa: 'essential' as never } } },
+  };
+  assert.ok(validateCollege(badFactor, ids).some((e) => e.includes('importance')));
+});
+
+test('every college has application facts from a known source', () => {
+  for (const c of colleges) assert.ok(c.applying, c.name);
+});

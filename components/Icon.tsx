@@ -17,6 +17,7 @@ const ICONS = {
   envelope: { ios: 'envelope.open', android: 'drafts', web: 'drafts' },
   graduation: { ios: 'graduationcap', android: 'school', web: 'school' },
   percent: { ios: 'percent', android: 'percent', web: 'percent' },
+  dollar: { ios: 'dollarsign.circle', android: 'payments', web: 'payments' },
   pencil: { ios: 'pencil.line', android: 'edit', web: 'edit' },
   doc: { ios: 'doc.text', android: 'description', web: 'description' },
   chart: { ios: 'chart.bar', android: 'bar_chart', web: 'bar_chart' },

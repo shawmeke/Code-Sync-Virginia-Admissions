@@ -100,6 +100,20 @@ export const colleges: College[] = [
       sourceId: 'uva-cds-2024-25',
       cohort: 'Fall 2024 first-years who reported a class rank',
     },
+    applying: {
+      value: {
+        fee: 75,
+        feeWaivable: null,
+        regularDeadline: 'Jan 1',
+        priorityDate: null,
+        earlyDecision: null,
+        earlyAction: { offered: true, deadline: 'Nov 1' },
+        factors: { rigor: null, classRank: null, gpa: null, tests: null, essay: null, recommendations: null },
+      },
+      sourceId: 'uva-cds-2024-25',
+      cohort: 'Common Data Set sections C7 and C13 to C22',
+      note: "Our copy of UVA's Common Data Set lost its table layout, so the early decision answer and the factor table can't be read.",
+    },
     programNotes: [],
     notes: [
       'UVA uses holistic review and says it has no GPA or test score cutoffs.',
@@ -159,6 +173,19 @@ export const colleges: College[] = [
     },
     // Virginia Tech leaves the class rank table (C10) blank.
     classRank: null,
+    applying: {
+      value: {
+        fee: 60,
+        feeWaivable: true,
+        regularDeadline: 'Jan 15',
+        priorityDate: 'Nov 1',
+        earlyDecision: { offered: false, deadline: null },
+        earlyAction: { offered: true, deadline: 'Nov 1' },
+        factors: { rigor: 'very important', classRank: 'not considered', gpa: 'very important', tests: 'considered', essay: 'very important', recommendations: 'not considered' },
+      },
+      sourceId: 'vt-cds-2025-26',
+      cohort: 'Common Data Set sections C7 and C13 to C22',
+    },
     programNotes: [
       {
         program: 'College of Engineering',
@@ -219,6 +246,19 @@ export const colleges: College[] = [
       sourceId: 'odu-cds-2025-26',
       cohort: 'Fall 2025 enrolled first-years who reported a class rank',
     },
+    applying: {
+      value: {
+        fee: 50,
+        feeWaivable: true,
+        regularDeadline: 'Feb 1',
+        priorityDate: 'Dec 1',
+        earlyDecision: { offered: false, deadline: null },
+        earlyAction: { offered: true, deadline: 'Dec 1' },
+        factors: { rigor: 'very important', classRank: 'considered', gpa: 'very important', tests: 'considered', essay: 'considered', recommendations: 'important' },
+      },
+      sourceId: 'odu-cds-2025-26',
+      cohort: 'Common Data Set sections C7 and C13 to C22',
+    },
     programNotes: [],
     notes: [],
   },
@@ -267,6 +307,19 @@ export const colleges: College[] = [
       sourceId: 'wm-cds-2025-26',
       cohort: 'Fall 2025 first-years who reported a class rank',
     },
+    applying: {
+      value: {
+        fee: 75,
+        feeWaivable: true,
+        regularDeadline: 'Jan 5',
+        priorityDate: null,
+        earlyDecision: { offered: true, deadline: 'Nov 1 (ED I), Jan 5 (ED II)' },
+        earlyAction: { offered: false, deadline: null },
+        factors: { rigor: 'very important', classRank: 'very important', gpa: 'very important', tests: 'considered', essay: 'very important', recommendations: 'very important' },
+      },
+      sourceId: 'wm-cds-2025-26',
+      cohort: 'Common Data Set sections C7 and C13 to C22',
+    },
     programNotes: [],
     notes: [],
   },
@@ -306,6 +359,19 @@ export const colleges: College[] = [
     // JMU's class rank table (C10) doesn't add up: top quarter and top half
     // are both 34.6%, and top half plus bottom half is 43.7%, not 100%.
     classRank: null,
+    applying: {
+      value: {
+        fee: 70,
+        feeWaivable: true,
+        regularDeadline: 'Jan 15',
+        priorityDate: 'Nov 1',
+        earlyDecision: { offered: false, deadline: null },
+        earlyAction: { offered: true, deadline: 'Nov 1' },
+        factors: { rigor: 'very important', classRank: 'not considered', gpa: 'very important', tests: 'considered', essay: 'considered', recommendations: 'considered' },
+      },
+      sourceId: 'jmu-cds-2025-26',
+      cohort: 'Common Data Set sections C7 and C13 to C22',
+    },
     programNotes: [],
     notes: [
       "JMU doesn't publish GPA figures in its Common Data Set.",
@@ -326,7 +392,7 @@ export function getSource(id: string): Source | undefined {
 export function sourcesForCollege(c: College): Source[] {
   const stats = [
     c.applicants, c.admitted, c.enrolled, c.offerRate, c.residencyOffers, c.sat, c.act,
-    c.satSubmitShare, c.actSubmitShare, c.gpaAverage, c.gpaBands, c.classRank,
+    c.satSubmitShare, c.actSubmitShare, c.gpaAverage, c.gpaBands, c.classRank, c.applying,
   ];
   const ids = [...new Set(stats.flatMap((s) => (s ? [s.sourceId] : [])))];
   return ids.flatMap((id) => {

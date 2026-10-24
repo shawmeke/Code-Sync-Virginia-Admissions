@@ -82,16 +82,18 @@ export const schoolBadges: Record<string, { initials: string; fill: string; rim:
 };
 export const badgeInk = '#ffffff';
 
-// Inter throughout. Each weight is its own family in React Native, so
-// fontWeight is never set alongside these. Numbers use tabular figures.
+// Fraunces (a serif) for headings over Source Sans 3 for everything else,
+// the same pairing Niche uses. Each weight is its own family in React
+// Native, so fontWeight is never set alongside these. "mono" names the faces
+// used for numbers; they set tabular figures so columns line up.
 export const fonts = {
-  display: 'Inter_700Bold',
-  control: 'Inter_600SemiBold',
-  body: 'Inter_400Regular',
-  bodyMedium: 'Inter_500Medium',
-  bodyItalic: 'Inter_400Regular',
-  mono: 'Inter_500Medium',
-  monoMedium: 'Inter_600SemiBold',
+  display: 'Fraunces_600SemiBold',
+  control: 'SourceSans3_600SemiBold',
+  body: 'SourceSans3_400Regular',
+  bodyMedium: 'SourceSans3_500Medium',
+  bodyItalic: 'SourceSans3_400Regular',
+  mono: 'SourceSans3_600SemiBold',
+  monoMedium: 'SourceSans3_700Bold',
 };
 
 export const type = { xs: 13, sm: 14, md: 16, lg: 18, xl: 21, xxl: 26, display: 30 };

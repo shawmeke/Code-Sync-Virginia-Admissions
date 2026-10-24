@@ -44,7 +44,7 @@ export function validateCollege(c: College, sourceIds: string[]): string[] {
 
   const stats = [
     c.applicants, c.admitted, c.enrolled, c.offerRate, c.residencyOffers, c.sat, c.act,
-    c.satSubmitShare, c.actSubmitShare, c.gpaAverage, c.gpaBands, c.classRank,
+    c.satSubmitShare, c.actSubmitShare, c.gpaAverage, c.gpaBands, c.classRank, c.applying,
   ];
   for (const stat of stats) {
     if (stat && !sourceIds.includes(stat.sourceId)) errors.push(`Unknown source "${stat.sourceId}".`);
@@ -67,6 +67,15 @@ export function validateCollege(c: College, sourceIds: string[]): string[] {
 
   if (c.sat && !validRange(c.sat.value, 400, 1600)) errors.push('SAT range is invalid.');
   if (c.act && !validRange(c.act.value, 1, 36)) errors.push('ACT range is invalid.');
+
+  if (c.applying) {
+    const { fee, factors } = c.applying.value;
+    if (fee !== null && !(fee >= 0)) errors.push('Application fee must be zero or more.');
+    const levels = ['very important', 'important', 'considered', 'not considered'];
+    for (const [name, level] of Object.entries(factors)) {
+      if (level !== null && !levels.includes(level)) errors.push(`Unknown importance "${level}" for ${name}.`);
+    }
+  }
 
   if (c.residencyOffers) {
     const { virginia, outOfState } = c.residencyOffers.value;

@@ -11,6 +11,9 @@ import type { College } from '@/types/college';
 
 type Row = { label: string; value: (c: College) => string };
 
+const planText = (p: { offered: boolean; deadline: string | null } | null | undefined) =>
+  !p ? 'Not available' : !p.offered ? 'Not offered' : (p.deadline ?? 'Offered');
+
 const ROWS: Row[] = [
   { label: 'Offer rate', value: (c) => (c.offerRate ? formatPercent(c.offerRate.value) : 'Not available') },
   { label: 'Applicants', value: (c) => (c.applicants ? formatCount(c.applicants.value) : 'Not available') },
@@ -22,6 +25,10 @@ const ROWS: Row[] = [
     value: (c) => (c.classRank?.value.topTenth != null ? formatPercent(c.classRank.value.topTenth) : 'Not available'),
   },
   { label: 'Testing', value: (c) => TEST_POLICY_LABELS[c.testPolicy] },
+  { label: 'Application fee', value: (c) => (c.applying?.value.fee != null ? `$${c.applying.value.fee}` : 'Not available') },
+  { label: 'Regular deadline', value: (c) => c.applying?.value.regularDeadline ?? 'Not available' },
+  { label: 'Early decision', value: (c) => planText(c.applying?.value.earlyDecision) },
+  { label: 'Early action', value: (c) => planText(c.applying?.value.earlyAction) },
   { label: 'Figures for', value: (c) => c.cycle },
 ];
 
@@ -125,7 +132,9 @@ function CompareRow({ label, schools, values, highlight, last }: CompareRowProps
       ]}>
       <Text style={[styles.labelCell, styles.rowLabel, { color: theme.muted }]}>{label}</Text>
       {values.map((v, i) => (
-        <Text key={i} style={[styles.valueCell, { color: highlight ? theme.accent : theme.ink }]}>
+        <Text
+          key={i}
+          style={[styles.valueCell, { color: highlight ? theme.accent : v === 'Not available' ? theme.muted : theme.ink }]}>
           {v}
         </Text>
       ))}

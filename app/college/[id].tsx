@@ -7,7 +7,7 @@ import { MatchScore, MetricRow } from '@/components/Comparison';
 import { Button } from '@/components/Controls';
 import { ExternalLink } from '@/components/ExternalLink';
 import { GpaBands } from '@/components/GpaBands';
-import { Icon } from '@/components/Icon';
+import { Icon, type IconName } from '@/components/Icon';
 import { useProfile } from '@/components/ProfileContext';
 import { SchoolBadge } from '@/components/SchoolBadge';
 import { Section } from '@/components/Section';
@@ -18,7 +18,7 @@ import { getCollege, sourcesForCollege } from '@/data/colleges';
 import { campusPhotos } from '@/data/photos';
 import { alignWithCollege, describeAlignment, type MetricResult } from '@/lib/admissions';
 import { formatCount, formatPercent, formatRange, TEST_POLICY_LABELS } from '@/lib/format';
-import type { ClassRankProfile, GpaScale } from '@/types/college';
+import type { ApplyingFacts, ClassRankProfile, GpaScale, Importance, Stat } from '@/types/college';
 
 const GPA_SCALE_NOTES: Record<GpaScale, string> = {
   weighted:
@@ -205,6 +205,8 @@ export default function CollegeScreen() {
 
       {tab === 'admissions' && (
         <>
+          {college.applying && <BeforeYouApply applying={college.applying} collegeName={college.name} />}
+
           <Section title="Applications">
             <StatRow label="Applicants" stat={college.applicants} format={formatCount} icon="people" />
             <StatRow label="Offers of admission" stat={college.admitted} format={formatCount} icon="envelope" />
@@ -314,6 +316,86 @@ export default function CollegeScreen() {
   );
 }
 
+const FACTOR_LABELS: Record<keyof ApplyingFacts['factors'], string> = {
+  rigor: 'Course rigor',
+  gpa: 'GPA',
+  classRank: 'Class rank',
+  tests: 'Test scores',
+  essay: 'Application essay',
+  recommendations: 'Recommendations',
+};
+
+const IMPORTANCE_LABELS: Record<Importance, string> = {
+  'very important': 'Very important',
+  important: 'Important',
+  considered: 'Considered',
+  'not considered': 'Not considered',
+};
+
+const plan = (p: { offered: boolean; deadline: string | null } | null) =>
+  p === null ? 'Not available' : !p.offered ? 'Not offered' : (p.deadline ?? 'Offered');
+
+// Practical facts from the Common Data Set: what it costs to apply, the
+// dates, and how much each part of an application counts.
+function BeforeYouApply({ applying, collegeName }: { applying: Stat<ApplyingFacts>; collegeName: string }) {
+  const theme = useTheme();
+  const a = applying.value;
+  const fee =
+    a.fee === null ? 'Not available' : `$${a.fee}${a.feeWaivable ? ', can be waived for need' : ''}`;
+  const rows: { icon: IconName; label: string; value: string }[] = [
+    { icon: 'dollar', label: 'Application fee', value: fee },
+    { icon: 'envelope', label: 'Regular deadline', value: a.regularDeadline ?? 'Not available' },
+    ...(a.priorityDate ? [{ icon: 'envelope' as const, label: 'Priority date', value: a.priorityDate }] : []),
+    { icon: 'graduation', label: 'Early decision (binding)', value: plan(a.earlyDecision) },
+    { icon: 'graduation', label: 'Early action', value: plan(a.earlyAction) },
+  ];
+  return (
+    <>
+      <Section title="Before you apply">
+        {rows.map((r, i) => (
+          <View
+            key={r.label}
+            style={[styles.factRow, i < rows.length - 1 && { borderBottomColor: theme.rule, borderBottomWidth: rules.hair }]}
+            accessible
+            accessibilityLabel={`${r.label}: ${r.value}`}>
+            <View style={[styles.factIcon, { backgroundColor: theme.accentSoft }]}>
+              <Icon name={r.icon} color={theme.accent} size={18} />
+            </View>
+            <Text style={[styles.factLabel, { color: theme.ink }]}>{r.label}</Text>
+            <Text style={[styles.factValue, { color: r.value === 'Not available' ? theme.muted : theme.ink }]}>{r.value}</Text>
+          </View>
+        ))}
+      </Section>
+      <Section title="What they weigh">
+        {(Object.keys(FACTOR_LABELS) as (keyof ApplyingFacts['factors'])[]).map((k, i, all) => {
+          const level = a.factors[k];
+          const strong = level === 'very important';
+          return (
+            <View
+              key={k}
+              style={[styles.factRow, i < all.length - 1 && { borderBottomColor: theme.rule, borderBottomWidth: rules.hair }]}
+              accessible
+              accessibilityLabel={`${FACTOR_LABELS[k]}: ${level ? IMPORTANCE_LABELS[level] : 'Not available'}`}>
+              <Text style={[styles.factLabel, { color: theme.ink }]}>{FACTOR_LABELS[k]}</Text>
+              <Text
+                style={[
+                  strong ? styles.factStrong : styles.factValue,
+                  { color: strong ? theme.accent : level === 'not considered' || !level ? theme.muted : theme.ink },
+                ]}>
+                {level ? IMPORTANCE_LABELS[level] : 'Not available'}
+              </Text>
+            </View>
+          );
+        })}
+        <Text style={[styles.small, styles.factNote, { color: theme.muted }]}>
+          {applying.note ? `${applying.note} ` : ''}From {collegeName}'s Common Data Set (sections C7 and C13 to C22).
+          Dates and fees change each year, so check the admissions website before you apply.
+        </Text>
+      </Section>
+    </>
+  );
+}
+
 const styles = StyleSheet.create({
   content: { paddingBottom: spacing.xl * 2, maxWidth: 720, width: '100%', alignSelf: 'center' },
   missing: { flex: 1, padding: spacing.lg },
@@ -345,5 +427,11 @@ const styles = StyleSheet.create({
   pad: { paddingHorizontal: spacing.lg },
   link: { fontFamily: fonts.control, fontSize: type.sm, marginTop: spacing.xs, textDecorationLine: 'underline' },
   save: { paddingHorizontal: spacing.lg, marginBottom: spacing.lg },
+  factRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, paddingVertical: spacing.md },
+  factIcon: { width: 34, height: 34, borderRadius: 17, alignItems: 'center', justifyContent: 'center' },
+  factLabel: { flex: 1, fontFamily: fonts.bodyMedium, fontSize: type.md },
+  factValue: { fontFamily: fonts.monoMedium, fontSize: type.sm, textAlign: 'right', flexShrink: 1 },
+  factStrong: { fontFamily: fonts.monoMedium, fontSize: type.sm, textAlign: 'right' },
+  factNote: { paddingBottom: spacing.md },
   saveNote: { fontFamily: fonts.body, fontSize: type.xs, textAlign: 'center', marginTop: spacing.sm },
 });

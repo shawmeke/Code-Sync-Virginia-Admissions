@@ -54,6 +54,30 @@ export type ClassRankProfile = {
 export type ResidencyCounts = { applied: number; admitted: number };
 export type ResidencyOffers = { virginia: ResidencyCounts; outOfState: ResidencyCounts };
 
+// How much a college says an academic factor counts (Common Data Set C7).
+export type Importance = 'very important' | 'important' | 'considered' | 'not considered';
+
+// What a student needs to know before applying, from Common Data Set
+// sections C7 and C13 to C22. Dates are as published ("Jan 5"); null means
+// the college didn't publish it or our copy of the document can't be read.
+export type ApplyingFacts = {
+  fee: number | null;
+  feeWaivable: boolean | null;
+  regularDeadline: string | null;
+  priorityDate: string | null;
+  // null when the document's answer can't be read.
+  earlyDecision: { offered: boolean; deadline: string | null } | null;
+  earlyAction: { offered: boolean; deadline: string | null } | null;
+  factors: {
+    rigor: Importance | null;
+    classRank: Importance | null;
+    gpa: Importance | null;
+    tests: Importance | null;
+    essay: Importance | null;
+    recommendations: Importance | null;
+  };
+};
+
 export type TestPolicy = 'required' | 'optional' | 'blind' | 'unknown';
 
 // A note that applies only to one school or major, so it is never shown as
@@ -94,6 +118,8 @@ export type College = {
   gpaBands: Stat<GpaBand[]> | null;
 
   classRank: Stat<ClassRankProfile> | null;
+
+  applying: Stat<ApplyingFacts> | null;
 
   programNotes: ProgramNote[];
   notes: string[];
