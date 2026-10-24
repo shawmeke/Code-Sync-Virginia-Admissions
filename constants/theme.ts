@@ -28,6 +28,8 @@ const light = {
   hero: '#173f29',
   heroInk: '#ffffff',
   heroMuted: '#cfe0d4',
+  // A faint ring track on the hero green: a step lighter than the hero.
+  heroTrack: '#2a5a3f',
   focus: '#1e5537',
   warning: '#8a3b12',
   warningSurface: '#f8e9dd',
@@ -54,6 +56,7 @@ const dark: typeof light = {
   hero: '#123120',
   heroInk: '#ffffff',
   heroMuted: '#bcd2c3',
+  heroTrack: '#24503a',
   focus: '#e2b84a',
   warning: '#f0a46b',
   warningSurface: '#33200f',

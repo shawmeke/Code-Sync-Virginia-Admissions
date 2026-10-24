@@ -82,3 +82,20 @@ test('a decimal comma is read as a decimal point', () => {
   assert.deepEqual(errors, []);
   assert.equal(profile.gpa?.value, 3.8);
 });
+
+test('each problem is tied to the field it belongs to', () => {
+  assert.deepEqual(parseProfileForm(emptyProfileForm).fieldErrors, {});
+  const { fieldErrors } = parseProfileForm({
+    ...emptyProfileForm,
+    gpa: '4.5',
+    sat: '14OO',
+    act: '40',
+    classRank: '0',
+    advancedTaken: '6',
+  });
+  assert.match(fieldErrors.gpa ?? '', /GPA/);
+  assert.match(fieldErrors.sat ?? '', /SAT/);
+  assert.match(fieldErrors.act ?? '', /ACT/);
+  assert.match(fieldErrors.classRank ?? '', /Class rank/);
+  assert.match(fieldErrors.rigor ?? '', /advanced/);
+});
