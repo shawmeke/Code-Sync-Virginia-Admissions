@@ -13,7 +13,7 @@ import { SchoolBadge } from '@/components/SchoolBadge';
 import { Section } from '@/components/Section';
 import { SourceList } from '@/components/SourceList';
 import { StatRow } from '@/components/StatRow';
-import { cardShadow, fonts, radius, rules, spacing, type, useTheme } from '@/constants/theme';
+import { fonts, radius, rules, spacing, type, useTheme } from '@/constants/theme';
 import { getCollege, sourcesForCollege } from '@/data/colleges';
 import { campusPhotos } from '@/data/photos';
 import { alignWithCollege, describeAlignment, type MetricResult } from '@/lib/admissions';
@@ -127,7 +127,7 @@ export default function CollegeScreen() {
       </View>
 
       {alignment ? (
-        <View style={[styles.matchCard, { backgroundColor: theme.sheet, borderColor: theme.rule }, cardShadow(theme)]}>
+        <View style={[styles.matchCard, { backgroundColor: theme.sheet }]}>
           {alignment.match ? (
             <>
               <MatchScore match={alignment.match} collegeName={college.name} />
@@ -325,13 +325,7 @@ const styles = StyleSheet.create({
   badgeRing: { alignSelf: 'flex-start', borderRadius: 40, padding: 4 },
   name: { fontFamily: fonts.display, fontSize: type.xxl, letterSpacing: -0.5, marginTop: spacing.sm },
   meta: { fontFamily: fonts.body, fontSize: type.sm, lineHeight: type.sm * 1.45, marginTop: spacing.xs },
-  matchCard: {
-    marginHorizontal: spacing.lg,
-    marginBottom: spacing.lg,
-    padding: spacing.lg,
-    borderRadius: radius.card,
-    borderWidth: rules.hair,
-  },
+  matchCard: { marginBottom: spacing.lg, padding: spacing.lg },
   promptPress: { marginHorizontal: spacing.lg, marginBottom: spacing.lg },
   prompt: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, borderRadius: radius.card, padding: spacing.lg },
   promptText: { flex: 1 },

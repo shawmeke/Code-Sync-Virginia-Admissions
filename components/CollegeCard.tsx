@@ -5,7 +5,7 @@ import { AlignmentDots } from '@/components/AlignmentDots';
 import { Icon } from '@/components/Icon';
 import { useProfile } from '@/components/ProfileContext';
 import { SchoolBadge } from '@/components/SchoolBadge';
-import { cardShadow, fonts, radius, rules, spacing, type, useTheme } from '@/constants/theme';
+import { fonts, rules, spacing, type, useTheme } from '@/constants/theme';
 import { alignWithCollege, describeAlignment, matchBasis } from '@/lib/admissions';
 import { formatPercent, formatRange } from '@/lib/format';
 import type { College } from '@/types/college';
@@ -33,8 +33,7 @@ export function CollegeCard({ college }: { college: College }) {
           <View
             style={[
               styles.card,
-              { backgroundColor: pressed ? theme.paper2 : theme.sheet, borderColor: theme.rule },
-              cardShadow(theme),
+              { backgroundColor: pressed ? theme.paper2 : theme.sheet, borderBottomColor: theme.rule },
             ]}>
             <View style={styles.top}>
               <SchoolBadge collegeId={college.id} />
@@ -68,8 +67,8 @@ export function CollegeCard({ college }: { college: College }) {
 }
 
 const styles = StyleSheet.create({
-  pressable: { marginBottom: spacing.md },
-  card: { borderRadius: radius.card, borderWidth: rules.hair, padding: spacing.lg },
+  pressable: { marginHorizontal: -spacing.lg },
+  card: { paddingVertical: spacing.lg, paddingHorizontal: spacing.lg, borderBottomWidth: rules.hair },
   top: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   title: { flex: 1 },
   name: { fontFamily: fonts.control, fontSize: type.md },

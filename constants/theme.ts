@@ -97,16 +97,7 @@ export const fonts = {
 export const type = { xs: 13, sm: 14, md: 16, lg: 18, xl: 21, xxl: 26, display: 30 };
 
 export const spacing = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24 };
-export const radius = { none: 0, control: 10, card: 16, pill: 999 };
+// One tight soft-square corner for controls, cards and chips. Circles are kept
+// for the things a screen points at: badges, rings and icon dots.
+export const radius = { none: 0, control: 6, card: 6, pill: 6 };
 export const rules = { hair: 1, bar: 2 };
-
-// A soft lift for cards, like the mockup.
-export function cardShadow(theme: Theme) {
-  return {
-    shadowColor: theme.shadow,
-    shadowOpacity: theme === dark ? 0.4 : 0.06,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
-  };
-}

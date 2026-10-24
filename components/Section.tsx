@@ -1,9 +1,10 @@
 import type { ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { cardShadow, fonts, radius, rules, spacing, type, useTheme } from '@/constants/theme';
+import { fonts, spacing, type, useTheme } from '@/constants/theme';
 
-// A heading over a white rounded card holding the rows.
+// A heading over a full-width white band holding the rows. Sections are told
+// apart by the shift from page color to white, not by boxes or borders.
 export function Section({ title, children }: { title: string; children: ReactNode }) {
   const theme = useTheme();
   return (
@@ -11,7 +12,7 @@ export function Section({ title, children }: { title: string; children: ReactNod
       <Text style={[styles.title, { color: theme.ink }]} accessibilityRole="header">
         {title}
       </Text>
-      <View style={[styles.card, { backgroundColor: theme.sheet, borderColor: theme.rule }, cardShadow(theme)]}>
+      <View style={[styles.band, { backgroundColor: theme.sheet }]}>
         {children}
       </View>
     </View>
@@ -21,5 +22,6 @@ export function Section({ title, children }: { title: string; children: ReactNod
 const styles = StyleSheet.create({
   section: { marginBottom: spacing.xl },
   title: { fontFamily: fonts.display, fontSize: type.lg, marginBottom: spacing.sm },
-  card: { borderRadius: radius.card, borderWidth: rules.hair, paddingHorizontal: spacing.lg, paddingVertical: spacing.xs },
+  // Bleeds past the screen's side padding so the band runs edge to edge.
+  band: { marginHorizontal: -spacing.lg, paddingHorizontal: spacing.lg, paddingVertical: spacing.xs },
 });

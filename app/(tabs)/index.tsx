@@ -6,7 +6,7 @@ import { BrandMark } from '@/components/BrandMark';
 import { Icon, type IconName } from '@/components/Icon';
 import { useProfile } from '@/components/ProfileContext';
 import { SchoolBadge } from '@/components/SchoolBadge';
-import { cardShadow, fonts, radius, rules, spacing, type, useTheme } from '@/constants/theme';
+import { fonts, radius, rules, spacing, type, useTheme } from '@/constants/theme';
 import { colleges } from '@/data/colleges';
 import { alignWithCollege, matchBasis } from '@/lib/admissions';
 
@@ -79,8 +79,7 @@ export default function HomeScreen() {
                   <View
                     style={[
                       styles.actionIcon,
-                      { backgroundColor: pressed ? theme.paper2 : theme.sheet, borderColor: theme.rule },
-                      cardShadow(theme),
+                      { backgroundColor: pressed ? theme.paper2 : theme.accentSoft },
                     ]}>
                     <Icon name={a.icon} color={theme.accent} size={24} />
                   </View>
@@ -100,7 +99,7 @@ export default function HomeScreen() {
           See all
         </Link>
       </View>
-      <View style={[styles.list, { backgroundColor: theme.sheet, borderColor: theme.rule }, cardShadow(theme)]}>
+      <View style={[styles.list, { backgroundColor: theme.sheet }]}>
         {ranked.slice(0, 3).map(({ college, score, basis }, i) => (
           <Link key={college.id} href={{ pathname: '/college/[id]', params: { id: college.id } }} asChild>
             <Pressable accessibilityRole="link">
@@ -148,19 +147,13 @@ const styles = StyleSheet.create({
   sectionTitle: { fontFamily: fonts.display, fontSize: type.lg, marginBottom: spacing.md },
   actions: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: spacing.xl },
   action: { width: '23%', alignItems: 'center' },
-  actionIcon: {
-    width: 58,
-    height: 58,
-    borderRadius: radius.card,
-    borderWidth: rules.hair,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  actionIcon: { width: 56, height: 56, borderRadius: 28, alignItems: 'center', justifyContent: 'center' },
   actionLabel: { fontFamily: fonts.bodyMedium, fontSize: 12, textAlign: 'center', marginTop: spacing.sm },
   listHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.xs },
   listTitle: { marginBottom: 0 },
   seeAll: { fontFamily: fonts.control, fontSize: type.sm, paddingVertical: 14, paddingLeft: spacing.lg },
-  list: { borderRadius: radius.card, borderWidth: rules.hair, overflow: 'hidden' },
+  // A full-width white band, rows split by faint lines.
+  list: { marginHorizontal: -spacing.lg },
   row: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, paddingHorizontal: spacing.lg, paddingVertical: spacing.md },
   rowText: { flex: 1 },
   rowName: { fontFamily: fonts.control, fontSize: type.md },

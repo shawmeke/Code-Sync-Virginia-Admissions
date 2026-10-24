@@ -3,7 +3,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { useProfile } from '@/components/ProfileContext';
 import { SchoolBadge } from '@/components/SchoolBadge';
-import { cardShadow, fonts, radius, rules, spacing, type, useTheme } from '@/constants/theme';
+import { fonts, rules, spacing, type, useTheme } from '@/constants/theme';
 import { colleges, getCollege } from '@/data/colleges';
 import { alignWithCollege } from '@/lib/admissions';
 import { formatCount, formatPercent, formatRange, TEST_POLICY_LABELS } from '@/lib/format';
@@ -42,7 +42,7 @@ export default function CompareScreen() {
       <Picker label="First school" value={left} other={right} onChange={setLeft} />
       <Picker label="Second school" value={right} other={left} onChange={setRight} />
 
-      <View style={[styles.table, { backgroundColor: theme.sheet, borderColor: theme.rule }, cardShadow(theme)]}>
+      <View style={[styles.table, { backgroundColor: theme.sheet }]}>
         <View style={[styles.headRow, { borderBottomColor: theme.rule }]}>
           <View style={styles.labelCell} />
           {[a, b].map((c) => (
@@ -139,7 +139,8 @@ const styles = StyleSheet.create({
   pickerLabel: { fontFamily: fonts.bodyMedium, fontSize: type.sm, marginBottom: spacing.xs },
   pickerRow: { flexDirection: 'row', gap: spacing.sm },
   pickerItem: { borderWidth: 2, borderRadius: 26, padding: 2 },
-  table: { borderRadius: radius.card, borderWidth: rules.hair, overflow: 'hidden', marginTop: spacing.md },
+  // A full-width white band; rows split by faint lines.
+  table: { marginHorizontal: -spacing.lg, marginTop: spacing.md },
   headRow: { flexDirection: 'row', paddingVertical: spacing.lg, borderBottomWidth: rules.hair },
   headCell: { flex: 1, alignItems: 'center', gap: spacing.sm, paddingHorizontal: spacing.xs },
   headName: { fontFamily: fonts.control, fontSize: type.sm, textAlign: 'center' },
