@@ -22,6 +22,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Colleges',
+          headerTitle: 'Code-Sync',
           tabBarIcon: ({ color }) => (
             <SymbolView
               name={{ ios: 'building.columns', android: 'account_balance', web: 'account_balance' }}

@@ -1,5 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
+import Animated, { useReducedMotion } from 'react-native-reanimated';
 
+import { ScoreRing } from '@/components/ScoreRing';
 import { radius, spacing, useTheme } from '@/constants/theme';
 import type { AcademicMatch, MatchMeasure, MetricResult } from '@/lib/admissions';
 import { formatPercentile, formatPercentileShort } from '@/lib/format';
@@ -23,13 +25,11 @@ export function MatchScore({ match, collegeName }: { match: AcademicMatch; colle
   const based = describeMeasures(match.measures);
   return (
     <View style={styles.match}>
-      <View
-        style={[styles.matchCircle, { borderColor: theme.primary }]}
-        accessible
-        accessibilityRole="image"
-        accessibilityLabel={`Academic Match ${match.score} out of 100`}>
-        <Text style={[styles.matchNumber, { color: theme.text }]}>{match.score}</Text>
-        <Text style={[styles.matchOutOf, { color: theme.textMuted }]}>of 100</Text>
+      <View accessible accessibilityRole="image" accessibilityLabel={`Academic Match ${match.score} out of 100`}>
+        <ScoreRing value={match.score} size={96} strokeWidth={9} color={theme.bar} trackColor={theme.barTrack}>
+          <Text style={[styles.matchNumber, { color: theme.text }]}>{match.score}</Text>
+          <Text style={[styles.matchOutOf, { color: theme.textMuted }]}>of 100</Text>
+        </ScoreRing>
       </View>
       <View style={styles.matchText}>
         <Text style={[styles.matchTitle, { color: theme.text }]}>Academic Match</Text>
@@ -61,6 +61,19 @@ export function MatchPill({ match }: { match: AcademicMatch }) {
 // Where a percentile falls on a 0–100 line, with the middle 50% shaded.
 export function PercentileBar({ percentile }: { percentile: number }) {
   const theme = useTheme();
+  const reduceMotion = useReducedMotion();
+  // The marker slides in from the left the first time it appears. The start
+  // value sits in the static style so the first frame doesn't flash the end.
+  const slide = reduceMotion
+    ? { left: `${percentile}%` as const }
+    : {
+        left: '0%' as const,
+        animationName: { to: { left: `${percentile}%` as const } },
+        animationDuration: 900,
+        animationDelay: 350,
+        animationTimingFunction: 'ease-out' as const,
+        animationFillMode: 'forwards' as const,
+      };
   return (
     <View
       style={styles.barWrap}
@@ -69,7 +82,7 @@ export function PercentileBar({ percentile }: { percentile: number }) {
       accessibilityLabel={`Estimated at ${formatPercentile(percentile)}`}>
       <View style={[styles.track, { backgroundColor: theme.barTrack }]}>
         <View style={[styles.middle, { backgroundColor: theme.bar, opacity: 0.25 }]} />
-        <View style={[styles.marker, { left: `${percentile}%`, backgroundColor: theme.bar, borderColor: theme.surface }]} />
+        <Animated.View style={[styles.marker, { backgroundColor: theme.bar, borderColor: theme.surface }, slide]} />
       </View>
       <View style={styles.ticks}>
         <Text style={[styles.tick, { color: theme.textMuted }]}>0</Text>
@@ -116,14 +129,6 @@ export function MetricRow({ metric, last }: { metric: MetricResult; last?: boole
 
 const styles = StyleSheet.create({
   match: { flexDirection: 'row', gap: spacing.lg, alignItems: 'center', paddingVertical: spacing.md },
-  matchCircle: {
-    width: 88,
-    height: 88,
-    borderRadius: 44,
-    borderWidth: 6,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   matchNumber: { fontSize: 30, fontWeight: '800', fontVariant: ['tabular-nums'] },
   matchOutOf: { fontSize: 11, marginTop: -2 },
   matchText: { flex: 1 },

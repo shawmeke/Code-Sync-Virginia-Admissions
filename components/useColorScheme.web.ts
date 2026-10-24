@@ -1,8 +1,10 @@
-// NOTE: The default React Native styling doesn't support server rendering.
-// Server rendered styles should not change between the first render of the HTML
-// and the first render on the client. Typically, web developers will use CSS media queries
-// to render different styles on the client and server, these aren't directly supported in React Native
-// but can be achieved using a styling library like Nativewind.
-export function useColorScheme() {
-  return 'light';
-}
+import { useColorScheme as useColorSchemeCore } from 'react-native';
+
+// The web build renders only in the browser (app.json web.output is
+// "single"), so it can follow the visitor's light or dark setting directly.
+// If the app ever switches to server rendering, this must return a fixed
+// value again so the server and browser render the same styles.
+export const useColorScheme = () => {
+  const coreScheme = useColorSchemeCore();
+  return coreScheme === 'dark' ? 'dark' : 'light';
+};

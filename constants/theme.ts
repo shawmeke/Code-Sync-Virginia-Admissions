@@ -45,5 +45,22 @@ export function useTheme(): Theme {
   return themes[useColorScheme()];
 }
 
+// Each school's primary color, used only as a small accent, with lighter
+// versions that stay visible on dark backgrounds. Falls back to the app's
+// primary color for schools not listed.
+const schoolAccents: Record<string, { light: string; dark: string }> = {
+  uva: { light: '#e57200', dark: '#f0913a' },
+  vt: { light: '#861f41', dark: '#c4567a' },
+  wm: { light: '#115740', dark: '#3f9c76' },
+  jmu: { light: '#450084', dark: '#9466d6' },
+  odu: { light: '#003057', dark: '#5b8fd1' },
+};
+
+export function accentFor(id: string, theme: Theme): string {
+  const accent = schoolAccents[id];
+  if (!accent) return theme.primary;
+  return theme === dark ? accent.dark : accent.light;
+}
+
 export const spacing = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24 };
 export const radius = { sm: 8, md: 12, pill: 999 };

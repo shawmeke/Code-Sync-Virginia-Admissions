@@ -29,6 +29,7 @@ export default function RootLayout() {
           headerBackTitle: 'Back',
         }}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="welcome" options={{ headerShown: false, animation: 'fade' }} />
         <Stack.Screen name="college/[id]" options={{ title: '' }} />
       </Stack>
       </ProfileProvider>

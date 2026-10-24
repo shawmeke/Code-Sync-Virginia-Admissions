@@ -1,4 +1,4 @@
-import { Link } from 'expo-router';
+import { Link, Redirect } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
@@ -28,7 +28,7 @@ export default function CollegesScreen() {
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<ControlFilter>('all');
   const [sort, setSort] = useState<SortOrder>('match');
-  const { profile, ready } = useProfile();
+  const { profile, ready, seenWelcome } = useProfile();
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -41,6 +41,8 @@ export default function CollegesScreen() {
         ready && sort === 'match' ? score(b) - score(a) || a.name.localeCompare(b.name) : a.name.localeCompare(b.name),
       );
   }, [query, filter, sort, profile, ready]);
+
+  if (!seenWelcome) return <Redirect href="/welcome" />;
 
   return (
     <FlatList

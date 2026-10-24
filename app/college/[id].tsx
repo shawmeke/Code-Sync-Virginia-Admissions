@@ -7,7 +7,7 @@ import { useProfile } from '@/components/ProfileContext';
 import { Section } from '@/components/Section';
 import { SourceList } from '@/components/SourceList';
 import { StatRow } from '@/components/StatRow';
-import { radius, spacing, useTheme } from '@/constants/theme';
+import { accentFor, radius, spacing, useTheme } from '@/constants/theme';
 import { getCollege, sourcesForCollege } from '@/data/colleges';
 import { alignWithCollege, describeAlignment, type MetricResult } from '@/lib/admissions';
 import { formatCount, formatPercent, formatRange, TEST_POLICY_LABELS } from '@/lib/format';
@@ -51,6 +51,7 @@ export default function CollegeScreen() {
       <Stack.Screen options={{ title: college.name }} />
 
       <View style={styles.hero}>
+        <View style={[styles.heroAccent, { backgroundColor: accentFor(college.id, theme) }]} />
         <Text style={[styles.name, { color: theme.text }]} accessibilityRole="header">
           {college.name}
         </Text>
@@ -186,7 +187,8 @@ const styles = StyleSheet.create({
   content: { padding: spacing.lg, paddingBottom: spacing.xl * 2 },
   missing: { flex: 1, padding: spacing.lg },
   hero: { marginBottom: spacing.xl },
-  name: { fontSize: 26, fontWeight: '800' },
+  heroAccent: { width: 44, height: 5, borderRadius: radius.pill, marginBottom: spacing.md },
+  name: { fontSize: 28, fontWeight: '800', letterSpacing: -0.3 },
   meta: { fontSize: 15, marginTop: spacing.xs },
   tags: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, marginTop: spacing.md },
   tag: { borderRadius: radius.pill, paddingHorizontal: 10, paddingVertical: 4 },
