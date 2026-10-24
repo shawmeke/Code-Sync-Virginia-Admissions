@@ -1,42 +1,47 @@
 import type { College, Source } from '../types/college.ts';
 
-// Figures carried over from the team's earlier research (the Sept 2026
-// estimator and the Excel workbooks). Every source is marked
-// needsVerification until someone checks each number against the original
-// document and fills in its URL.
+// Every figure comes from the college's official Common Data Set (CDS).
 
 export const sources: Source[] = [
   {
-    id: 'uva-fall-2025',
-    title: 'UVA Fall 2025 first-year admissions statistics',
+    id: 'uva-cds-2024-25',
+    title: 'University of Virginia Common Data Set 2024–25',
     publisher: 'University of Virginia',
-    url: null,
-    academicYear: '2025–26',
-    needsVerification: true,
+    url: 'https://ira.virginia.edu/data-analytics/common-data-set-initiatve',
+    academicYear: '2024–25',
+    needsVerification: false,
   },
   {
     id: 'vt-cds-2025-26',
-    title: 'Virginia Tech Common Data Set 2025–26 (team workbook)',
+    title: 'Virginia Tech Common Data Set 2025–26',
     publisher: 'Virginia Tech',
-    url: null,
+    url: 'https://aie.vt.edu/content/dam/aie_vt_edu/common-data-set/25-26/2025-2026-CDS.xlsx',
     academicYear: '2025–26',
-    needsVerification: true,
-  },
-  {
-    id: 'vt-2023-24',
-    title: 'Virginia Tech offer rate, 2023–24 cycle',
-    publisher: 'Virginia Tech',
-    url: null,
-    academicYear: '2023–24',
-    needsVerification: true,
+    needsVerification: false,
   },
   {
     id: 'odu-cds-2025-26',
     title: 'Old Dominion University Common Data Set 2025–26',
     publisher: 'Old Dominion University',
-    url: null,
+    url: 'https://www.odu.edu/sites/default/files/2026/documents/cds-2025-2026.pdf',
     academicYear: '2025–26',
-    needsVerification: true,
+    needsVerification: false,
+  },
+  {
+    id: 'wm-cds-2025-26',
+    title: 'William & Mary Common Data Set 2025–26, section C',
+    publisher: 'William & Mary',
+    url: 'https://www.wm.edu/offices/ir/university_data/cds/cds_2025-26_c.pdf',
+    academicYear: '2025–26',
+    needsVerification: false,
+  },
+  {
+    id: 'jmu-cds-2025-26',
+    title: 'James Madison University Common Data Set 2025–26',
+    publisher: 'James Madison University',
+    url: 'https://www.jmu.edu/pair/ir/common-data-set/cds-2025.docx',
+    academicYear: '2025–26',
+    needsVerification: false,
   },
 ];
 
@@ -47,39 +52,50 @@ export const colleges: College[] = [
     city: 'Charlottesville',
     control: 'public',
     testPolicy: 'optional',
-    cycle: 'Fall 2025',
-    applicants: { value: 64457, sourceId: 'uva-fall-2025', cohort: 'Fall 2025 first-year applicants' },
-    admitted: { value: 10086, sourceId: 'uva-fall-2025', cohort: 'Fall 2025 first-year offers' },
-    enrolled: null,
+    // UVA's newest Common Data Set the team could get describes Fall 2024, one
+    // cycle earlier than the other colleges.
+    cycle: 'Fall 2024',
+    applicants: { value: 58951, sourceId: 'uva-cds-2024-25', cohort: 'Fall 2024 first-year applicants' },
+    admitted: { value: 9909, sourceId: 'uva-cds-2024-25', cohort: 'Fall 2024 first-year offers' },
+    enrolled: { value: 3961, sourceId: 'uva-cds-2024-25', cohort: 'Fall 2024 enrolled first-years' },
     offerRate: {
-      value: 15.65,
-      sourceId: 'uva-fall-2025',
-      cohort: 'Fall 2025 first-year applicants',
+      value: 16.81,
+      sourceId: 'uva-cds-2024-25',
+      cohort: 'Fall 2024 first-year applicants',
       derived: true,
       note: 'Offers divided by applications.',
     },
-    sat: {
-      value: { p25: 1410, p75: 1540 },
-      sourceId: 'uva-fall-2025',
-      cohort: 'Fall 2025 first-years who submitted SAT',
-      derived: true,
-      note: "Total range made by adding UVA's published Reading/Writing and Math section ranges, so it is approximate.",
-    },
-    act: { value: { p25: 32, p75: 35 }, sourceId: 'uva-fall-2025', cohort: 'Fall 2025 first-years who submitted ACT' },
-    satSubmitShare: null,
-    actSubmitShare: null,
-    gpaScale: 'unknown',
+    sat: { value: { p25: 1410, p75: 1520 }, sourceId: 'uva-cds-2024-25', cohort: 'Fall 2024 enrolled first-years who submitted SAT' },
+    act: { value: { p25: 32, p75: 35 }, sourceId: 'uva-cds-2024-25', cohort: 'Fall 2024 enrolled first-years who submitted ACT' },
+    satSubmitShare: { value: 45.6, sourceId: 'uva-cds-2024-25', cohort: 'Fall 2024 enrolled first-years' },
+    actSubmitShare: { value: 13.8, sourceId: 'uva-cds-2024-25', cohort: 'Fall 2024 enrolled first-years' },
+    // UVA leaves the average GPA blank, but 90.5% of students in the 4.0
+    // group means these must include weighted GPAs.
+    gpaScale: 'weighted',
     gpaAverage: null,
-    gpaBands: null,
+    gpaBands: {
+      value: [
+        { min: 4.0, max: 4.0, percent: 90.5 },
+        { min: 3.75, max: 3.99, percent: 6.8 },
+        { min: 3.5, max: 3.74, percent: 2.1 },
+        { min: 3.25, max: 3.49, percent: 0.3 },
+        { min: 3.0, max: 3.24, percent: 0.1 },
+        { min: 2.5, max: 2.99, percent: 0.2 },
+        { min: 0, max: 2.49, percent: 0 },
+      ],
+      sourceId: 'uva-cds-2024-25',
+      cohort: 'Fall 2024 enrolled first-years',
+      note: 'Common Data Set section C11. The 4.0 group includes everyone at 4.0 or above.',
+    },
     classRank: {
-      value: { topTenth: 90, topQuarter: null, topHalf: null, reportedShare: 30 },
-      sourceId: 'uva-fall-2025',
-      cohort: 'Fall 2025 first-years who reported a class rank',
+      value: { topTenth: 84, topQuarter: 97, topHalf: 99, reportedShare: 34 },
+      sourceId: 'uva-cds-2024-25',
+      cohort: 'Fall 2024 first-years who reported a class rank',
     },
     programNotes: [],
     notes: [
       'UVA uses holistic review and says it has no GPA or test score cutoffs.',
-      'UVA aims for a set share of Virginia residents; this app does not adjust for residency.',
+      'UVA admitted 26% of Virginia applicants and 14% of out-of-state applicants for Fall 2024 (Common Data Set C1).',
     ],
   },
   {
@@ -89,33 +105,54 @@ export const colleges: College[] = [
     control: 'public',
     testPolicy: 'optional',
     cycle: 'Fall 2025',
-    applicants: { value: 57622, sourceId: 'vt-cds-2025-26', cohort: 'Fall 2025 first-year applicants' },
-    admitted: null,
-    enrolled: null,
+    applicants: { value: 57755, sourceId: 'vt-cds-2025-26', cohort: 'Fall 2025 first-year applicants' },
+    admitted: { value: 31515, sourceId: 'vt-cds-2025-26', cohort: 'Fall 2025 first-year offers' },
+    enrolled: { value: 7133, sourceId: 'vt-cds-2025-26', cohort: 'Fall 2025 enrolled first-years' },
     offerRate: {
-      value: 54.84,
-      sourceId: 'vt-2023-24',
-      cohort: '2023–24 first-year applicants',
-      note: 'From an earlier cycle than the Fall 2025 applicant count.',
+      value: 54.57,
+      sourceId: 'vt-cds-2025-26',
+      cohort: 'Fall 2025 first-year applicants',
+      derived: true,
+      note: 'Offers divided by applications.',
     },
-    sat: null,
-    act: null,
-    satSubmitShare: null,
-    actSubmitShare: null,
-    gpaScale: 'unknown',
-    gpaAverage: null,
-    gpaBands: null,
+    sat: {
+      value: { p25: 1280, p75: 1450 },
+      sourceId: 'vt-cds-2025-26',
+      cohort: 'Fall 2025 enrolled first-years who submitted SAT',
+      derived: true,
+      note: "Virginia Tech doesn't publish a total SAT range, so this adds its Reading/Writing (640–720) and Math (640–730) ranges and is approximate.",
+    },
+    act: { value: { p25: 28, p75: 32 }, sourceId: 'vt-cds-2025-26', cohort: 'Fall 2025 enrolled first-years who submitted ACT' },
+    satSubmitShare: { value: 42, sourceId: 'vt-cds-2025-26', cohort: 'Fall 2025 enrolled first-years' },
+    actSubmitShare: { value: 8, sourceId: 'vt-cds-2025-26', cohort: 'Fall 2025 enrolled first-years' },
+    // The CDS asks for a 4.0 scale, but an average above 4.0 means these
+    // must include weighted GPAs.
+    gpaScale: 'weighted',
+    gpaAverage: { value: 4.06, sourceId: 'vt-cds-2025-26', cohort: 'Fall 2025 enrolled first-years who submitted a GPA' },
+    gpaBands: {
+      value: [
+        { min: 4.0, max: 4.0, percent: 67 },
+        { min: 3.75, max: 3.99, percent: 18 },
+        { min: 3.5, max: 3.74, percent: 10 },
+        { min: 3.25, max: 3.49, percent: 4 },
+        { min: 3.0, max: 3.24, percent: 1 },
+        { min: 0, max: 2.99, percent: 0 },
+      ],
+      sourceId: 'vt-cds-2025-26',
+      cohort: 'Fall 2025 enrolled first-years',
+      note: 'Common Data Set section C11. The 4.0 group includes everyone at 4.0 or above.',
+    },
+    // Virginia Tech leaves the class rank table (C10) blank.
     classRank: null,
     programNotes: [
       {
         program: 'College of Engineering',
         keywords: ['engineering', 'engineer'],
-        note: 'The team workbook includes averages for admitted Engineering students only. They describe Engineering, not all of Virginia Tech, so the app does not compare you against them.',
+        note: 'Some published Virginia Tech figures describe admitted Engineering students only. Because they don\'t represent the whole university, the app doesn\'t compare you against them.',
       },
     ],
     notes: [
-      'About 7,000 first-year students enter each fall (approximate; not used in comparisons).',
-      'No university-wide GPA, test score, or class rank figures have been collected yet.',
+      'Virginia Tech admitted 47% of Virginia applicants and 59% of out-of-state applicants for Fall 2025 (Common Data Set C1).',
     ],
   },
   {
@@ -141,6 +178,7 @@ export const colleges: College[] = [
     actSubmitShare: { value: 1, sourceId: 'odu-cds-2025-26', cohort: 'Fall 2025 enrolled first-years' },
     gpaScale: 'unknown',
     gpaAverage: { value: 3.43, sourceId: 'odu-cds-2025-26', cohort: 'Fall 2025 enrolled first-years' },
+    // ODU leaves the rows below 2.50 blank and its column totals 100%.
     gpaBands: {
       value: [
         { min: 4.0, max: 4.0, percent: 19 },
@@ -153,7 +191,7 @@ export const colleges: College[] = [
       ],
       sourceId: 'odu-cds-2025-26',
       cohort: 'Fall 2025 enrolled first-years',
-      note: 'CDS section C11. Whether these GPAs are weighted or unweighted is not stated. The 2.50–2.99 and below-2.50 rows should be rechecked against the original table.',
+      note: 'Common Data Set section C11.',
     },
     classRank: {
       value: { topTenth: 12, topQuarter: 35, topHalf: 71, reportedShare: 75 },
@@ -163,6 +201,87 @@ export const colleges: College[] = [
     programNotes: [],
     notes: [],
   },
+  {
+    id: 'wm',
+    name: 'William & Mary',
+    city: 'Williamsburg',
+    control: 'public',
+    testPolicy: 'optional',
+    cycle: 'Fall 2025',
+    applicants: { value: 16895, sourceId: 'wm-cds-2025-26', cohort: 'Fall 2025 first-year applicants' },
+    admitted: { value: 6245, sourceId: 'wm-cds-2025-26', cohort: 'Fall 2025 first-year offers' },
+    enrolled: { value: 1639, sourceId: 'wm-cds-2025-26', cohort: 'Fall 2025 enrolled first-years' },
+    offerRate: {
+      value: 36.96,
+      sourceId: 'wm-cds-2025-26',
+      cohort: 'Fall 2025 first-year applicants',
+      derived: true,
+      note: 'Offers divided by applications.',
+    },
+    sat: { value: { p25: 1390, p75: 1520 }, sourceId: 'wm-cds-2025-26', cohort: 'Fall 2025 enrolled first-years who submitted SAT' },
+    act: { value: { p25: 32, p75: 34 }, sourceId: 'wm-cds-2025-26', cohort: 'Fall 2025 enrolled first-years who submitted ACT' },
+    satSubmitShare: { value: 48, sourceId: 'wm-cds-2025-26', cohort: 'Fall 2025 enrolled first-years' },
+    actSubmitShare: { value: 14, sourceId: 'wm-cds-2025-26', cohort: 'Fall 2025 enrolled first-years' },
+    // The CDS asks for a 4.0 scale, but an average of 4.34 means these must
+    // include weighted GPAs.
+    gpaScale: 'weighted',
+    gpaAverage: { value: 4.34, sourceId: 'wm-cds-2025-26', cohort: 'Fall 2025 enrolled first-years who submitted a GPA' },
+    gpaBands: {
+      value: [
+        { min: 4.0, max: 4.0, percent: 88.9 },
+        { min: 3.75, max: 3.99, percent: 7.2 },
+        { min: 3.5, max: 3.74, percent: 3.0 },
+        { min: 3.25, max: 3.49, percent: 0.8 },
+        { min: 3.0, max: 3.24, percent: 0.1 },
+        { min: 0, max: 2.99, percent: 0 },
+      ],
+      sourceId: 'wm-cds-2025-26',
+      cohort: 'Fall 2025 enrolled first-years',
+      note: 'Common Data Set section C11. The 4.0 group includes everyone at 4.0 or above.',
+    },
+    classRank: {
+      value: { topTenth: 79, topQuarter: 95, topHalf: 99, reportedShare: 30 },
+      sourceId: 'wm-cds-2025-26',
+      cohort: 'Fall 2025 first-years who reported a class rank',
+    },
+    programNotes: [],
+    notes: [],
+  },
+  {
+    id: 'jmu',
+    name: 'James Madison University',
+    city: 'Harrisonburg',
+    control: 'public',
+    testPolicy: 'optional',
+    cycle: 'Fall 2025',
+    applicants: { value: 42595, sourceId: 'jmu-cds-2025-26', cohort: 'Fall 2025 first-year applicants' },
+    admitted: { value: 29300, sourceId: 'jmu-cds-2025-26', cohort: 'Fall 2025 first-year offers' },
+    enrolled: { value: 4935, sourceId: 'jmu-cds-2025-26', cohort: 'Fall 2025 enrolled first-years' },
+    offerRate: {
+      value: 68.79,
+      sourceId: 'jmu-cds-2025-26',
+      cohort: 'Fall 2025 first-year applicants',
+      derived: true,
+      note: 'Offers divided by applications.',
+    },
+    sat: { value: { p25: 1180, p75: 1330 }, sourceId: 'jmu-cds-2025-26', cohort: 'Fall 2025 enrolled first-years who submitted SAT' },
+    act: { value: { p25: 24, p75: 29 }, sourceId: 'jmu-cds-2025-26', cohort: 'Fall 2025 enrolled first-years who submitted ACT' },
+    satSubmitShare: { value: 16, sourceId: 'jmu-cds-2025-26', cohort: 'Fall 2025 enrolled first-years' },
+    actSubmitShare: { value: 3, sourceId: 'jmu-cds-2025-26', cohort: 'Fall 2025 enrolled first-years' },
+    // JMU reports its GPA figures (C11–C12) as "NA".
+    gpaScale: 'unknown',
+    gpaAverage: null,
+    gpaBands: null,
+    // JMU's class rank table (C10) doesn't add up: top quarter and top half
+    // are both 34.6%, and top half plus bottom half is 43.7%, not 100%.
+    classRank: null,
+    programNotes: [],
+    notes: [
+      "JMU doesn't publish GPA figures in its Common Data Set.",
+      "JMU's published class rank figures don't add up, so the app doesn't compare class rank.",
+      'JMU admitted 64% of Virginia applicants and 73% of out-of-state applicants for Fall 2025 (Common Data Set C1).',
+    ],
+  },
 ];
 
 export function getCollege(id: string): College | undefined {
@@ -171,4 +290,17 @@ export function getCollege(id: string): College | undefined {
 
 export function getSource(id: string): Source | undefined {
   return sources.find((s) => s.id === id);
+}
+
+// The sources a college's figures come from, in the order first used.
+export function sourcesForCollege(c: College): Source[] {
+  const stats = [
+    c.applicants, c.admitted, c.enrolled, c.offerRate, c.sat, c.act,
+    c.satSubmitShare, c.actSubmitShare, c.gpaAverage, c.gpaBands, c.classRank,
+  ];
+  const ids = [...new Set(stats.flatMap((s) => (s ? [s.sourceId] : [])))];
+  return ids.flatMap((id) => {
+    const source = getSource(id);
+    return source ? [source] : [];
+  });
 }

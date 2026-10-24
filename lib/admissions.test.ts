@@ -10,6 +10,8 @@ import type { StudentProfile } from '../types/student.ts';
 const uva = getCollege('uva')!;
 const vt = getCollege('vt')!;
 const odu = getCollege('odu')!;
+const wm = getCollege('wm')!;
+const jmu = getCollege('jmu')!;
 
 const blank: StudentProfile = {
   gpa: null,
@@ -36,9 +38,9 @@ test('SAT is placed against the college range and cites it', () => {
   assert.equal(m.status, 'compared');
   assert.equal(m.position, 'within');
   assert.equal(m.stat, uva.sat);
-  assert.match(m.summary, /1410–1540/);
-  // UVA's SAT total is built from section ranges, and that must be disclosed.
-  assert.ok(m.caveats.some((c) => c.includes('section ranges')));
+  assert.match(m.summary, /1410–1520/);
+  // UVA publishes a total SAT range, so nothing is flagged as approximate.
+  assert.ok(!m.caveats.some((c) => c.includes('approximate')));
 });
 
 test('ACT is compared against the ACT range, not the SAT range', () => {
@@ -62,9 +64,17 @@ test('no test score at a test-optional school is not counted against the student
 });
 
 test('a college with no test data says so instead of guessing', () => {
-  const m = metric({ ...blank, test: { type: 'SAT', score: 1300 } }, vt, 'test');
+  const noTests: College = { ...vt, sat: null, act: null };
+  const m = metric({ ...blank, test: { type: 'SAT', score: 1300 } }, noTests, 'test');
   assert.equal(m.status, 'college-missing');
   assert.equal(m.position, null);
+});
+
+test('a SAT range built from section scores says it is approximate', () => {
+  const m = metric({ ...blank, test: { type: 'SAT', score: 1300 } }, vt, 'test');
+  assert.equal(m.status, 'compared');
+  assert.equal(m.position, 'within');
+  assert.ok(m.caveats.some((c) => c.includes('approximate')));
 });
 
 test('unweighted GPA is placed using the published GPA groups', () => {
@@ -96,6 +106,27 @@ test('a weighted 5.0-scale GPA is flagged, not silently dropped or mixed in', ()
   assert.match(m.summary, /unweighted GPA on a 4\.0 scale/);
 });
 
+test('a weighted GPA is compared at a college that reports weighted GPAs', () => {
+  const m = metric({ ...blank, gpa: { value: 4.2, scale: 5, weighted: true } }, wm, 'gpa');
+  assert.equal(m.status, 'compared');
+  assert.match(m.summary, /4\.00 group/);
+});
+
+test('an unweighted GPA is not compared with weighted college figures', () => {
+  const m = metric({ ...blank, gpa: { value: 3.9, scale: 4, weighted: false } }, wm, 'gpa');
+  assert.equal(m.status, 'incompatible');
+  assert.match(m.summary, /Enter your weighted GPA/);
+});
+
+test('a college that publishes no GPA or class rank says so', () => {
+  const a = alignWithCollege({ ...blank, gpa: { value: 3.8, scale: 4, weighted: false }, classRankTopPercent: 10 }, jmu);
+  for (const key of ['gpa', 'classRank']) {
+    const m = a.metrics.find((x) => x.metric === key)!;
+    assert.equal(m.status, 'college-missing');
+    assert.equal(m.position, null);
+  }
+});
+
 test('a GPA average alone gives a comparison but no middle-50% position', () => {
   const averageOnly: College = { ...odu, gpaBands: null };
   const m = metric({ ...blank, gpa: { value: 3.2, scale: 4, weighted: false } }, averageOnly, 'gpa');
@@ -119,11 +150,19 @@ test('top 5% at ODU is above the middle 50%', () => {
   assert.equal(m.position, 'above');
 });
 
-test('UVA class rank is used even though only the top-tenth share is published', () => {
-  const inTopTenth = metric({ ...blank, classRankTopPercent: 5 }, uva, 'classRank');
+test('class rank is used even when only the top-tenth share is published', () => {
+  const topTenthOnly: College = {
+    ...uva,
+    classRank: {
+      value: { topTenth: 90, topQuarter: null, topHalf: null, reportedShare: 30 },
+      sourceId: 'uva-cds-2024-25',
+      cohort: 'test first-years who reported a class rank',
+    },
+  };
+  const inTopTenth = metric({ ...blank, classRankTopPercent: 5 }, topTenthOnly, 'classRank');
   assert.equal(inTopTenth.position, 'within');
 
-  const outside = metric({ ...blank, classRankTopPercent: 40 }, uva, 'classRank');
+  const outside = metric({ ...blank, classRankTopPercent: 40 }, topTenthOnly, 'classRank');
   assert.equal(outside.position, 'below');
   // The top-quarter share is unknown, so the top-tenth share is a lower bound.
   assert.match(outside.summary, /At least 90%/);
@@ -164,7 +203,7 @@ test('no output uses chance, odds or probability language', () => {
     intendedMajor: 'Computer Engineering',
     residency: 'virginia',
   };
-  for (const c of [uva, vt, odu]) {
+  for (const c of [uva, vt, odu, wm, jmu]) {
     const a = alignWithCollege(full, c);
     const text = [describeAlignment(a), ...a.metrics.flatMap((m) => [m.summary, ...m.caveats]), ...a.contextNotes].join(' ');
     assert.doesNotMatch(text, /chance|odds|probab|likely|guarantee/i);
