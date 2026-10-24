@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 import { ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -41,6 +42,8 @@ export default function WelcomeScreen() {
 
   return (
     <ImageBackground source={PHOTO.image} style={[styles.fill, { backgroundColor: theme.hero }]} resizeMode="cover">
+      {/* The deep green is always dark, so the clock and battery stay light. */}
+      <StatusBar style="light" />
       {/* The deep green over the photo keeps every word readable. */}
       <View style={[styles.overlay, { backgroundColor: theme.hero }]} />
       <ScrollView

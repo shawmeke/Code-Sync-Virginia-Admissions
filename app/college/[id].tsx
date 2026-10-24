@@ -21,7 +21,8 @@ import { formatCount, formatPercent, formatRange, TEST_POLICY_LABELS } from '@/l
 import type { ClassRankProfile, GpaScale } from '@/types/college';
 
 const GPA_SCALE_NOTES: Record<GpaScale, string> = {
-  weighted: 'These are weighted GPAs.',
+  weighted:
+    "These appear to include weighted GPAs: the average or the top group is above 4.0. The college doesn't say which it reports.",
   unweighted: 'These are unweighted GPAs on a 4.0 scale.',
   unknown: "The college doesn't say whether these GPAs are weighted or unweighted.",
 };

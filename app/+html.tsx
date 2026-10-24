@@ -1,8 +1,6 @@
 import { ScrollViewStyleReset } from 'expo-router/html';
 import type { ReactNode } from 'react';
 
-import { themes } from '@/constants/theme';
-
 // This file is web-only and used to configure the root HTML for every
 // web page during static rendering.
 // The contents of this function only run in Node.js environments and
@@ -30,12 +28,12 @@ export default function Root({ children }: { children: ReactNode }) {
   );
 }
 
-// Used only if the web build switches to static rendering; the client-only
-// build gets the same focus and overflow rules from components/webStyles.web.ts.
 const responsiveBackground = `
-:root { --color-paper: ${themes.light.paper}; --color-focus: ${themes.light.focus}; }
-@media (prefers-color-scheme: dark) { :root { --color-paper: ${themes.dark.paper}; --color-focus: ${themes.dark.focus}; } }
-html, body { overflow-x: clip; }
-body { background-color: var(--color-paper); }
-:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
-`;
+body {
+  background-color: #fff;
+}
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #000;
+  }
+}`;

@@ -9,9 +9,10 @@ import { useProfile } from '@/components/ProfileContext';
 import { fonts, radius, rules, spacing, type, useTheme } from '@/constants/theme';
 import { colleges } from '@/data/colleges';
 import { alignWithCollege } from '@/lib/admissions';
+import { filterColleges, type CollegeFilter } from '@/lib/collegeFilter';
 import type { College } from '@/types/college';
 
-type ControlFilter = 'all' | College['control'] | 'saved';
+type ControlFilter = CollegeFilter;
 type SortOrder = 'match' | 'name';
 
 const FILTERS: { key: ControlFilter; label: string }[] = [
@@ -47,12 +48,9 @@ export default function CollegesScreen() {
   const { profile, ready, saved } = useProfile();
 
   const results = useMemo(() => {
-    const q = query.trim().toLowerCase();
     // Colleges with no Academic Match go last when sorting by match.
     const score = (c: College) => (ready ? (alignWithCollege(profile, c).match?.score ?? -1) : -1);
-    return colleges
-      .filter((c) => filter === 'all' || (filter === 'saved' ? saved.includes(c.id) : c.control === filter))
-      .filter((c) => !q || c.name.toLowerCase().includes(q) || c.city.toLowerCase().includes(q))
+    return filterColleges(colleges, { query, filter, saved })
       .sort((a, b) =>
         ready && sort === 'match' ? score(b) - score(a) || a.name.localeCompare(b.name) : a.name.localeCompare(b.name),
       );

@@ -6,7 +6,7 @@ import { Icon } from '@/components/Icon';
 import { useProfile } from '@/components/ProfileContext';
 import { SchoolBadge } from '@/components/SchoolBadge';
 import { cardShadow, fonts, radius, rules, spacing, type, useTheme } from '@/constants/theme';
-import { alignWithCollege, describeAlignment } from '@/lib/admissions';
+import { alignWithCollege, describeAlignment, matchBasis } from '@/lib/admissions';
 import { formatPercent, formatRange } from '@/lib/format';
 import type { College } from '@/types/college';
 
@@ -41,7 +41,12 @@ export function CollegeCard({ college }: { college: College }) {
               <View style={styles.title}>
                 <Text style={[styles.name, { color: theme.ink }]}>{college.name}</Text>
                 {alignment?.match && (
-                  <Text style={[styles.match, { color: theme.accent }]}>Match {alignment.match.score}</Text>
+                  <Text style={[styles.match, { color: theme.accent }]}>
+                    Match {alignment.match.score}
+                    {matchBasis(alignment.match) && (
+                      <Text style={[styles.basis, { color: theme.muted }]}> · {matchBasis(alignment.match)}</Text>
+                    )}
+                  </Text>
                 )}
                 <Text style={[styles.meta, { color: theme.muted }]}>
                   {control} · {college.city}, VA
@@ -69,6 +74,7 @@ const styles = StyleSheet.create({
   title: { flex: 1 },
   name: { fontFamily: fonts.control, fontSize: type.md },
   match: { fontFamily: fonts.control, fontSize: type.sm, marginTop: 2 },
+  basis: { fontFamily: fonts.body, fontSize: type.xs },
   meta: { fontFamily: fonts.body, fontSize: type.xs, marginTop: 2 },
   figures: { fontFamily: fonts.bodyMedium, fontSize: type.xs, marginTop: spacing.md, fontVariant: ['tabular-nums'] },
   summary: { fontFamily: fonts.body, fontSize: type.xs, lineHeight: type.xs * 1.4, marginTop: spacing.sm },

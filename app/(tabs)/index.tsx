@@ -8,7 +8,7 @@ import { useProfile } from '@/components/ProfileContext';
 import { SchoolBadge } from '@/components/SchoolBadge';
 import { cardShadow, fonts, radius, rules, spacing, type, useTheme } from '@/constants/theme';
 import { colleges } from '@/data/colleges';
-import { alignWithCollege } from '@/lib/admissions';
+import { alignWithCollege, matchBasis } from '@/lib/admissions';
 
 const ACTIONS: { label: string; icon: IconName; href: Href }[] = [
   { label: 'My profile', icon: 'person', href: '/profile' },
@@ -27,7 +27,10 @@ export default function HomeScreen() {
   if (!seenWelcome) return <Redirect href="/welcome" />;
 
   const ranked = colleges
-    .map((c) => ({ college: c, score: ready ? (alignWithCollege(profile, c).match?.score ?? null) : null }))
+    .map((c) => {
+      const match = ready ? alignWithCollege(profile, c).match : null;
+      return { college: c, score: match?.score ?? null, basis: match ? matchBasis(match) : null };
+    })
     .sort((a, b) => (b.score ?? -1) - (a.score ?? -1) || a.college.name.localeCompare(b.college.name));
 
   return (
@@ -98,7 +101,7 @@ export default function HomeScreen() {
         </Link>
       </View>
       <View style={[styles.list, { backgroundColor: theme.sheet, borderColor: theme.rule }, cardShadow(theme)]}>
-        {ranked.slice(0, 3).map(({ college, score }, i) => (
+        {ranked.slice(0, 3).map(({ college, score, basis }, i) => (
           <Link key={college.id} href={{ pathname: '/college/[id]', params: { id: college.id } }} asChild>
             <Pressable accessibilityRole="link">
               {({ pressed }) => (
@@ -112,7 +115,7 @@ export default function HomeScreen() {
                   <View style={styles.rowText}>
                     <Text style={[styles.rowName, { color: theme.ink }]}>{college.name}</Text>
                     <Text style={[styles.rowMeta, { color: score === null ? theme.muted : theme.accent }]}>
-                      {score === null ? `${college.city}, VA` : `Match ${score}`}
+                      {score === null ? `${college.city}, VA` : basis ? `Match ${score} · ${basis}` : `Match ${score}`}
                     </Text>
                   </View>
                   <Icon name="chevron" color={theme.muted} size={16} />

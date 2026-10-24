@@ -1,6 +1,6 @@
 import type { College, ProgramNote, ResidencyCounts, ScoreRange, Stat } from '../types/college.ts';
 import type { StudentProfile } from '../types/student.ts';
-import { formatCount, formatPercentile } from './format.ts';
+import { formatCount, formatPercentile, formatPercentileShort } from './format.ts';
 
 // Compares a student's academic profile with a college's published figures,
 // one measure at a time. This is deliberately NOT an admission probability.
@@ -36,11 +36,35 @@ export type MetricResult = {
   // Estimated share (1–99) of the college's students the student is ahead
   // of on this measure. Null when the published figures can't support one.
   percentile: number | null;
+  // How the percentile is shown, e.g. "~42nd percentile". A test score past
+  // the published range is labeled by that range ("Above 75th percentile"),
+  // because nothing published says how far past it the student is.
+  percentileLabel: string | null;
   summary: string;
   caveats: string[];
   // The published figure the comparison used, so the screen can cite it.
   stat: Stat<unknown> | null;
 };
+
+const MEASURE_NAMES: Record<MatchMeasure, string> = {
+  test: 'test score',
+  gpa: 'GPA',
+  classRank: 'class rank',
+};
+
+// "test score, GPA and class rank"
+export function describeMeasures(measures: MatchMeasure[]): string {
+  const names = measures.map((m) => MEASURE_NAMES[m]);
+  if (names.length <= 1) return names.join('');
+  return `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`;
+}
+
+// Null when a match uses all three measures; otherwise which ones it rests
+// on, e.g. "test score only", so a score from one measure isn't mistaken for
+// a full comparison.
+export function matchBasis(match: AcademicMatch): string | null {
+  return match.measures.length === 3 ? null : `${describeMeasures(match.measures)} only`;
+}
 
 export type AcademicMatch = {
   // 0–100: the average of the measure percentiles, rounded.
@@ -172,7 +196,12 @@ function clampPercentile(n: number): number {
 }
 
 function compareTest(profile: StudentProfile, college: College, type: 'SAT' | 'ACT'): MetricResult {
-  const base = { metric: type === 'SAT' ? ('sat' as const) : ('act' as const), label: type, percentile: null };
+  const base = {
+    metric: type === 'SAT' ? ('sat' as const) : ('act' as const),
+    label: type,
+    percentile: null,
+    percentileLabel: null,
+  };
   const score = type === 'SAT' ? profile.sat : profile.act;
   const other = type === 'SAT' ? profile.act : profile.sat;
 
@@ -222,19 +251,31 @@ function compareTest(profile: StudentProfile, college: College, type: 'SAT' | 'A
       : 'The percentile is estimated from the published 25th, 50th and 75th percentiles.',
   );
 
+  const placement =
+    position === 'within'
+      ? `at ${formatPercentile(percentile)}`
+      : position === 'above'
+        ? 'above the published 75th percentile'
+        : 'below the published 25th percentile';
   return {
     ...base,
     status: 'compared',
     position,
     percentile,
-    summary: `Your ${type} of ${score} is ${position} the middle 50% (${p25}–${p75}) for ${range.cohort}, at ${formatPercentile(percentile)}.`,
+    percentileLabel:
+      position === 'within'
+        ? formatPercentileShort(percentile)
+        : position === 'above'
+          ? 'Above 75th percentile'
+          : 'Below 25th percentile',
+    summary: `Your ${type} of ${score} is ${position} the middle 50% (${p25}–${p75}) for ${range.cohort}, ${placement}.`,
     caveats,
     stat: range,
   };
 }
 
 function compareGpa(profile: StudentProfile, college: College): MetricResult {
-  const base = { metric: 'gpa' as const, label: 'GPA', percentile: null };
+  const base = { metric: 'gpa' as const, label: 'GPA', percentile: null, percentileLabel: null };
   const { gpa } = profile;
 
   if (!gpa) {
@@ -302,6 +343,7 @@ function compareGpa(profile: StudentProfile, college: College): MetricResult {
         status: 'compared',
         position,
         percentile,
+        percentileLabel: formatPercentileShort(percentile),
         summary: `Your GPA of ${gpa.value.toFixed(2)} is in the ${rangeText} group, at ${formatPercentile(percentile)}. Of ${bands.cohort}, ${round1(shareAbove)}% were in a higher group and ${round1(shareBelow)}% in a lower one.`,
         caveats,
         stat: bands,
@@ -327,7 +369,7 @@ function compareGpa(profile: StudentProfile, college: College): MetricResult {
 }
 
 function compareClassRank(profile: StudentProfile, college: College): MetricResult {
-  const base = { metric: 'classRank' as const, label: 'Class rank', percentile: null };
+  const base = { metric: 'classRank' as const, label: 'Class rank', percentile: null, percentileLabel: null };
   const top = profile.classRankTopPercent;
 
   if (top === null) {
@@ -414,13 +456,30 @@ function compareClassRank(profile: StudentProfile, college: College): MetricResu
 
   if (percentile !== null) caveats.push('The percentile assumes students are spread evenly within each class rank group.');
 
-  return { ...base, status: 'compared', position, percentile, summary: sentences.join(' '), caveats, stat: rank };
+  return {
+    ...base,
+    status: 'compared',
+    position,
+    percentile,
+    percentileLabel: percentile === null ? null : formatPercentileShort(percentile),
+    summary: sentences.join(' '),
+    caveats,
+    stat: rank,
+  };
 }
 
 // Colleges don't publish a numeric benchmark for course rigor, so it is shown
 // as context and never turned into a score.
 function describeRigor(profile: StudentProfile): MetricResult {
-  const base = { metric: 'rigor' as const, label: 'Course rigor', position: null, percentile: null, caveats: [], stat: null };
+  const base = {
+    metric: 'rigor' as const,
+    label: 'Course rigor',
+    position: null,
+    percentile: null,
+    percentileLabel: null,
+    caveats: [],
+    stat: null,
+  };
   if (!profile.rigor) {
     return { ...base, status: 'student-missing', summary: "You haven't entered your advanced courses." };
   }

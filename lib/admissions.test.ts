@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { alignWithCollege, describeAlignment, estimateRangePercentile, rangePosition } from './admissions.ts';
+import { alignWithCollege, describeAlignment, estimateRangePercentile, matchBasis, rangePosition } from './admissions.ts';
 import { getCollege } from '../data/colleges.ts';
 import type { College } from '../types/college.ts';
 import type { StudentProfile } from '../types/student.ts';
@@ -310,4 +310,33 @@ test("residency notes use the college's own in-state and out-of-state counts", (
 test('without residency counts, the note says the figures combine both groups', () => {
   const notes = alignWithCollege({ ...blank, residency: 'virginia' }, wm).contextNotes.join(' ');
   assert.match(notes, /combine/);
+});
+
+// --- Honest labels for estimates ---
+
+test('a test score inside the published range gets an estimated percentile label', () => {
+  const m = metric({ ...blank, sat: 1450 }, uva, 'sat');
+  assert.equal(m.percentileLabel, '~42nd percentile');
+});
+
+test('a test score past the published range is labeled by the range, not an invented number', () => {
+  const above = metric({ ...blank, sat: 1580 }, uva, 'sat');
+  assert.equal(above.percentileLabel, 'Above 75th percentile');
+  assert.match(above.summary, /above the published 75th percentile/);
+  assert.doesNotMatch(above.summary, /about the \d/);
+  const below = metric({ ...blank, sat: 1200 }, uva, 'sat');
+  assert.equal(below.percentileLabel, 'Below 25th percentile');
+  assert.match(below.summary, /below the published 25th percentile/);
+});
+
+test('a match says which measures it rests on unless it uses all three', () => {
+  const testOnly = alignWithCollege({ ...blank, sat: 1450 }, jmu).match!;
+  assert.equal(matchBasis(testOnly), 'test score only');
+  const two = alignWithCollege({ ...blank, sat: 1450, gpa: { value: 4.3, scale: 5, weighted: true } }, vt).match!;
+  assert.equal(matchBasis(two), 'test score and GPA only');
+  const all = alignWithCollege(
+    { ...blank, sat: 1450, gpa: { value: 4.3, scale: 5, weighted: true }, classRankTopPercent: 5 },
+    uva,
+  ).match!;
+  assert.equal(matchBasis(all), null);
 });

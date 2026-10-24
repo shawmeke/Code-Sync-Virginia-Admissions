@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { cardShadow, fonts, radius, rules, spacing, type, useTheme } from '@/constants/theme';
 
 // A heading over a white rounded card holding the rows.
-export function Section({ title, children }: { title: string; sheet?: boolean; children: ReactNode }) {
+export function Section({ title, children }: { title: string; children: ReactNode }) {
   const theme = useTheme();
   return (
     <View style={styles.section}>
