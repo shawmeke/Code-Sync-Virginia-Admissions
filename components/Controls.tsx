@@ -84,6 +84,6 @@ const styles = StyleSheet.create({
   },
   buttonText: { fontFamily: fonts.control, fontSize: type.md },
   pills: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
-  pill: { minHeight: 36, borderWidth: rules.hair, borderRadius: radius.pill, paddingHorizontal: 16, justifyContent: 'center' },
+  pill: { minHeight: 44, borderWidth: rules.hair, borderRadius: radius.pill, paddingHorizontal: 16, justifyContent: 'center' },
   pillText: { fontFamily: fonts.control, fontSize: type.sm },
 });

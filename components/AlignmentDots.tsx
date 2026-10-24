@@ -29,7 +29,8 @@ export function AlignmentDots({ score, compact }: { score: number; compact?: boo
         <View
           style={[
             styles.diamond,
-            { left: `${position}%`, backgroundColor: theme.goldFill, borderColor: theme.sheet },
+            // The deeper gold keeps the mark at 3:1 or better on white cards.
+            { left: `${position}%`, backgroundColor: theme.gold, borderColor: theme.sheet },
           ]}
         />
       </View>

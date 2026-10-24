@@ -15,6 +15,8 @@ export default function ProfileScreen() {
       style={{ backgroundColor: theme.paper }}
       contentContainerStyle={styles.content}
       keyboardShouldPersistTaps="handled"
+      // Lift the form above the iPhone keyboard so lower fields stay visible.
+      automaticallyAdjustKeyboardInsets
       keyboardDismissMode="on-drag">
       <Text style={[styles.intro, { color: theme.ink2 }]}>
         Enter whatever you know. Every field is optional. Nothing you type is saved or sent anywhere; it stays on this
@@ -192,6 +194,7 @@ function Field({ label, value, onChangeText, placeholder, keyboardType, maxLengt
         accessibilityLabel={a11yLabel ?? label}
         autoCorrect={false}
         returnKeyType="done"
+        selectionColor={theme.accent}
         style={[
           styles.input,
           wide && styles.inputWide,

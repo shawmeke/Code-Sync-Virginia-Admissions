@@ -90,7 +90,9 @@ export default function HomeScreen() {
       </View>
 
       <View style={styles.listHead}>
-        <Text style={[styles.sectionTitle, { color: theme.ink }]}>{ready ? 'Your top matches' : 'Virginia schools'}</Text>
+        <Text style={[styles.sectionTitle, styles.listTitle, { color: theme.ink }]}>
+          {ready ? 'Your top matches' : 'Virginia schools'}
+        </Text>
         <Link href="/search" style={[styles.seeAll, { color: theme.accent }]}>
           See all
         </Link>
@@ -152,12 +154,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   actionLabel: { fontFamily: fonts.bodyMedium, fontSize: 12, textAlign: 'center', marginTop: spacing.sm },
-  listHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' },
-  seeAll: { fontFamily: fonts.control, fontSize: type.sm },
+  listHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.xs },
+  listTitle: { marginBottom: 0 },
+  seeAll: { fontFamily: fonts.control, fontSize: type.sm, paddingVertical: 14, paddingLeft: spacing.lg },
   list: { borderRadius: radius.card, borderWidth: rules.hair, overflow: 'hidden' },
   row: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, paddingHorizontal: spacing.lg, paddingVertical: spacing.md },
   rowText: { flex: 1 },
   rowName: { fontFamily: fonts.control, fontSize: type.md },
   rowMeta: { fontFamily: fonts.bodyMedium, fontSize: type.sm, marginTop: 2 },
-  about: { fontFamily: fonts.bodyMedium, fontSize: type.sm, textAlign: 'center', marginTop: spacing.xl, textDecorationLine: 'underline' },
+  about: {
+    fontFamily: fonts.bodyMedium,
+    fontSize: type.sm,
+    textAlign: 'center',
+    marginTop: spacing.lg,
+    paddingVertical: spacing.md,
+    textDecorationLine: 'underline',
+  },
 });

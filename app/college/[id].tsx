@@ -278,6 +278,11 @@ export default function CollegeScreen() {
 
       <View style={styles.save}>
         <Button label={isSaved ? 'Saved' : 'Save school'} variant={isSaved ? 'secondary' : 'primary'} onPress={() => toggleSaved(college.id)} />
+        <Text style={[styles.saveNote, { color: theme.muted }]}>
+          {isSaved
+            ? 'Find it under Saved in Search. Saved schools clear when you close the app.'
+            : 'Saved schools stay in your list until you close the app.'}
+        </Text>
       </View>
 
       <Text style={[styles.small, styles.disclaimer, { color: theme.muted }]}>
@@ -324,4 +329,5 @@ const styles = StyleSheet.create({
   pad: { paddingHorizontal: spacing.lg },
   link: { fontFamily: fonts.control, fontSize: type.sm, marginTop: spacing.xs, textDecorationLine: 'underline' },
   save: { paddingHorizontal: spacing.lg, marginBottom: spacing.lg },
+  saveNote: { fontFamily: fonts.body, fontSize: type.xs, textAlign: 'center', marginTop: spacing.sm },
 });

@@ -1,5 +1,5 @@
-import { Link, useLocalSearchParams } from 'expo-router';
-import { useMemo, useState } from 'react';
+import { Link, router, useLocalSearchParams } from 'expo-router';
+import { useEffect, useMemo, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { CollegeCard } from '@/components/CollegeCard';
@@ -32,6 +32,17 @@ export default function CollegesScreen() {
   // The Home screen's "Saved schools" opens this list already filtered.
   const params = useLocalSearchParams<{ filter?: string }>();
   const [filter, setFilter] = useState<ControlFilter>(params.filter === 'saved' ? 'saved' : 'all');
+  // The tab stays mounted, so follow the link's filter each time it arrives,
+  // not only on first open.
+  useEffect(() => {
+    if (params.filter === 'saved') setFilter('saved');
+  }, [params.filter]);
+  const chooseFilter = (k: ControlFilter) => {
+    setFilter(k);
+    // Clear the link's filter once the student picks another, so the next
+    // tap on "Saved schools" changes it again.
+    router.setParams({ filter: k === 'saved' ? 'saved' : undefined });
+  };
   const [sort, setSort] = useState<SortOrder>('match');
   const { profile, ready, saved } = useProfile();
 
@@ -92,6 +103,7 @@ export default function CollegesScreen() {
             autoCorrect={false}
             clearButtonMode="while-editing"
             returnKeyType="search"
+            selectionColor={theme.accent}
             style={[styles.search, { color: theme.ink }]}
           />
           </View>
@@ -100,7 +112,7 @@ export default function CollegesScreen() {
               label="Filter colleges"
               options={FILTERS}
               selected={filter}
-              onSelect={(k) => setFilter(k as ControlFilter)}
+              onSelect={(k) => chooseFilter(k as ControlFilter)}
             />
             {ready && (
               <Segmented label="Sort colleges" options={SORTS} selected={sort} onSelect={(k) => setSort(k as SortOrder)} />

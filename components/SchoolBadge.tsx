@@ -25,7 +25,8 @@ export function SchoolBadge({ collegeId, size = 44 }: { collegeId: string; size?
       ]}>
       <Text
         style={[styles.text, { color: badgeInk, fontSize: size * (initials.length > 2 ? 0.27 : 0.34) }]}
-        numberOfLines={1}>
+        numberOfLines={1}
+        allowFontScaling={false}>
         {initials}
       </Text>
     </View>
