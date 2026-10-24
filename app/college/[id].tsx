@@ -369,7 +369,7 @@ function BeforeYouApply({ applying, collegeName }: { applying: Stat<ApplyingFact
       <Section title="What they weigh">
         {(Object.keys(FACTOR_LABELS) as (keyof ApplyingFacts['factors'])[]).map((k, i, all) => {
           const level = a.factors[k];
-          const strong = level === 'very important';
+          const strong = level === 'very important' || level === 'important';
           return (
             <View
               key={k}
@@ -380,7 +380,16 @@ function BeforeYouApply({ applying, collegeName }: { applying: Stat<ApplyingFact
               <Text
                 style={[
                   strong ? styles.factStrong : styles.factValue,
-                  { color: strong ? theme.accent : level === 'not considered' || !level ? theme.muted : theme.ink },
+                  {
+                    color:
+                      level === 'very important'
+                        ? theme.accent
+                        : level === 'important'
+                          ? theme.goldText
+                          : level === 'not considered' || !level
+                            ? theme.muted
+                            : theme.ink,
+                  },
                 ]}>
                 {level ? IMPORTANCE_LABELS[level] : 'Not available'}
               </Text>

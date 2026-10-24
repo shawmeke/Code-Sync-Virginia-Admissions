@@ -10,11 +10,12 @@ import { fonts, radius, rules, spacing, type, useTheme } from '@/constants/theme
 import { colleges } from '@/data/colleges';
 import { alignWithCollege, matchBasis } from '@/lib/admissions';
 
-const ACTIONS: { label: string; icon: IconName; href: Href }[] = [
-  { label: 'My profile', icon: 'person', href: '/profile' },
-  { label: 'College search', icon: 'search', href: '/search' },
-  { label: 'Compare schools', icon: 'compare', href: '/compare' },
-  { label: 'Saved schools', icon: 'heart', href: '/search?filter=saved' },
+// Green for finding and filling in, gold for your own lists.
+const ACTIONS: { label: string; icon: IconName; href: Href; tone: 'green' | 'gold' }[] = [
+  { label: 'My profile', icon: 'person', href: '/profile', tone: 'green' },
+  { label: 'College search', icon: 'search', href: '/search', tone: 'green' },
+  { label: 'Compare schools', icon: 'compare', href: '/compare', tone: 'gold' },
+  { label: 'Saved schools', icon: 'heart', href: '/search?filter=saved', tone: 'gold' },
 ];
 
 // The home screen: a feature card that leads to your profile (or your top
@@ -79,9 +80,9 @@ export default function HomeScreen() {
                   <View
                     style={[
                       styles.actionIcon,
-                      { backgroundColor: pressed ? theme.paper2 : theme.accentSoft },
+                      { backgroundColor: pressed ? theme.paper2 : a.tone === 'gold' ? theme.goldSoft : theme.accentSoft },
                     ]}>
-                    <Icon name={a.icon} color={theme.accent} size={24} />
+                    <Icon name={a.icon} color={a.tone === 'gold' ? theme.goldText : theme.accent} size={24} />
                   </View>
                   <Text style={[styles.actionLabel, { color: theme.ink2 }]}>{a.label}</Text>
                 </>

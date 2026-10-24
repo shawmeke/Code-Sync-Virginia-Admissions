@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useLocalSearchParams } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { useProfile } from '@/components/ProfileContext';
@@ -40,6 +41,15 @@ export default function CompareScreen() {
   const initial = [...saved, ...colleges.map((c) => c.id).filter((id) => !saved.includes(id))];
   const [left, setLeft] = useState(initial[0]);
   const [right, setRight] = useState(initial[1]);
+  // A college row's "Compare" button opens this tab with that school first.
+  // The tab stays mounted, so follow each new request, not only the first.
+  const params = useLocalSearchParams<{ first?: string }>();
+  useEffect(() => {
+    const first = params.first;
+    if (!first || !getCollege(first)) return;
+    setLeft(first);
+    setRight((r) => (r === first ? (colleges.find((c) => c.id !== first)?.id ?? r) : r));
+  }, [params.first]);
   const a = getCollege(left)!;
   const b = getCollege(right)!;
   const match = (c: College) => (ready ? (alignWithCollege(profile, c).match?.score ?? null) : null);

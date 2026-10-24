@@ -24,6 +24,9 @@ const light = {
   gold: '#9a720c',
   goldFill: '#d4a82a',
   goldInk: '#13241a',
+  // Gold for words (6.1:1 on white) and a pale gold for icon dots and chips.
+  goldText: '#7d5d08',
+  goldSoft: '#f7edd3',
   // The deep green behind the welcome screen and feature cards.
   hero: '#173f29',
   heroInk: '#ffffff',
@@ -53,6 +56,8 @@ const dark: typeof light = {
   gold: '#e2b84a',
   goldFill: '#e2b84a',
   goldInk: '#0c1510',
+  goldText: '#e2b84a',
+  goldSoft: '#3a3117',
   hero: '#123120',
   heroInk: '#ffffff',
   heroMuted: '#bcd2c3',
