@@ -53,11 +53,6 @@ export default function ProfileScreen() {
           </View>
         </View>
 
-        <Text style={[styles.intro, { color: theme.ink2 }]}>
-          Enter whatever you know. Every field is optional. Nothing you type is saved or sent anywhere; it stays on this
-          screen until you close the app.
-        </Text>
-
         <Section title="Grades">
           <Field
             icon="chart"
@@ -125,45 +120,32 @@ export default function ProfileScreen() {
         <Section title="Class rank">
           <Field
             icon="rank"
-            label="Top __% of my class"
-            a11yLabel="Class rank, as top percent of class"
-            value={form.classRank}
-            onChangeText={(classRank) => updateForm({ classRank })}
-            placeholder="e.g. 10"
-            keyboardType="decimal-pad"
-            maxLength={5}
+            label="Your rank"
+            a11yLabel="Your rank in your class"
+            value={form.classRankPosition}
+            onChangeText={(classRankPosition) => updateForm({ classRankPosition })}
+            placeholder="e.g. 12"
+            keyboardType="number-pad"
+            maxLength={4}
+            valid={profile.classRankTopPercent !== null}
+          />
+          <Field
+            icon="people"
+            label="Students in your class"
+            value={form.classSize}
+            onChangeText={(classSize) => updateForm({ classSize })}
+            placeholder="e.g. 350"
+            keyboardType="number-pad"
+            maxLength={4}
             error={fieldErrors.classRank}
             valid={profile.classRankTopPercent !== null}
           />
-          <Help>Leave blank if your school doesn't rank students.</Help>
-        </Section>
-
-        <Section title="Course rigor">
-          <Field
-            icon="graduation"
-            label="Advanced courses I've taken"
-            value={form.advancedTaken}
-            onChangeText={(advancedTaken) => updateForm({ advancedTaken })}
-            placeholder="e.g. 6"
-            keyboardType="number-pad"
-            maxLength={2}
-            valid={profile.rigor !== null}
-          />
-          <Field
-            icon="doc"
-            label="Advanced courses my school offers"
-            value={form.advancedAvailable}
-            onChangeText={(advancedAvailable) => updateForm({ advancedAvailable })}
-            placeholder="e.g. 15"
-            keyboardType="number-pad"
-            maxLength={3}
-            error={fieldErrors.rigor}
-            valid={profile.rigor !== null}
-          />
-          <Help>
-            Count honors, AP, IB and dual-enrollment courses. Colleges don't publish a number for this, so it's shown as
-            context and isn't part of your Academic Match.
-          </Help>
+          {profile.classRankTopPercent !== null && (
+            <Text style={[styles.rankResult, { color: theme.accent }]}>
+              Top {formatTopPercent(profile.classRankTopPercent)}% of your class
+            </Text>
+          )}
+          <Help>Leave both blank if your school doesn't rank students.</Help>
         </Section>
 
         <Section title="About you">
@@ -218,6 +200,12 @@ export default function ProfileScreen() {
       </View>
     </View>
   );
+}
+
+// "0.2", "12.5", "33.3": one decimal, or two when under 1% so the top of a
+// large class doesn't round to zero.
+function formatTopPercent(p: number): string {
+  return String(Number(p.toFixed(p < 1 ? 2 : 1)));
 }
 
 type FieldProps = {
@@ -309,7 +297,7 @@ const styles = StyleSheet.create({
   heroText: { flex: 1 },
   heroTitle: { fontFamily: fonts.display, fontSize: type.xl },
   heroBody: { fontFamily: fonts.body, fontSize: type.sm, lineHeight: type.sm * 1.45, marginTop: spacing.xs },
-  intro: { fontFamily: fonts.body, fontSize: type.sm, lineHeight: type.sm * 1.5, marginBottom: spacing.xl },
+  rankResult: { fontFamily: fonts.control, fontSize: type.md, paddingTop: spacing.md },
   field: { paddingVertical: spacing.md, borderBottomWidth: rules.hair },
   row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.md },
   rowWide: { flexDirection: 'column', alignItems: 'stretch' },

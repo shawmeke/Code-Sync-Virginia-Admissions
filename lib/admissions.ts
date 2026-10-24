@@ -191,6 +191,13 @@ export function estimateRangePercentile(value: number, range: ScoreRange): numbe
   return clampPercentile(estimate);
 }
 
+// "at about the 42nd percentile", but "above the 95th percentile" without
+// the "at", since the extremes are given as a range.
+function atPercentile(percentile: number): string {
+  const phrase = formatPercentile(percentile);
+  return phrase.startsWith('about') ? `at ${phrase}` : phrase;
+}
+
 function clampPercentile(n: number): number {
   return Math.min(99, Math.max(1, n));
 }
@@ -253,7 +260,7 @@ function compareTest(profile: StudentProfile, college: College, type: 'SAT' | 'A
 
   const placement =
     position === 'within'
-      ? `at ${formatPercentile(percentile)}`
+      ? atPercentile(percentile)
       : position === 'above'
         ? 'above the published 75th percentile'
         : 'below the published 25th percentile';
@@ -344,7 +351,7 @@ function compareGpa(profile: StudentProfile, college: College): MetricResult {
         position,
         percentile,
         percentileLabel: formatPercentileShort(percentile),
-        summary: `Your GPA of ${gpa.value.toFixed(2)} is in the ${rangeText} group, at ${formatPercentile(percentile)}. Of ${bands.cohort}, ${round1(shareAbove)}% were in a higher group and ${round1(shareBelow)}% in a lower one.`,
+        summary: `Your GPA of ${gpa.value.toFixed(2)} is in the ${rangeText} group, ${atPercentile(percentile)}. Of ${bands.cohort}, ${round1(shareAbove)}% were in a higher group and ${round1(shareBelow)}% in a lower one.`,
         caveats,
         stat: bands,
       };
@@ -441,7 +448,7 @@ function compareClassRank(profile: StudentProfile, college: College): MetricResu
     percentile = Math.round(clampPercentile(100 - yours.share + (yours.share - ahead.share) * through));
   }
 
-  const sentences = [`You're in the top ${top}% of your class${percentile === null ? '' : `, at ${formatPercentile(percentile)} of these students`}.`];
+  const sentences = [`You're in the top ${top}% of your class${percentile === null ? '' : `, ${atPercentile(percentile)} of these students`}.`];
   if (ahead && ahead.limit > 0) {
     sentences.push(`${ahead.exact ? '' : 'At least '}${ahead.share}% of ${rank.cohort} were in the top ${ahead.limit}%.`);
   }

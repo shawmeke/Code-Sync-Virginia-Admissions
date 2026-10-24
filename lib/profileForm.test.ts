@@ -19,9 +19,8 @@ test('typed numbers become a profile, with both tests kept', () => {
     gpa: '3.85',
     sat: '1450',
     act: '33',
-    classRank: '8',
-    advancedTaken: '6',
-    advancedAvailable: '12',
+    classRankPosition: '8',
+    classSize: '100',
     residency: 'virginia',
     major: ' Biology ',
   });
@@ -31,7 +30,7 @@ test('typed numbers become a profile, with both tests kept', () => {
   assert.equal(profile.sat, 1450);
   assert.equal(profile.act, 33);
   assert.equal(profile.classRankTopPercent, 8);
-  assert.deepEqual(profile.rigor, { advancedTaken: 6, advancedAvailable: 12 });
+  assert.equal(profile.rigor, null);
   assert.equal(profile.residency, 'virginia');
   assert.equal(profile.intendedMajor, 'Biology');
 });
@@ -52,17 +51,22 @@ test('out-of-range values are reported', () => {
   assert.equal(errors.length, 2);
 });
 
-test('advanced courses need both numbers', () => {
-  const { errors, profile } = parseProfileForm({ ...emptyProfileForm, advancedTaken: '4' });
-  assert.equal(profile.rigor, null);
-  assert.ok(errors.some((e) => e.includes('advanced')));
+test('rank and class size become a top percent', () => {
+  const first = parseProfileForm({ ...emptyProfileForm, classRankPosition: '1', classSize: '500' });
+  assert.deepEqual(first.fieldErrors, {});
+  assert.equal(first.profile.classRankTopPercent, 0.2);
+  const mid = parseProfileForm({ ...emptyProfileForm, classRankPosition: '50', classSize: '400' });
+  assert.equal(mid.profile.classRankTopPercent, 12.5);
+  const last = parseProfileForm({ ...emptyProfileForm, classRankPosition: '400', classSize: '400' });
+  assert.equal(last.profile.classRankTopPercent, 100);
 });
 
-test('a half-entered course rigor pair does not block the comparison', () => {
-  const { errors, ready, profile } = parseProfileForm({ ...emptyProfileForm, sat: '1400', advancedTaken: '6' });
-  assert.equal(errors.length, 1);
-  assert.equal(ready, true);
-  assert.equal(profile.rigor, null);
+test('class rank needs both numbers, whole, with the rank inside the class', () => {
+  for (const [classRankPosition, classSize] of [['5', ''], ['', '300'], ['301', '300'], ['0', '300'], ['2.5', '300']]) {
+    const { fieldErrors, profile } = parseProfileForm({ ...emptyProfileForm, classRankPosition, classSize });
+    assert.equal(profile.classRankTopPercent, null, `${classRankPosition} of ${classSize}`);
+    assert.match(fieldErrors.classRank ?? '', /rank|class/i, `${classRankPosition} of ${classSize}`);
+  }
 });
 
 test('a bad test score does block the comparison', () => {
@@ -90,12 +94,11 @@ test('each problem is tied to the field it belongs to', () => {
     gpa: '4.5',
     sat: '14OO',
     act: '40',
-    classRank: '0',
-    advancedTaken: '6',
+    classRankPosition: '9',
+    classSize: '3',
   });
   assert.match(fieldErrors.gpa ?? '', /GPA/);
   assert.match(fieldErrors.sat ?? '', /SAT/);
   assert.match(fieldErrors.act ?? '', /ACT/);
-  assert.match(fieldErrors.classRank ?? '', /Class rank/);
-  assert.match(fieldErrors.rigor ?? '', /advanced/);
+  assert.match(fieldErrors.classRank ?? '', /rank/i);
 });

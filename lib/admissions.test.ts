@@ -340,3 +340,9 @@ test('a match says which measures it rests on unless it uses all three', () => {
   ).match!;
   assert.equal(matchBasis(all), null);
 });
+
+test('extreme percentiles read naturally ("above the 95th", not "at above the 95th")', () => {
+  const rank = metric({ ...blank, classRankTopPercent: 0.2 }, uva, 'classRank');
+  assert.match(rank.summary, /, above the 95th percentile of these students/);
+  assert.doesNotMatch(rank.summary, /at (above|below) the/);
+});
