@@ -2,15 +2,15 @@ import { ScrollView, StyleSheet, Text } from 'react-native';
 
 import { Section } from '@/components/Section';
 import { SourceList } from '@/components/SourceList';
-import { spacing, useTheme } from '@/constants/theme';
+import { fonts, spacing, type, useTheme } from '@/constants/theme';
 import { sources } from '@/data/colleges';
 
 export default function AboutScreen() {
   const theme = useTheme();
-  const body = [styles.body, { color: theme.text }];
+  const body = [styles.body, { color: theme.ink2 }];
 
   return (
-    <ScrollView style={{ backgroundColor: theme.background }} contentContainerStyle={styles.content}>
+    <ScrollView style={{ backgroundColor: theme.paper }} contentContainerStyle={styles.content}>
       <Section title="What these numbers are">
         <Text style={body}>
           Each figure comes from a college's own published admissions data, usually its Common Data Set. Every number
@@ -57,6 +57,6 @@ export default function AboutScreen() {
 }
 
 const styles = StyleSheet.create({
-  content: { padding: spacing.lg, paddingBottom: spacing.xl * 2 },
-  body: { fontSize: 15, lineHeight: 22, paddingVertical: spacing.sm },
+  content: { padding: spacing.lg, paddingBottom: spacing.xl * 2, maxWidth: 680, width: '100%', alignSelf: 'center' },
+  body: { fontFamily: fonts.body, fontSize: type.md, lineHeight: type.md * 1.55, paddingTop: spacing.md },
 });

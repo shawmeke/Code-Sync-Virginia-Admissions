@@ -2,7 +2,7 @@ import { SymbolView } from 'expo-symbols';
 import { Tabs } from 'expo-router';
 
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
-import { useTheme } from '@/constants/theme';
+import { fonts, rules, useTheme } from '@/constants/theme';
 
 export default function TabLayout() {
   const theme = useTheme();
@@ -10,10 +10,14 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: theme.primary,
-        tabBarStyle: { backgroundColor: theme.surface, borderTopColor: theme.border },
-        headerStyle: { backgroundColor: theme.header },
-        headerTintColor: theme.onHeader,
+        tabBarActiveTintColor: theme.accent,
+        tabBarInactiveTintColor: theme.muted,
+        tabBarStyle: { backgroundColor: theme.paper, borderTopColor: theme.rule2, borderTopWidth: rules.hair },
+        tabBarLabelStyle: { fontFamily: fonts.control, fontSize: 12 },
+        headerStyle: { backgroundColor: theme.paper },
+        headerTintColor: theme.ink,
+        headerTitleStyle: { fontFamily: fonts.display, fontSize: 18 },
+        headerShadowVisible: false,
         // Disable the static render of the header on web
         // to prevent a hydration error in React Navigation v6.
         headerShown: useClientOnlyValue(false, true),

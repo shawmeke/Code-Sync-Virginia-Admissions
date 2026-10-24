@@ -1,9 +1,10 @@
 import { router } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View, type KeyboardTypeOptions } from 'react-native';
 
+import { Button, Segmented } from '@/components/Controls';
 import { useProfile } from '@/components/ProfileContext';
 import { Section } from '@/components/Section';
-import { radius, spacing, useTheme } from '@/constants/theme';
+import { fonts, radius, rules, spacing, type, useTheme } from '@/constants/theme';
 
 export default function ProfileScreen() {
   const theme = useTheme();
@@ -11,11 +12,11 @@ export default function ProfileScreen() {
 
   return (
     <ScrollView
-      style={{ backgroundColor: theme.background }}
+      style={{ backgroundColor: theme.paper }}
       contentContainerStyle={styles.content}
       keyboardShouldPersistTaps="handled"
       keyboardDismissMode="on-drag">
-      <Text style={[styles.intro, { color: theme.textMuted }]}>
+      <Text style={[styles.intro, { color: theme.ink2 }]}>
         Enter whatever you know. Every field is optional. Nothing you type is saved or sent anywhere; it stays on this
         screen until you close the app.
       </Text>
@@ -135,33 +136,29 @@ export default function ProfileScreen() {
 
       {errors.length > 0 && (
         <View
-          style={[styles.errors, { backgroundColor: theme.warningSurface, borderColor: theme.warning }]}>
+          style={[styles.errors, { backgroundColor: theme.warningSurface, borderTopColor: theme.warning }]}>
           <Text style={[styles.errorsTitle, { color: theme.warning }]}>Check these before comparing</Text>
           {errors.map((e, i) => (
-            <Text key={`${i}-${e}`} style={[styles.errorText, { color: theme.text }]}>
+            <Text key={`${i}-${e}`} style={[styles.errorText, { color: theme.ink }]}>
               • {e}
             </Text>
           ))}
         </View>
       )}
 
-      <Pressable
+      <Button
+        label={ready ? 'See how I compare' : hasData ? 'Fix the items above to compare' : 'Enter a GPA, test score or class rank'}
         onPress={() => router.navigate('/')}
         disabled={!ready}
-        accessibilityRole="button"
-        accessibilityState={{ disabled: !ready }}
-        style={({ pressed }) => [
-          styles.button,
-          { backgroundColor: ready ? theme.primary : theme.surfaceMuted, opacity: pressed ? 0.8 : 1 },
-        ]}>
-        <Text style={[styles.buttonText, { color: ready ? theme.onPrimary : theme.textMuted }]}>
-          {ready ? 'See how I compare' : hasData ? 'Fix the items above to compare' : 'Enter a GPA, test score or class rank'}
-        </Text>
-      </Pressable>
+      />
 
       {hasData && (
         <Pressable onPress={resetForm} accessibilityRole="button" style={styles.clear}>
-          <Text style={[styles.clearText, { color: theme.primary }]}>Clear everything</Text>
+          {({ pressed }) => (
+            <Text style={[styles.clearText, { color: theme.ink, textDecorationColor: theme.accent, opacity: pressed ? 0.7 : 1 }]}>
+              Clear everything
+            </Text>
+          )}
         </Pressable>
       )}
     </ScrollView>
@@ -183,13 +180,13 @@ type FieldProps = {
 function Field({ label, value, onChangeText, placeholder, keyboardType, maxLength, wide, a11yLabel }: FieldProps) {
   const theme = useTheme();
   return (
-    <View style={[styles.row, wide && styles.rowWide, { borderBottomColor: theme.border }]}>
-      <Text style={[styles.label, { color: theme.text }]}>{label}</Text>
+    <View style={[styles.row, wide && styles.rowWide, { borderBottomColor: theme.rule }]}>
+      <Text style={[styles.label, { color: theme.ink2 }]}>{label}</Text>
       <TextInput
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor={theme.textMuted}
+        placeholderTextColor={theme.muted}
         keyboardType={keyboardType}
         maxLength={maxLength}
         accessibilityLabel={a11yLabel ?? label}
@@ -198,7 +195,7 @@ function Field({ label, value, onChangeText, placeholder, keyboardType, maxLengt
         style={[
           styles.input,
           wide && styles.inputWide,
-          { backgroundColor: theme.surfaceMuted, borderColor: theme.border, color: theme.text },
+          { backgroundColor: theme.sheet, borderColor: theme.muted, color: theme.ink },
         ]}
       />
     </View>
@@ -215,71 +212,48 @@ type ChoicesProps = {
 function Choices({ label, options, selected, onSelect }: ChoicesProps) {
   const theme = useTheme();
   return (
-    <View style={[styles.row, styles.rowWide, { borderBottomColor: theme.border }]}>
-      <Text style={[styles.label, { color: theme.text }]}>{label}</Text>
-      <View style={styles.chips} accessibilityRole="radiogroup" accessibilityLabel={label}>
-        {options.map((o) => {
-          const isSelected = o.key === selected;
-          return (
-            <Pressable
-              key={o.key}
-              onPress={() => onSelect(o.key)}
-              accessibilityRole="radio"
-              accessibilityLabel={o.label}
-              accessibilityState={{ selected: isSelected }}
-              style={[
-                styles.chip,
-                isSelected
-                  ? { backgroundColor: theme.primary, borderColor: theme.primary }
-                  : { backgroundColor: theme.surface, borderColor: theme.border },
-              ]}>
-              <Text style={[styles.chipText, { color: isSelected ? theme.onPrimary : theme.text }]}>{o.label}</Text>
-            </Pressable>
-          );
-        })}
-      </View>
+    <View style={[styles.row, styles.rowWide, { borderBottomColor: theme.rule }]}>
+      <Text style={[styles.label, { color: theme.ink2 }]}>{label}</Text>
+      <Segmented label={label} options={options} selected={selected} onSelect={onSelect} />
     </View>
   );
 }
 
 function Help({ children }: { children: string }) {
   const theme = useTheme();
-  return <Text style={[styles.help, { color: theme.textMuted }]}>{children}</Text>;
+  return <Text style={[styles.help, { color: theme.muted }]}>{children}</Text>;
 }
 
 const styles = StyleSheet.create({
-  content: { padding: spacing.lg, paddingBottom: spacing.xl * 2 },
-  intro: { fontSize: 14, lineHeight: 20, marginBottom: spacing.lg },
+  content: { padding: spacing.lg, paddingBottom: spacing.xl * 2, maxWidth: 680, width: '100%', alignSelf: 'center' },
+  intro: { fontFamily: fonts.body, fontSize: type.md, lineHeight: type.md * 1.5, marginBottom: spacing.xl },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: spacing.md,
     paddingVertical: spacing.md,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: rules.hair,
   },
   rowWide: { flexDirection: 'column', alignItems: 'stretch' },
-  label: { fontSize: 15, flexShrink: 1 },
+  label: { fontFamily: fonts.body, fontSize: type.md, flexShrink: 1 },
   input: {
-    width: 110,
-    borderWidth: 1,
-    borderRadius: radius.sm,
+    width: 112,
+    minHeight: 44,
+    borderWidth: rules.hair,
+    borderRadius: radius.control,
     paddingHorizontal: spacing.md,
     paddingVertical: 8,
-    fontSize: 16,
+    fontFamily: fonts.monoMedium,
+    fontSize: type.md,
     textAlign: 'right',
     fontVariant: ['tabular-nums'],
   },
-  inputWide: { width: '100%', textAlign: 'left' },
-  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
-  chip: { borderWidth: 1, borderRadius: radius.pill, paddingHorizontal: 14, paddingVertical: 6 },
-  chipText: { fontSize: 14, fontWeight: '600' },
-  help: { fontSize: 12, lineHeight: 17, paddingVertical: spacing.md },
-  errors: { borderWidth: 1, borderRadius: radius.md, padding: spacing.md, marginBottom: spacing.lg },
-  errorsTitle: { fontSize: 15, fontWeight: '700', marginBottom: spacing.xs },
-  errorText: { fontSize: 14, lineHeight: 20 },
-  button: { borderRadius: radius.md, paddingVertical: 14, alignItems: 'center' },
-  buttonText: { fontSize: 16, fontWeight: '700' },
+  inputWide: { width: '100%', textAlign: 'left', fontFamily: fonts.body },
+  help: { fontFamily: fonts.body, fontSize: type.sm, lineHeight: type.sm * 1.45, paddingVertical: spacing.md },
+  errors: { borderTopWidth: rules.bar, padding: spacing.md, marginBottom: spacing.lg },
+  errorsTitle: { fontFamily: fonts.display, fontSize: type.md, marginBottom: spacing.xs },
+  errorText: { fontFamily: fonts.body, fontSize: type.md, lineHeight: type.md * 1.4 },
   clear: { alignItems: 'center', paddingVertical: spacing.lg },
-  clearText: { fontSize: 15, fontWeight: '600' },
+  clearText: { fontFamily: fonts.control, fontSize: type.md, textDecorationLine: 'underline' },
 });

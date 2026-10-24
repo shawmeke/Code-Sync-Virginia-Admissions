@@ -3,8 +3,9 @@ import { useMemo, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { CollegeCard } from '@/components/CollegeCard';
+import { Segmented } from '@/components/Controls';
 import { useProfile } from '@/components/ProfileContext';
-import { radius, spacing, useTheme } from '@/constants/theme';
+import { fonts, radius, rules, spacing, type, useTheme } from '@/constants/theme';
 import { colleges } from '@/data/colleges';
 import { alignWithCollege } from '@/lib/admissions';
 import type { College } from '@/types/college';
@@ -12,15 +13,15 @@ import type { College } from '@/types/college';
 type ControlFilter = 'all' | College['control'];
 type SortOrder = 'match' | 'name';
 
-const SORTS: { key: SortOrder; label: string }[] = [
-  { key: 'match', label: 'Best match' },
-  { key: 'name', label: 'A–Z' },
-];
-
 const FILTERS: { key: ControlFilter; label: string }[] = [
   { key: 'all', label: 'All' },
   { key: 'public', label: 'Public' },
   { key: 'private', label: 'Private' },
+];
+
+const SORTS: { key: SortOrder; label: string }[] = [
+  { key: 'match', label: 'Best match' },
+  { key: 'name', label: 'A–Z' },
 ];
 
 export default function CollegesScreen() {
@@ -46,7 +47,7 @@ export default function CollegesScreen() {
 
   return (
     <FlatList
-      style={{ backgroundColor: theme.background }}
+      style={{ backgroundColor: theme.paper }}
       contentContainerStyle={styles.content}
       data={results}
       keyExtractor={(c) => c.id}
@@ -54,17 +55,22 @@ export default function CollegesScreen() {
       keyboardShouldPersistTaps="handled"
       keyboardDismissMode="on-drag"
       ListHeaderComponent={
-        <View style={styles.header}>
-          <Text style={[styles.intro, { color: theme.textMuted }]}>
-            Published admissions figures for Virginia colleges, with the source and year for each number. Score ranges show the middle 50% of students.
+        <View>
+          <Text style={[styles.intro, { color: theme.ink2 }]}>
+            Published admissions figures for Virginia colleges, with the source and year for each number. Score ranges
+            show the middle 50% of students.
           </Text>
           {!ready && (
             <Link href="/profile" asChild>
               <Pressable accessibilityRole="link" style={styles.promptPress}>
                 {({ pressed }) => (
-                  <View style={[styles.prompt, { backgroundColor: theme.primary, opacity: pressed ? 0.85 : 1 }]}>
-                    <Text style={[styles.promptTitle, { color: theme.onPrimary }]}>See how you compare</Text>
-                    <Text style={[styles.promptBody, { color: theme.onPrimary }]}>
+                  <View
+                    style={[
+                      styles.prompt,
+                      { backgroundColor: pressed ? theme.paper2 : theme.sheet, borderTopColor: theme.accent },
+                    ]}>
+                    <Text style={[styles.promptTitle, { color: theme.ink }]}>See how you compare</Text>
+                    <Text style={[styles.promptBody, { color: theme.ink2 }]}>
                       Add your GPA, test scores or class rank to get an Academic Match for each college.
                     </Text>
                   </View>
@@ -76,64 +82,34 @@ export default function CollegesScreen() {
             value={query}
             onChangeText={setQuery}
             placeholder="Search by name or city"
-            placeholderTextColor={theme.textMuted}
+            placeholderTextColor={theme.muted}
             accessibilityLabel="Search colleges by name or city"
             autoCorrect={false}
             clearButtonMode="while-editing"
             returnKeyType="search"
-            style={[styles.search, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.text }]}
+            style={[styles.search, { backgroundColor: theme.sheet, borderColor: theme.muted, color: theme.ink }]}
           />
-          <View style={styles.filters} accessibilityRole="radiogroup">
-            {FILTERS.map((f) => {
-              const selected = f.key === filter;
-              return (
-                <Pressable
-                  key={f.key}
-                  onPress={() => setFilter(f.key)}
-                  accessibilityRole="radio"
-                  accessibilityLabel={f.label}
-                  accessibilityState={{ selected }}
-                  style={[
-                    styles.chip,
-                    selected
-                      ? { backgroundColor: theme.primary, borderColor: theme.primary }
-                      : { backgroundColor: theme.surface, borderColor: theme.border },
-                  ]}>
-                  <Text style={[styles.chipText, { color: selected ? theme.onPrimary : theme.text }]}>{f.label}</Text>
-                </Pressable>
-              );
-            })}
+          <View style={styles.controls}>
+            <Segmented
+              label="Filter colleges"
+              options={FILTERS}
+              selected={filter}
+              onSelect={(k) => setFilter(k as ControlFilter)}
+            />
+            {ready && (
+              <Segmented label="Sort colleges" options={SORTS} selected={sort} onSelect={(k) => setSort(k as SortOrder)} />
+            )}
           </View>
-          {ready && (
-            <View style={styles.filters} accessibilityRole="radiogroup" accessibilityLabel="Sort colleges">
-              {SORTS.map((s) => {
-                const selected = s.key === sort;
-                return (
-                  <Pressable
-                    key={s.key}
-                    onPress={() => setSort(s.key)}
-                    accessibilityRole="radio"
-                    accessibilityLabel={`Sort by ${s.label}`}
-                    accessibilityState={{ selected }}
-                    style={[
-                      styles.chip,
-                      selected
-                        ? { backgroundColor: theme.primary, borderColor: theme.primary }
-                        : { backgroundColor: theme.surface, borderColor: theme.border },
-                    ]}>
-                    <Text style={[styles.chipText, { color: selected ? theme.onPrimary : theme.text }]}>{s.label}</Text>
-                  </Pressable>
-                );
-              })}
-            </View>
-          )}
-          <Text style={[styles.count, { color: theme.textMuted }]}>
-            {results.length} {results.length === 1 ? 'college' : 'colleges'}
-          </Text>
+          <View style={[styles.ledgerHead, { borderBottomColor: theme.ink }]}>
+            <Text style={[styles.ledgerLabel, { color: theme.muted }]}>
+              {results.length} {results.length === 1 ? 'college' : 'colleges'}
+            </Text>
+            {ready && <Text style={[styles.ledgerLabel, { color: theme.muted }]}>Your match</Text>}
+          </View>
         </View>
       }
       ListEmptyComponent={
-        <Text style={[styles.empty, { color: theme.textMuted }]}>
+        <Text style={[styles.empty, { color: theme.muted }]}>
           {filter === 'private' && !query
             ? 'No private colleges have been added yet.'
             : 'No colleges match your search.'}
@@ -145,16 +121,28 @@ export default function CollegesScreen() {
 
 const styles = StyleSheet.create({
   content: { padding: spacing.lg, paddingBottom: spacing.xl * 2 },
-  header: { marginBottom: spacing.md },
-  intro: { fontSize: 14, lineHeight: 20, marginBottom: spacing.md },
-  promptPress: { marginBottom: spacing.md },
-  prompt: { borderRadius: radius.md, padding: spacing.md },
-  promptTitle: { fontSize: 16, fontWeight: '700' },
-  promptBody: { fontSize: 14, lineHeight: 20, marginTop: 2 },
-  search: { borderWidth: 1, borderRadius: radius.sm, paddingHorizontal: spacing.md, paddingVertical: 10, fontSize: 16 },
-  filters: { flexDirection: 'row', gap: spacing.sm, marginTop: spacing.md },
-  chip: { borderWidth: 1, borderRadius: radius.pill, paddingHorizontal: 14, paddingVertical: 6 },
-  chipText: { fontSize: 14, fontWeight: '600' },
-  count: { fontSize: 13, marginTop: spacing.md },
-  empty: { textAlign: 'center', marginTop: spacing.xl, fontSize: 15 },
+  intro: { fontFamily: fonts.body, fontSize: type.md, lineHeight: type.md * 1.5, marginBottom: spacing.lg },
+  promptPress: { marginBottom: spacing.lg },
+  prompt: { padding: spacing.md, borderTopWidth: rules.bar },
+  promptTitle: { fontFamily: fonts.display, fontSize: type.lg },
+  promptBody: { fontFamily: fonts.body, fontSize: type.md, lineHeight: type.md * 1.45, marginTop: 2 },
+  search: {
+    borderWidth: rules.hair,
+    borderRadius: radius.control,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 10,
+    fontFamily: fonts.body,
+    fontSize: type.md,
+  },
+  controls: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md, marginTop: spacing.md },
+  ledgerHead: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: spacing.xl,
+    paddingBottom: spacing.xs,
+    paddingHorizontal: spacing.md,
+    borderBottomWidth: rules.bar,
+  },
+  ledgerLabel: { fontFamily: fonts.bodyMedium, fontSize: type.sm },
+  empty: { textAlign: 'center', marginTop: spacing.xl, fontFamily: fonts.body, fontSize: type.md },
 });

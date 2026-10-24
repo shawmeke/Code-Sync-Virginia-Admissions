@@ -7,7 +7,7 @@ import { useProfile } from '@/components/ProfileContext';
 import { Section } from '@/components/Section';
 import { SourceList } from '@/components/SourceList';
 import { StatRow } from '@/components/StatRow';
-import { accentFor, radius, spacing, useTheme } from '@/constants/theme';
+import { fonts, rules, spacing, type, useTheme } from '@/constants/theme';
 import { getCollege, sourcesForCollege } from '@/data/colleges';
 import { alignWithCollege, describeAlignment, type MetricResult } from '@/lib/admissions';
 import { formatCount, formatPercent, formatRange, TEST_POLICY_LABELS } from '@/lib/format';
@@ -29,9 +29,9 @@ export default function CollegeScreen() {
 
   if (!college) {
     return (
-      <View style={[styles.missing, { backgroundColor: theme.background }]}>
+      <View style={[styles.missing, { backgroundColor: theme.paper }]}>
         <Stack.Screen options={{ title: 'Not found' }} />
-        <Text style={[styles.body, { color: theme.text }]}>This college isn't in the app.</Text>
+        <Text style={[styles.body, { color: theme.ink2 }]}>This college isn't in the app.</Text>
       </View>
     );
   }
@@ -47,38 +47,43 @@ export default function CollegeScreen() {
   const metrics = alignment?.metrics.filter(shown) ?? [];
 
   return (
-    <ScrollView style={{ backgroundColor: theme.background }} contentContainerStyle={styles.content}>
+    <ScrollView style={{ backgroundColor: theme.paper }} contentContainerStyle={styles.content}>
       <Stack.Screen options={{ title: college.name }} />
 
       <View style={styles.hero}>
-        <View style={[styles.heroAccent, { backgroundColor: accentFor(college.id, theme) }]} />
-        <Text style={[styles.name, { color: theme.text }]} accessibilityRole="header">
+        <Text style={[styles.name, { color: theme.ink }]} accessibilityRole="header">
           {college.name}
         </Text>
-        <Text style={[styles.meta, { color: theme.textMuted }]}>
-          {college.city}, Virginia · {control}
+        <Text style={[styles.meta, { color: theme.muted }]}>
+          {college.city}, Virginia. {control} university.
         </Text>
-        <View style={styles.tags}>
-          <Tag text={TEST_POLICY_LABELS[college.testPolicy]} />
-          <Tag text={`Figures for ${college.cycle}`} />
+        <View style={[styles.facts, { borderTopColor: theme.rule2 }]}>
+          <Fact label="Testing" value={TEST_POLICY_LABELS[college.testPolicy]} />
+          <Fact label="Figures for" value={college.cycle} />
         </View>
       </View>
 
       {alignment ? (
-        <Section title="How you compare">
+        <Section title="How you compare" sheet>
           {alignment.match ? (
             <MatchScore match={alignment.match} collegeName={college.name} />
           ) : (
-            <Text style={[styles.body, styles.block, { color: theme.text }]}>
+            <Text style={[styles.body, styles.block, { color: theme.ink2 }]}>
               {college.name} doesn't publish enough figures to estimate an Academic Match from what you entered.
             </Text>
           )}
-          <Text style={[styles.small, styles.footnote, { color: theme.textMuted }]}>{describeAlignment(alignment)}</Text>
+          <Text style={[styles.small, styles.footnote, { color: theme.muted, borderBottomColor: theme.rule }]}>
+            {describeAlignment(alignment)}
+          </Text>
           {metrics.map((m, i) => (
-            <MetricRow key={m.metric} metric={m} last={i === metrics.length - 1 && !alignment.contextNotes.length && !alignment.programNotes.length} />
+            <MetricRow
+              key={m.metric}
+              metric={m}
+              last={i === metrics.length - 1 && !alignment.contextNotes.length && !alignment.programNotes.length}
+            />
           ))}
           {[...alignment.programNotes.map((p) => `${p.program}: ${p.note}`), ...alignment.contextNotes].map((n, i) => (
-            <Text key={`${i}-${n}`} style={[styles.body, styles.block, { color: theme.text }]}>
+            <Text key={`${i}-${n}`} style={[styles.body, styles.block, { color: theme.ink2 }]}>
               {n}
             </Text>
           ))}
@@ -87,9 +92,13 @@ export default function CollegeScreen() {
         <Link href="/profile" asChild>
           <Pressable accessibilityRole="link" style={styles.promptPress}>
             {({ pressed }) => (
-              <View style={[styles.prompt, { backgroundColor: theme.surfaceMuted, opacity: pressed ? 0.8 : 1 }]}>
-                <Text style={[styles.blockTitle, { color: theme.text }]}>See how you compare</Text>
-                <Text style={[styles.body, { color: theme.textMuted }]}>
+              <View
+                style={[
+                  styles.prompt,
+                  { backgroundColor: pressed ? theme.paper2 : theme.sheet, borderTopColor: theme.accent },
+                ]}>
+                <Text style={[styles.blockTitle, { color: theme.ink }]}>See how you compare</Text>
+                <Text style={[styles.body, { color: theme.ink2 }]}>
                   Add your profile to see where your numbers fall among {college.name}'s students.
                 </Text>
               </View>
@@ -116,16 +125,14 @@ export default function CollegeScreen() {
         <StatRow label="Average GPA" stat={college.gpaAverage} format={(v) => v.toFixed(2)} last={!college.gpaBands} />
         {college.gpaBands && (
           <View style={styles.block}>
-            <Text style={[styles.blockTitle, { color: theme.text }]}>Share of students in each GPA range</Text>
+            <Text style={[styles.blockTitle, { color: theme.ink }]}>Share of students in each GPA range</Text>
             <GpaBands bands={college.gpaBands.value} />
-            <Text style={[styles.small, { color: theme.textMuted }]}>{college.gpaBands.cohort}</Text>
-            {college.gpaBands.note && (
-              <Text style={[styles.small, { color: theme.textMuted }]}>{college.gpaBands.note}</Text>
-            )}
+            <Text style={[styles.small, { color: theme.muted }]}>{college.gpaBands.cohort}</Text>
+            {college.gpaBands.note && <Text style={[styles.small, { color: theme.muted }]}>{college.gpaBands.note}</Text>}
           </View>
         )}
         {gpaKnown && (
-          <Text style={[styles.small, styles.footnote, { color: theme.textMuted }]}>{GPA_SCALE_NOTES[college.gpaScale]}</Text>
+          <Text style={[styles.small, styles.gpaNote, { color: theme.muted }]}>{GPA_SCALE_NOTES[college.gpaScale]}</Text>
         )}
       </Section>
 
@@ -145,8 +152,8 @@ export default function CollegeScreen() {
         <Section title="Program-specific notes">
           {college.programNotes.map((p) => (
             <View key={p.program} style={styles.block}>
-              <Text style={[styles.blockTitle, { color: theme.text }]}>{p.program}</Text>
-              <Text style={[styles.body, { color: theme.text }]}>{p.note}</Text>
+              <Text style={[styles.blockTitle, { color: theme.ink }]}>{p.program}</Text>
+              <Text style={[styles.body, { color: theme.ink2 }]}>{p.note}</Text>
             </View>
           ))}
         </Section>
@@ -154,8 +161,8 @@ export default function CollegeScreen() {
 
       {college.notes.length > 0 && (
         <Section title="Good to know">
-          {college.notes.map((n) => (
-            <Text key={n} style={[styles.body, styles.block, { color: theme.text }]}>
+          {college.notes.map((n, i) => (
+            <Text key={`${i}-${n}`} style={[styles.body, styles.block, { color: theme.ink2 }]}>
               {n}
             </Text>
           ))}
@@ -166,7 +173,7 @@ export default function CollegeScreen() {
         <SourceList sources={sourcesForCollege(college)} />
       </Section>
 
-      <Text style={[styles.small, { color: theme.textMuted }]}>
+      <Text style={[styles.small, { color: theme.muted }]}>
         These figures describe students from a past admissions cycle. They are not cutoffs, and they can't tell you
         whether you will be admitted.
       </Text>
@@ -174,30 +181,32 @@ export default function CollegeScreen() {
   );
 }
 
-function Tag({ text }: { text: string }) {
+function Fact({ label, value }: { label: string; value: string }) {
   const theme = useTheme();
   return (
-    <View style={[styles.tag, { backgroundColor: theme.surfaceMuted }]}>
-      <Text style={[styles.tagText, { color: theme.text }]}>{text}</Text>
+    <View style={[styles.fact, { borderBottomColor: theme.rule }]}>
+      <Text style={[styles.factLabel, { color: theme.muted }]}>{label}</Text>
+      <Text style={[styles.factValue, { color: theme.ink }]}>{value}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  content: { padding: spacing.lg, paddingBottom: spacing.xl * 2 },
+  content: { padding: spacing.lg, paddingBottom: spacing.xl * 2, maxWidth: 680, width: '100%', alignSelf: 'center' },
   missing: { flex: 1, padding: spacing.lg },
-  hero: { marginBottom: spacing.xl },
-  heroAccent: { width: 44, height: 5, borderRadius: radius.pill, marginBottom: spacing.md },
-  name: { fontSize: 28, fontWeight: '800', letterSpacing: -0.3 },
-  meta: { fontSize: 15, marginTop: spacing.xs },
-  tags: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, marginTop: spacing.md },
-  tag: { borderRadius: radius.pill, paddingHorizontal: 10, paddingVertical: 4 },
-  tagText: { fontSize: 12, fontWeight: '600' },
+  hero: { marginBottom: spacing.xl + spacing.sm },
+  name: { fontFamily: fonts.display, fontSize: type.display, lineHeight: type.display * 1.05, letterSpacing: -0.8 },
+  meta: { fontFamily: fonts.body, fontSize: type.md, marginTop: spacing.xs },
+  facts: { marginTop: spacing.lg, borderTopWidth: rules.bar },
+  fact: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: spacing.sm, borderBottomWidth: rules.hair },
+  factLabel: { fontFamily: fonts.body, fontSize: type.md },
+  factValue: { fontFamily: fonts.bodyMedium, fontSize: type.md },
   block: { paddingVertical: spacing.md },
-  blockTitle: { fontSize: 15, fontWeight: '600', marginBottom: spacing.xs },
-  body: { fontSize: 15, lineHeight: 22 },
-  small: { fontSize: 12, lineHeight: 17, marginTop: spacing.xs },
-  footnote: { paddingBottom: spacing.md },
+  blockTitle: { fontFamily: fonts.display, fontSize: type.md, marginBottom: spacing.xs },
+  body: { fontFamily: fonts.body, fontSize: type.md, lineHeight: type.md * 1.5 },
+  small: { fontFamily: fonts.body, fontSize: type.xs, lineHeight: type.xs * 1.45, marginTop: spacing.xs },
+  footnote: { paddingBottom: spacing.md, borderBottomWidth: rules.hair },
+  gpaNote: { paddingBottom: spacing.md },
   promptPress: { marginBottom: spacing.xl },
-  prompt: { borderRadius: radius.md, padding: spacing.md },
+  prompt: { padding: spacing.md, borderTopWidth: rules.bar },
 });
