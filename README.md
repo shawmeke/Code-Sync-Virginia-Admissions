@@ -84,8 +84,17 @@ npm test            # run the tests
   spread evenly.
 - UVA's data is one year older than the other schools' because its 2025–26
   Common Data Set wasn't available yet.
-- Some colleges don't publish every figure. JMU, for example, publishes no
-  GPA data.
+- Some colleges don't publish every figure. JMU publishes no GPA data, and its
+  class rank table doesn't add up, so the app leaves both out. William & Mary
+  leaves its in-state and out-of-state table blank.
+- The Common Data Set doesn't say whether GPAs are weighted. Virginia Tech,
+  William & Mary and UVA report averages above 4.0 or most students in the
+  4.0 group, so the app treats their GPAs as weighted. That's my inference.
+- Figures combine in-state and out-of-state students. At UVA and William &
+  Mary, the two groups are admitted at very different rates.
+- My copy of UVA's Common Data Set lost its table layout in the section on
+  what the school weighs, so those factors and its early decision answer are
+  left blank.
 
 ## Photo credits
 
