@@ -1,13 +1,22 @@
-import type { College, ProgramNote, Stat } from '../types/college.ts';
+import type { College, ProgramNote, ResidencyCounts, ScoreRange, Stat } from '../types/college.ts';
 import type { StudentProfile } from '../types/student.ts';
+import { formatCount, formatPercentile } from './format.ts';
 
 // Compares a student's academic profile with a college's published figures,
-// one measure at a time. This is deliberately NOT an admission probability:
-// it never combines measures into a single score. Each measure says where the
-// student sits relative to the published middle 50%, cites the figure it used,
-// and explains when a comparison isn't possible instead of skipping it.
+// one measure at a time. This is deliberately NOT an admission probability.
+// Each measure says where the student sits relative to the published middle
+// 50%, estimates a percentile among enrolled students when the published
+// figures allow it, cites the figure it used, and explains when a comparison
+// isn't possible instead of skipping it.
+//
+// The Academic Match score averages those percentiles. It describes how the
+// student's numbers compare with past enrolled students, nothing more.
 
-export type MetricKey = 'test' | 'gpa' | 'classRank' | 'rigor';
+export type MetricKey = 'sat' | 'act' | 'gpa' | 'classRank' | 'rigor';
+
+// The measures Academic Match is built from. SAT and ACT count as one "test"
+// measure so a student who sends both isn't counted twice.
+export type MatchMeasure = 'test' | 'gpa' | 'classRank';
 
 export type Position = 'below' | 'within' | 'above';
 
@@ -24,10 +33,19 @@ export type MetricResult = {
   status: MetricStatus;
   // Null when the student can't be placed above, within, or below.
   position: Position | null;
+  // Estimated share (1–99) of the college's students the student is ahead
+  // of on this measure. Null when the published figures can't support one.
+  percentile: number | null;
   summary: string;
   caveats: string[];
   // The published figure the comparison used, so the screen can cite it.
   stat: Stat<unknown> | null;
+};
+
+export type AcademicMatch = {
+  // 0–100: the average of the measure percentiles, rounded.
+  score: number;
+  measures: MatchMeasure[];
 };
 
 export type CollegeAlignment = {
@@ -35,8 +53,10 @@ export type CollegeAlignment = {
   collegeName: string;
   cycle: string;
   metrics: MetricResult[];
+  // Counted over the match measures, with the stronger test standing for both.
   positions: Record<Position, number>;
   comparedCount: number;
+  match: AcademicMatch | null;
   // Notes for a specific program that matches the student's intended major.
   programNotes: ProgramNote[];
   contextNotes: string[];
@@ -54,17 +74,30 @@ export const POSITION_LABELS: Record<Position, string> = {
 const QUARTILE_SHARE = 75;
 
 export function alignWithCollege(profile: StudentProfile, college: College): CollegeAlignment {
-  const metrics = [
-    compareTest(profile, college),
-    compareGpa(profile, college),
-    compareClassRank(profile, college),
-    describeRigor(profile),
+  const sat = compareTest(profile, college, 'SAT');
+  const act = compareTest(profile, college, 'ACT');
+  const gpa = compareGpa(profile, college);
+  const classRank = compareClassRank(profile, college);
+  const metrics = [sat, act, gpa, classRank, describeRigor(profile)];
+
+  const measures: [MatchMeasure, MetricResult][] = [
+    ['test', strongerTest(sat, act)],
+    ['gpa', gpa],
+    ['classRank', classRank],
   ];
 
   const positions: Record<Position, number> = { below: 0, within: 0, above: 0 };
-  for (const m of metrics) {
+  for (const [, m] of measures) {
     if (m.position) positions[m.position]++;
   }
+
+  const estimated = measures.filter(([, m]) => m.percentile !== null);
+  const match: AcademicMatch | null = estimated.length
+    ? {
+        score: Math.round(estimated.reduce((sum, [, m]) => sum + m.percentile!, 0) / estimated.length),
+        measures: estimated.map(([key]) => key),
+      }
+    : null;
 
   return {
     collegeId: college.id,
@@ -72,10 +105,22 @@ export function alignWithCollege(profile: StudentProfile, college: College): Col
     cycle: college.cycle,
     metrics,
     positions,
-    comparedCount: metrics.filter((m) => m.status === 'compared').length,
+    comparedCount: measures.filter(([, m]) => m.status === 'compared').length,
+    match,
     programNotes: matchProgramNotes(profile.intendedMajor, college.programNotes),
     contextNotes: contextNotes(profile, college),
   };
+}
+
+// The test result that stands for "test" in the match: the one with the
+// higher percentile, since students send colleges their stronger score.
+function strongerTest(sat: MetricResult, act: MetricResult): MetricResult {
+  if (sat.percentile === null && act.percentile === null) {
+    return act.status === 'compared' && sat.status !== 'compared' ? act : sat;
+  }
+  if (sat.percentile === null) return act;
+  if (act.percentile === null) return sat;
+  return act.percentile > sat.percentile ? act : sat;
 }
 
 export function alignWithColleges(profile: StudentProfile, colleges: College[]): CollegeAlignment[] {
@@ -84,8 +129,8 @@ export function alignWithColleges(profile: StudentProfile, colleges: College[]):
 
 // A one-line, non-predictive description of an alignment for list views.
 export function describeAlignment(a: CollegeAlignment): string {
-  // Rigor is never compared, so it doesn't count toward the total.
-  const total = a.metrics.filter((m) => m.metric !== 'rigor').length;
+  // Test, GPA and class rank. Rigor is never compared, so it doesn't count.
+  const total = 3;
   if (a.comparedCount === 0) return `Not enough published data to compare your profile with ${a.collegeName}.`;
   const parts = (['above', 'within', 'below'] as const)
     .filter((p) => a.positions[p] > 0)
@@ -100,28 +145,59 @@ export function rangePosition(value: number, range: { p25: number; p75: number }
   return 'within';
 }
 
-function compareTest(profile: StudentProfile, college: College): MetricResult {
-  const base = { metric: 'test' as const, label: 'Test score' };
+// Estimates the percentile of a score from the published 25th, 50th and 75th
+// percentiles by drawing straight lines between them, and extending the
+// nearest line beyond them. Kept between 1 and 99, because nothing published
+// says where the very top or bottom of the class lies.
+export function estimateRangePercentile(value: number, range: ScoreRange): number {
+  const points: [number, number][] = [[range.p25, 25]];
+  if (range.p50 !== undefined) points.push([range.p50, 50]);
+  points.push([range.p75, 75]);
 
-  if (!profile.test) {
+  // Segments with no width (e.g. ACT 33–33) can't give a slope, so skip them.
+  const segments: [[number, number], [number, number]][] = [];
+  for (let i = 1; i < points.length; i++) {
+    if (points[i][0] > points[i - 1][0]) segments.push([points[i - 1], points[i]]);
+  }
+  if (!segments.length) return value < range.p25 ? 1 : value > range.p75 ? 99 : 50;
+
+  // Scores below the first point use the first line; above the last, the last.
+  const [[x0, y0], [x1, y1]] = segments.find(([, [x]]) => value <= x) ?? segments[segments.length - 1];
+  const estimate = y0 + ((value - x0) * (y1 - y0)) / (x1 - x0);
+  return clampPercentile(estimate);
+}
+
+function clampPercentile(n: number): number {
+  return Math.min(99, Math.max(1, n));
+}
+
+function compareTest(profile: StudentProfile, college: College, type: 'SAT' | 'ACT'): MetricResult {
+  const base = { metric: type === 'SAT' ? ('sat' as const) : ('act' as const), label: type, percentile: null };
+  const score = type === 'SAT' ? profile.sat : profile.act;
+  const other = type === 'SAT' ? profile.act : profile.sat;
+
+  if (score === null) {
+    const otherType = type === 'SAT' ? 'ACT' : 'SAT';
+    // The SAT row carries the testing-policy message when neither test was entered.
     const summary =
-      college.testPolicy === 'required'
-        ? `${college.name} requires a test score, and you haven't entered one.`
-        : college.testPolicy === 'unknown'
-          ? `You aren't submitting a test score. Check ${college.name}'s current testing policy.`
-          : `You aren't submitting a test score. ${college.name} is test-${college.testPolicy}, so this isn't counted against you here.`;
+      other !== null
+        ? `You didn't enter an ${type} score. That's fine: colleges only need one, and you entered an ${otherType}.`
+        : type === 'ACT'
+          ? "You haven't entered an ACT score."
+          : college.testPolicy === 'required'
+            ? `${college.name} requires a test score, and you haven't entered one.`
+            : college.testPolicy === 'unknown'
+              ? `You aren't submitting a test score. Check ${college.name}'s current testing policy.`
+              : `You aren't submitting a test score. ${college.name} is test-${college.testPolicy}, so this isn't counted against you here.`;
     return { ...base, status: 'student-missing', position: null, summary, caveats: [], stat: null };
   }
 
-  const { type, score } = profile.test;
   const range = type === 'SAT' ? college.sat : college.act;
   const submitShare = type === 'SAT' ? college.satSubmitShare : college.actSubmitShare;
-  const label = type;
 
   if (!range) {
     return {
       ...base,
-      label,
       status: 'college-missing',
       position: null,
       summary: `There's no published ${type} range for ${college.name} in this app yet.`,
@@ -132,7 +208,7 @@ function compareTest(profile: StudentProfile, college: College): MetricResult {
 
   const { p25, p75 } = range.value;
   const position = rangePosition(score, range.value);
-  const relation = position === 'within' ? 'within' : position === 'above' ? 'above' : 'below';
+  const percentile = Math.round(estimateRangePercentile(score, range.value));
   const caveats: string[] = [];
   if (submitShare && submitShare.value < 50) {
     caveats.push(
@@ -140,20 +216,25 @@ function compareTest(profile: StudentProfile, college: College): MetricResult {
     );
   }
   if (range.note) caveats.push(range.note);
+  caveats.push(
+    range.value.p50 === undefined
+      ? 'The percentile is estimated from the published 25th and 75th percentiles.'
+      : 'The percentile is estimated from the published 25th, 50th and 75th percentiles.',
+  );
 
   return {
     ...base,
-    label,
     status: 'compared',
     position,
-    summary: `Your ${type} of ${score} is ${relation} the middle 50% (${p25}–${p75}) for ${range.cohort}.`,
+    percentile,
+    summary: `Your ${type} of ${score} is ${position} the middle 50% (${p25}–${p75}) for ${range.cohort}, at ${formatPercentile(percentile)}.`,
     caveats,
     stat: range,
   };
 }
 
 function compareGpa(profile: StudentProfile, college: College): MetricResult {
-  const base = { metric: 'gpa' as const, label: 'GPA' };
+  const base = { metric: 'gpa' as const, label: 'GPA', percentile: null };
   const { gpa } = profile;
 
   if (!gpa) {
@@ -202,14 +283,26 @@ function compareGpa(profile: StudentProfile, college: College): MetricResult {
       const shareBelow = sumPercent(sorted.filter((b) => b.max < band.min));
       const position: Position =
         shareAbove > QUARTILE_SHARE ? 'below' : shareBelow > QUARTILE_SHARE ? 'above' : 'within';
-      const rangeText = band.min === band.max ? band.min.toFixed(2) : `${band.min.toFixed(2)}–${band.max.toFixed(2)}`;
+      // The top group of a weighted-GPA table holds everyone at or above it.
+      const rangeText =
+        band.min !== band.max
+          ? `${band.min.toFixed(2)}–${band.max.toFixed(2)}`
+          : band === sorted[0] && college.gpaScale === 'weighted'
+            ? `${band.min.toFixed(2)} and above`
+            : band.min.toFixed(2);
+      // Students are assumed to be spread evenly through each group.
+      const span = band.max - band.min;
+      const through = span > 0 ? Math.min(1, Math.max(0, (gpa.value - band.min) / span)) : 0.5;
+      const percentile = Math.round(clampPercentile(shareBelow + band.percent * through));
       if (average) caveats.push(`Average GPA: ${average.value.toFixed(2)}.`);
       if (bands.note) caveats.push(bands.note);
+      caveats.push('The percentile assumes students are spread evenly within each GPA group.');
       return {
         ...base,
         status: 'compared',
         position,
-        summary: `Your GPA of ${gpa.value.toFixed(2)} is in the ${rangeText} group. Of ${bands.cohort}, ${shareAbove}% were in a higher group and ${shareBelow}% in a lower one.`,
+        percentile,
+        summary: `Your GPA of ${gpa.value.toFixed(2)} is in the ${rangeText} group, at ${formatPercentile(percentile)}. Of ${bands.cohort}, ${round1(shareAbove)}% were in a higher group and ${round1(shareBelow)}% in a lower one.`,
         caveats,
         stat: bands,
       };
@@ -234,7 +327,7 @@ function compareGpa(profile: StudentProfile, college: College): MetricResult {
 }
 
 function compareClassRank(profile: StudentProfile, college: College): MetricResult {
-  const base = { metric: 'classRank' as const, label: 'Class rank' };
+  const base = { metric: 'classRank' as const, label: 'Class rank', percentile: null };
   const top = profile.classRankTopPercent;
 
   if (top === null) {
@@ -297,7 +390,16 @@ function compareClassRank(profile: StudentProfile, college: College): MetricResu
   else if (behind !== null && behind > QUARTILE_SHARE) position = 'above';
   else if (ahead && behind !== null) position = 'within';
 
-  const sentences = [`You're in the top ${top}% of your class.`];
+  // A percentile needs the exact share in your group and in the group just
+  // above it. Students are assumed to be spread evenly within your group.
+  let percentile: number | null = null;
+  if (ahead?.exact && yours.share !== null) {
+    const prevLimit = index === 0 ? 0 : brackets[index - 1].limit;
+    const through = (yours.limit - top) / (yours.limit - prevLimit);
+    percentile = Math.round(clampPercentile(100 - yours.share + (yours.share - ahead.share) * through));
+  }
+
+  const sentences = [`You're in the top ${top}% of your class${percentile === null ? '' : `, at ${formatPercentile(percentile)} of these students`}.`];
   if (ahead && ahead.limit > 0) {
     sentences.push(`${ahead.exact ? '' : 'At least '}${ahead.share}% of ${rank.cohort} were in the top ${ahead.limit}%.`);
   }
@@ -310,13 +412,15 @@ function compareClassRank(profile: StudentProfile, college: College): MetricResu
     caveats.push(`Only ${r.reportedShare}% of enrolled students reported a class rank, so these figures describe part of the class.`);
   }
 
-  return { ...base, status: 'compared', position, summary: sentences.join(' '), caveats, stat: rank };
+  if (percentile !== null) caveats.push('The percentile assumes students are spread evenly within each class rank group.');
+
+  return { ...base, status: 'compared', position, percentile, summary: sentences.join(' '), caveats, stat: rank };
 }
 
 // Colleges don't publish a numeric benchmark for course rigor, so it is shown
 // as context and never turned into a score.
 function describeRigor(profile: StudentProfile): MetricResult {
-  const base = { metric: 'rigor' as const, label: 'Course rigor', position: null, caveats: [], stat: null };
+  const base = { metric: 'rigor' as const, label: 'Course rigor', position: null, percentile: null, caveats: [], stat: null };
   if (!profile.rigor) {
     return { ...base, status: 'student-missing', summary: "You haven't entered your advanced courses." };
   }
@@ -344,7 +448,15 @@ function matchProgramNotes(major: string | null, notes: ProgramNote[]): ProgramN
 
 function contextNotes(profile: StudentProfile, college: College): string[] {
   const notes: string[] = [];
-  if (profile.residency && college.control === 'public') {
+  const residency = college.residencyOffers;
+  if (profile.residency && residency) {
+    const virginia = profile.residency === 'virginia';
+    const counts: ResidencyCounts = virginia ? residency.value.virginia : residency.value.outOfState;
+    const rate = Math.round((counts.admitted / counts.applied) * 100);
+    notes.push(
+      `${college.name} offered admission to ${rate}% of ${virginia ? 'Virginia' : 'out-of-state'} applicants (${formatCount(counts.admitted)} of ${formatCount(counts.applied)}, ${residency.cohort}). The score ranges above combine both groups.`,
+    );
+  } else if (profile.residency && college.control === 'public') {
     notes.push(
       'Virginia public universities admit in-state and out-of-state applicants at different rates. These figures combine both groups.',
     );
@@ -357,4 +469,9 @@ function contextNotes(profile: StudentProfile, college: College): string[] {
 
 function sumPercent(bands: { percent: number }[]): number {
   return bands.reduce((sum, b) => sum + b.percent, 0);
+}
+
+// Sums of decimal shares (e.g. 7.2 + 3.0) pick up floating-point noise.
+function round1(n: number): number {
+  return Math.round(n * 10) / 10;
 }

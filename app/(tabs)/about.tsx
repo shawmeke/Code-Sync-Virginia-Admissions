@@ -22,6 +22,23 @@ export default function AboutScreen() {
         </Text>
       </Section>
 
+      <Section title="How Academic Match works">
+        <Text style={body}>
+          For each measure you enter (test score, GPA and class rank), the app estimates your percentile among the
+          college's enrolled students. Test scores use the published 25th, 50th and 75th percentiles; GPA and class rank
+          use the published share of students in each group.
+        </Text>
+        <Text style={body}>
+          Academic Match is the average of those percentiles. If you enter both an SAT and an ACT, only the stronger one
+          counts. A score of 60 means that, on average, your numbers are higher than about 60% of that college's
+          students.
+        </Text>
+        <Text style={body}>
+          Course rigor, essays, activities and recommendations matter too, but colleges don't publish numbers for them,
+          so they aren't part of the score.
+        </Text>
+      </Section>
+
       <Section title="What this app does not do">
         <Text style={body}>
           It doesn't predict whether you will be admitted. Past statistics describe students who were admitted or

@@ -1,12 +1,15 @@
-import { Stack, useLocalSearchParams } from 'expo-router';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Link, Stack, useLocalSearchParams } from 'expo-router';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { MatchScore, MetricRow } from '@/components/Comparison';
 import { GpaBands } from '@/components/GpaBands';
+import { useProfile } from '@/components/ProfileContext';
 import { Section } from '@/components/Section';
 import { SourceList } from '@/components/SourceList';
 import { StatRow } from '@/components/StatRow';
 import { radius, spacing, useTheme } from '@/constants/theme';
 import { getCollege, sourcesForCollege } from '@/data/colleges';
+import { alignWithCollege, describeAlignment, type MetricResult } from '@/lib/admissions';
 import { formatCount, formatPercent, formatRange, TEST_POLICY_LABELS } from '@/lib/format';
 import type { ClassRankProfile, GpaScale } from '@/types/college';
 
@@ -21,6 +24,7 @@ const showPercent = (n: number | null) => (n === null ? 'Not available' : format
 export default function CollegeScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const theme = useTheme();
+  const { profile, ready } = useProfile();
   const college = getCollege(id);
 
   if (!college) {
@@ -35,6 +39,12 @@ export default function CollegeScreen() {
   const control = college.control === 'public' ? 'Public' : 'Private';
   const rank = college.classRank;
   const gpaKnown = college.gpaAverage || college.gpaBands;
+  const alignment = ready ? alignWithCollege(profile, college) : null;
+  // Hide measures the student left blank, except the SAT row when no test was
+  // entered at all, since it explains the college's testing policy.
+  const shown = (m: MetricResult) =>
+    m.status !== 'student-missing' || (m.metric === 'sat' && profile.sat === null && profile.act === null);
+  const metrics = alignment?.metrics.filter(shown) ?? [];
 
   return (
     <ScrollView style={{ backgroundColor: theme.background }} contentContainerStyle={styles.content}>
@@ -52,6 +62,40 @@ export default function CollegeScreen() {
           <Tag text={`Figures for ${college.cycle}`} />
         </View>
       </View>
+
+      {alignment ? (
+        <Section title="How you compare">
+          {alignment.match ? (
+            <MatchScore match={alignment.match} collegeName={college.name} />
+          ) : (
+            <Text style={[styles.body, styles.block, { color: theme.text }]}>
+              {college.name} doesn't publish enough figures to estimate an Academic Match from what you entered.
+            </Text>
+          )}
+          <Text style={[styles.small, styles.footnote, { color: theme.textMuted }]}>{describeAlignment(alignment)}</Text>
+          {metrics.map((m, i) => (
+            <MetricRow key={m.metric} metric={m} last={i === metrics.length - 1 && !alignment.contextNotes.length && !alignment.programNotes.length} />
+          ))}
+          {[...alignment.programNotes.map((p) => `${p.program}: ${p.note}`), ...alignment.contextNotes].map((n, i) => (
+            <Text key={`${i}-${n}`} style={[styles.body, styles.block, { color: theme.text }]}>
+              {n}
+            </Text>
+          ))}
+        </Section>
+      ) : (
+        <Link href="/profile" asChild>
+          <Pressable accessibilityRole="link" style={styles.promptPress}>
+            {({ pressed }) => (
+              <View style={[styles.prompt, { backgroundColor: theme.surfaceMuted, opacity: pressed ? 0.8 : 1 }]}>
+                <Text style={[styles.blockTitle, { color: theme.text }]}>See how you compare</Text>
+                <Text style={[styles.body, { color: theme.textMuted }]}>
+                  Add your profile to see where your numbers fall among {college.name}'s students.
+                </Text>
+              </View>
+            )}
+          </Pressable>
+        </Link>
+      )}
 
       <Section title="Applications">
         <StatRow label="Applicants" stat={college.applicants} format={formatCount} />
@@ -152,4 +196,6 @@ const styles = StyleSheet.create({
   body: { fontSize: 15, lineHeight: 22 },
   small: { fontSize: 12, lineHeight: 17, marginTop: spacing.xs },
   footnote: { paddingBottom: spacing.md },
+  promptPress: { marginBottom: spacing.xl },
+  prompt: { borderRadius: radius.md, padding: spacing.md },
 });

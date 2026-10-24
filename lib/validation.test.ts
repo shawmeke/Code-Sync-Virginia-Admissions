@@ -8,7 +8,8 @@ import type { StudentProfile } from '../types/student.ts';
 
 const blank: StudentProfile = {
   gpa: null,
-  test: null,
+  sat: null,
+  act: null,
   classRankTopPercent: null,
   rigor: null,
   intendedMajor: null,
@@ -53,10 +54,27 @@ test('a blank profile is valid', () => {
 test('profile checks reject impossible values', () => {
   assert.equal(validateProfile({ ...blank, gpa: { value: 4.3, scale: 4, weighted: false } }).length, 1);
   assert.equal(validateProfile({ ...blank, gpa: { value: 4.3, scale: 5, weighted: false } }).length, 1);
-  assert.equal(validateProfile({ ...blank, test: { type: 'SAT', score: 1605 } }).length, 1);
-  assert.equal(validateProfile({ ...blank, test: { type: 'ACT', score: 37 } }).length, 1);
+  assert.equal(validateProfile({ ...blank, sat: 1605 }).length, 1);
+  assert.equal(validateProfile({ ...blank, act: 37 }).length, 1);
   assert.equal(validateProfile({ ...blank, classRankTopPercent: 0 }).length, 1);
   assert.equal(validateProfile({ ...blank, rigor: { advancedTaken: 5, advancedAvailable: 3 } }).length, 1);
+});
+
+test('a student can enter both an SAT and an ACT score', () => {
+  assert.deepEqual(validateProfile({ ...blank, sat: 1400, act: 31 }), []);
+});
+
+test('data checks catch a median outside its range and residency counts that exceed totals', () => {
+  const ids = sources.map((s) => s.id);
+  const uva = colleges.find((c) => c.id === 'uva')!;
+  const badMedian = { ...uva, sat: { ...uva.sat!, value: { p25: 1410, p50: 1530, p75: 1520 } } };
+  assert.ok(validateCollege(badMedian, ids).some((e) => e.includes('SAT range')));
+  const r = uva.residencyOffers!;
+  const badResidency = {
+    ...uva,
+    residencyOffers: { ...r, value: { ...r.value, virginia: { applied: 100, admitted: 200 } } },
+  };
+  assert.ok(validateCollege(badResidency, ids).some((e) => e.includes('Residency')));
 });
 
 test('a weighted 5.0 GPA is a valid entry', () => {

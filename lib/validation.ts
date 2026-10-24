@@ -1,4 +1,4 @@
-import type { College } from '../types/college.ts';
+import type { College, ScoreRange } from '../types/college.ts';
 import type { StudentProfile } from '../types/student.ts';
 
 // Returns a list of problems with what the student entered. An empty list
@@ -13,14 +13,11 @@ export function validateProfile(p: StudentProfile): string[] {
     if (!weighted && scale !== 4) errors.push('Unweighted GPAs should be on a 4.0 scale.');
   }
 
-  if (p.test) {
-    const { type, score } = p.test;
-    if (type === 'SAT' && !(Number.isInteger(score) && score >= 400 && score <= 1600 && score % 10 === 0)) {
-      errors.push('SAT total must be between 400 and 1600, in steps of 10.');
-    }
-    if (type === 'ACT' && !(Number.isInteger(score) && score >= 1 && score <= 36)) {
-      errors.push('ACT composite must be a whole number from 1 to 36.');
-    }
+  if (p.sat !== null && !(Number.isInteger(p.sat) && p.sat >= 400 && p.sat <= 1600 && p.sat % 10 === 0)) {
+    errors.push('SAT total must be between 400 and 1600, in steps of 10.');
+  }
+  if (p.act !== null && !(Number.isInteger(p.act) && p.act >= 1 && p.act <= 36)) {
+    errors.push('ACT composite must be a whole number from 1 to 36.');
   }
 
   if (p.classRankTopPercent !== null && !(p.classRankTopPercent > 0 && p.classRankTopPercent <= 100)) {
@@ -46,7 +43,7 @@ export function validateCollege(c: College, sourceIds: string[]): string[] {
   const isPercent = (n: number) => n >= 0 && n <= 100;
 
   const stats = [
-    c.applicants, c.admitted, c.enrolled, c.offerRate, c.sat, c.act,
+    c.applicants, c.admitted, c.enrolled, c.offerRate, c.residencyOffers, c.sat, c.act,
     c.satSubmitShare, c.actSubmitShare, c.gpaAverage, c.gpaBands, c.classRank,
   ];
   for (const stat of stats) {
@@ -68,11 +65,20 @@ export function validateCollege(c: College, sourceIds: string[]): string[] {
   }
   if (c.offerRate && !isPercent(c.offerRate.value)) errors.push('Offer rate must be a percentage.');
 
-  if (c.sat && !(c.sat.value.p25 >= 400 && c.sat.value.p25 <= c.sat.value.p75 && c.sat.value.p75 <= 1600)) {
-    errors.push('SAT range is invalid.');
-  }
-  if (c.act && !(c.act.value.p25 >= 1 && c.act.value.p25 <= c.act.value.p75 && c.act.value.p75 <= 36)) {
-    errors.push('ACT range is invalid.');
+  if (c.sat && !validRange(c.sat.value, 400, 1600)) errors.push('SAT range is invalid.');
+  if (c.act && !validRange(c.act.value, 1, 36)) errors.push('ACT range is invalid.');
+
+  if (c.residencyOffers) {
+    const { virginia, outOfState } = c.residencyOffers.value;
+    for (const g of [virginia, outOfState]) {
+      if (!(g.applied > 0 && g.admitted >= 0 && g.admitted <= g.applied)) errors.push('Residency counts are invalid.');
+    }
+    if (c.applicants && virginia.applied + outOfState.applied > c.applicants.value) {
+      errors.push('Residency applicants add up to more than all applicants.');
+    }
+    if (c.admitted && virginia.admitted + outOfState.admitted > c.admitted.value) {
+      errors.push('Residency offers add up to more than all offers.');
+    }
   }
   for (const share of [c.satSubmitShare, c.actSubmitShare]) {
     if (share && !isPercent(share.value)) errors.push('Test submission share must be a percentage.');
@@ -103,4 +109,11 @@ export function validateCollege(c: College, sourceIds: string[]): string[] {
   }
 
   return errors;
+}
+
+// A middle-50% range inside the test's score scale, with the median (if any)
+// between the 25th and 75th percentiles.
+function validRange(r: ScoreRange, min: number, max: number): boolean {
+  const mid = r.p50 ?? r.p25;
+  return r.p25 >= min && r.p25 <= mid && mid <= r.p75 && r.p75 <= max;
 }

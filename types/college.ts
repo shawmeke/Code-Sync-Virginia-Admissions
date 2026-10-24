@@ -29,7 +29,8 @@ export type Stat<T> = {
 };
 
 // A middle-50% range: 25% of the cohort scored below p25 and 25% above p75.
-export type ScoreRange = { p25: number; p75: number };
+// p50 is the median, when the college publishes one.
+export type ScoreRange = { p25: number; p50?: number; p75: number };
 
 // One row of a Common Data Set GPA table (section C11): the share of
 // enrolled first-years whose high school GPA fell between min and max.
@@ -47,6 +48,11 @@ export type ClassRankProfile = {
   // Share of enrolled students who reported a class rank at all.
   reportedShare: number | null;
 };
+
+// Applicants and offers by where the applicant lived (Common Data Set C1).
+// International and unknown-residence applicants are left out.
+export type ResidencyCounts = { applied: number; admitted: number };
+export type ResidencyOffers = { virginia: ResidencyCounts; outOfState: ResidencyCounts };
 
 export type TestPolicy = 'required' | 'optional' | 'blind' | 'unknown';
 
@@ -74,6 +80,7 @@ export type College = {
   // Stored separately because it can come from a different year than the
   // applicant and admit counts.
   offerRate: Stat<number> | null;
+  residencyOffers: Stat<ResidencyOffers> | null;
 
   sat: Stat<ScoreRange> | null;
   act: Stat<ScoreRange> | null;

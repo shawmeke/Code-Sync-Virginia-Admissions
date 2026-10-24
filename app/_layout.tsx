@@ -1,5 +1,6 @@
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 
+import { ProfileProvider } from '@/components/ProfileContext';
 import { useColorScheme } from '@/components/useColorScheme';
 import { themes } from '@/constants/theme';
 
@@ -20,6 +21,7 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={{ ...base, colors: { ...base.colors, background: theme.background, primary: theme.primary } }}>
+      <ProfileProvider>
       <Stack
         screenOptions={{
           headerStyle: { backgroundColor: theme.header },
@@ -29,6 +31,7 @@ export default function RootLayout() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="college/[id]" options={{ title: '' }} />
       </Stack>
+      </ProfileProvider>
     </ThemeProvider>
   );
 }

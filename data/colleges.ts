@@ -65,8 +65,16 @@ export const colleges: College[] = [
       derived: true,
       note: 'Offers divided by applications.',
     },
-    sat: { value: { p25: 1410, p75: 1520 }, sourceId: 'uva-cds-2024-25', cohort: 'Fall 2024 enrolled first-years who submitted SAT' },
-    act: { value: { p25: 32, p75: 35 }, sourceId: 'uva-cds-2024-25', cohort: 'Fall 2024 enrolled first-years who submitted ACT' },
+    residencyOffers: {
+      value: {
+        virginia: { applied: 16464, admitted: 4269 },
+        outOfState: { applied: 35526, admitted: 4912 },
+      },
+      sourceId: 'uva-cds-2024-25',
+      cohort: 'Fall 2024',
+    },
+    sat: { value: { p25: 1410, p50: 1470, p75: 1520 }, sourceId: 'uva-cds-2024-25', cohort: 'Fall 2024 enrolled first-years who submitted SAT' },
+    act: { value: { p25: 32, p50: 33, p75: 35 }, sourceId: 'uva-cds-2024-25', cohort: 'Fall 2024 enrolled first-years who submitted ACT' },
     satSubmitShare: { value: 45.6, sourceId: 'uva-cds-2024-25', cohort: 'Fall 2024 enrolled first-years' },
     actSubmitShare: { value: 13.8, sourceId: 'uva-cds-2024-25', cohort: 'Fall 2024 enrolled first-years' },
     // UVA leaves the average GPA blank, but 90.5% of students in the 4.0
@@ -95,7 +103,6 @@ export const colleges: College[] = [
     programNotes: [],
     notes: [
       'UVA uses holistic review and says it has no GPA or test score cutoffs.',
-      'UVA admitted 26% of Virginia applicants and 14% of out-of-state applicants for Fall 2024 (Common Data Set C1).',
     ],
   },
   {
@@ -115,14 +122,22 @@ export const colleges: College[] = [
       derived: true,
       note: 'Offers divided by applications.',
     },
+    residencyOffers: {
+      value: {
+        virginia: { applied: 20900, admitted: 9893 },
+        outOfState: { applied: 31104, admitted: 18311 },
+      },
+      sourceId: 'vt-cds-2025-26',
+      cohort: 'Fall 2025',
+    },
     sat: {
-      value: { p25: 1280, p75: 1450 },
+      value: { p25: 1280, p50: 1370, p75: 1450 },
       sourceId: 'vt-cds-2025-26',
       cohort: 'Fall 2025 enrolled first-years who submitted SAT',
       derived: true,
-      note: "Virginia Tech doesn't publish a total SAT range, so this adds its Reading/Writing (640–720) and Math (640–730) ranges and is approximate.",
+      note: "Virginia Tech doesn't publish a total SAT range, so this adds its Reading/Writing (640/680/720) and Math (640/690/730) percentiles and is approximate.",
     },
-    act: { value: { p25: 28, p75: 32 }, sourceId: 'vt-cds-2025-26', cohort: 'Fall 2025 enrolled first-years who submitted ACT' },
+    act: { value: { p25: 28, p50: 30, p75: 32 }, sourceId: 'vt-cds-2025-26', cohort: 'Fall 2025 enrolled first-years who submitted ACT' },
     satSubmitShare: { value: 42, sourceId: 'vt-cds-2025-26', cohort: 'Fall 2025 enrolled first-years' },
     actSubmitShare: { value: 8, sourceId: 'vt-cds-2025-26', cohort: 'Fall 2025 enrolled first-years' },
     // The CDS asks for a 4.0 scale, but an average above 4.0 means these
@@ -151,9 +166,7 @@ export const colleges: College[] = [
         note: 'Some published Virginia Tech figures describe admitted Engineering students only. Because they don\'t represent the whole university, the app doesn\'t compare you against them.',
       },
     ],
-    notes: [
-      'Virginia Tech admitted 47% of Virginia applicants and 59% of out-of-state applicants for Fall 2025 (Common Data Set C1).',
-    ],
+    notes: [],
   },
   {
     id: 'odu',
@@ -172,8 +185,16 @@ export const colleges: College[] = [
       derived: true,
       note: 'Offers divided by applications.',
     },
-    sat: { value: { p25: 1120, p75: 1270 }, sourceId: 'odu-cds-2025-26', cohort: 'Fall 2025 enrolled first-years who submitted SAT' },
-    act: { value: { p25: 22, p75: 27 }, sourceId: 'odu-cds-2025-26', cohort: 'Fall 2025 enrolled first-years who submitted ACT' },
+    residencyOffers: {
+      value: {
+        virginia: { applied: 11577, admitted: 10701 },
+        outOfState: { applied: 3236, admitted: 2820 },
+      },
+      sourceId: 'odu-cds-2025-26',
+      cohort: 'Fall 2025',
+    },
+    sat: { value: { p25: 1120, p50: 1190, p75: 1270 }, sourceId: 'odu-cds-2025-26', cohort: 'Fall 2025 enrolled first-years who submitted SAT' },
+    act: { value: { p25: 22, p50: 25, p75: 27 }, sourceId: 'odu-cds-2025-26', cohort: 'Fall 2025 enrolled first-years who submitted ACT' },
     satSubmitShare: { value: 7, sourceId: 'odu-cds-2025-26', cohort: 'Fall 2025 enrolled first-years' },
     actSubmitShare: { value: 1, sourceId: 'odu-cds-2025-26', cohort: 'Fall 2025 enrolled first-years' },
     gpaScale: 'unknown',
@@ -218,8 +239,10 @@ export const colleges: College[] = [
       derived: true,
       note: 'Offers divided by applications.',
     },
-    sat: { value: { p25: 1390, p75: 1520 }, sourceId: 'wm-cds-2025-26', cohort: 'Fall 2025 enrolled first-years who submitted SAT' },
-    act: { value: { p25: 32, p75: 34 }, sourceId: 'wm-cds-2025-26', cohort: 'Fall 2025 enrolled first-years who submitted ACT' },
+    // W&M leaves the residency breakdown in C1 blank.
+    residencyOffers: null,
+    sat: { value: { p25: 1390, p50: 1450, p75: 1520 }, sourceId: 'wm-cds-2025-26', cohort: 'Fall 2025 enrolled first-years who submitted SAT' },
+    act: { value: { p25: 32, p50: 33, p75: 34 }, sourceId: 'wm-cds-2025-26', cohort: 'Fall 2025 enrolled first-years who submitted ACT' },
     satSubmitShare: { value: 48, sourceId: 'wm-cds-2025-26', cohort: 'Fall 2025 enrolled first-years' },
     actSubmitShare: { value: 14, sourceId: 'wm-cds-2025-26', cohort: 'Fall 2025 enrolled first-years' },
     // The CDS asks for a 4.0 scale, but an average of 4.34 means these must
@@ -264,8 +287,16 @@ export const colleges: College[] = [
       derived: true,
       note: 'Offers divided by applications.',
     },
-    sat: { value: { p25: 1180, p75: 1330 }, sourceId: 'jmu-cds-2025-26', cohort: 'Fall 2025 enrolled first-years who submitted SAT' },
-    act: { value: { p25: 24, p75: 29 }, sourceId: 'jmu-cds-2025-26', cohort: 'Fall 2025 enrolled first-years who submitted ACT' },
+    residencyOffers: {
+      value: {
+        virginia: { applied: 20933, admitted: 13429 },
+        outOfState: { applied: 21513, admitted: 15740 },
+      },
+      sourceId: 'jmu-cds-2025-26',
+      cohort: 'Fall 2025',
+    },
+    sat: { value: { p25: 1180, p50: 1260, p75: 1330 }, sourceId: 'jmu-cds-2025-26', cohort: 'Fall 2025 enrolled first-years who submitted SAT' },
+    act: { value: { p25: 24, p50: 27, p75: 29 }, sourceId: 'jmu-cds-2025-26', cohort: 'Fall 2025 enrolled first-years who submitted ACT' },
     satSubmitShare: { value: 16, sourceId: 'jmu-cds-2025-26', cohort: 'Fall 2025 enrolled first-years' },
     actSubmitShare: { value: 3, sourceId: 'jmu-cds-2025-26', cohort: 'Fall 2025 enrolled first-years' },
     // JMU reports its GPA figures (C11–C12) as "NA".
@@ -279,7 +310,6 @@ export const colleges: College[] = [
     notes: [
       "JMU doesn't publish GPA figures in its Common Data Set.",
       "JMU's published class rank figures don't add up, so the app doesn't compare class rank.",
-      'JMU admitted 64% of Virginia applicants and 73% of out-of-state applicants for Fall 2025 (Common Data Set C1).',
     ],
   },
 ];
@@ -295,7 +325,7 @@ export function getSource(id: string): Source | undefined {
 // The sources a college's figures come from, in the order first used.
 export function sourcesForCollege(c: College): Source[] {
   const stats = [
-    c.applicants, c.admitted, c.enrolled, c.offerRate, c.sat, c.act,
+    c.applicants, c.admitted, c.enrolled, c.offerRate, c.residencyOffers, c.sat, c.act,
     c.satSubmitShare, c.actSubmitShare, c.gpaAverage, c.gpaBands, c.classRank,
   ];
   const ids = [...new Set(stats.flatMap((s) => (s ? [s.sourceId] : [])))];

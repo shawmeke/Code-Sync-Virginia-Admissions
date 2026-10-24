@@ -18,3 +18,24 @@ export const TEST_POLICY_LABELS: Record<TestPolicy, string> = {
   blind: 'Test-blind',
   unknown: 'Test policy not recorded',
 };
+
+// "about the 42nd percentile". The very ends are shown as a range, because
+// nothing published says where the top or bottom of a class lies.
+export function formatPercentile(n: number): string {
+  if (n < 5) return 'below the 5th percentile';
+  if (n > 95) return 'above the 95th percentile';
+  return `about the ${ordinal(Math.round(n))} percentile`;
+}
+
+// The same estimate, short enough for a row header: "~42nd percentile".
+export function formatPercentileShort(n: number): string {
+  if (n < 5) return 'Below 5th percentile';
+  if (n > 95) return 'Above 95th percentile';
+  return `~${ordinal(Math.round(n))} percentile`;
+}
+
+function ordinal(n: number): string {
+  const tens = n % 100;
+  if (tens >= 11 && tens <= 13) return `${n}th`;
+  return `${n}${({ 1: 'st', 2: 'nd', 3: 'rd' } as Record<number, string>)[n % 10] ?? 'th'}`;
+}
