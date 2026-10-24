@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BrandMark } from '@/components/BrandMark';
 import { Icon, type IconName } from '@/components/Icon';
+import { PromptCard } from '@/components/PromptCard';
 import { useProfile } from '@/components/ProfileContext';
 import { SchoolBadge } from '@/components/SchoolBadge';
 import { fonts, radius, rules, spacing, type, useTheme } from '@/constants/theme';
@@ -48,27 +49,17 @@ export default function HomeScreen() {
         <BrandMark size={44} color={theme.gold} trackColor={theme.rule2} ink={theme.accent} />
       </View>
 
-      <Link href={ready ? '/search' : '/profile'} asChild>
-        <Pressable accessibilityRole="link" style={styles.featurePress}>
-          {({ pressed }) => (
-            <View style={[styles.feature, { backgroundColor: theme.hero, opacity: pressed ? 0.92 : 1 }]}>
-              <View style={styles.featureText}>
-                <Text style={[styles.featureTitle, { color: theme.heroInk }]}>
-                  {ready ? 'Your Academic Match is ready' : 'Find your best fit'}
-                </Text>
-                <Text style={[styles.featureBody, { color: theme.heroMuted }]}>
-                  {ready
-                    ? 'See how your numbers compare at each Virginia school, sorted by match.'
-                    : 'Add your GPA, test scores or class rank to see how you compare at Virginia colleges.'}
-                </Text>
-              </View>
-              <View style={[styles.featureArrow, { backgroundColor: theme.goldFill }]}>
-                <Icon name="chevron" color={theme.goldInk} size={16} />
-              </View>
-            </View>
-          )}
-        </Pressable>
-      </Link>
+      <View style={styles.featurePress}>
+        <PromptCard
+          href={ready ? '/search' : '/profile'}
+          title={ready ? 'Your Academic Match is ready' : 'Find your best fit'}
+          body={
+            ready
+              ? 'See how your numbers compare at each Virginia school, sorted by match.'
+              : 'Add your GPA, test scores or class rank to see how you compare at Virginia colleges.'
+          }
+        />
+      </View>
 
       <Text style={[styles.sectionTitle, { color: theme.ink }]}>Quick actions</Text>
       <View style={styles.actions}>
@@ -140,11 +131,6 @@ const styles = StyleSheet.create({
   hello: { fontFamily: fonts.display, fontSize: type.xxl, letterSpacing: -0.5 },
   sub: { fontFamily: fonts.body, fontSize: type.sm, marginTop: 2 },
   featurePress: { marginBottom: spacing.xl },
-  feature: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, borderRadius: radius.card, padding: spacing.lg },
-  featureText: { flex: 1 },
-  featureTitle: { fontFamily: fonts.display, fontSize: type.lg },
-  featureBody: { fontFamily: fonts.body, fontSize: type.sm, lineHeight: type.sm * 1.45, marginTop: 4 },
-  featureArrow: { width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center' },
   sectionTitle: { fontFamily: fonts.display, fontSize: type.lg, marginBottom: spacing.md },
   actions: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: spacing.xl },
   action: { width: '23%', alignItems: 'center' },

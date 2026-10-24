@@ -89,12 +89,12 @@ npm test            # run the tests
 
 ## Photo credits
 
-Campus photographs from Wikimedia Commons:
+Campus photographs from Wikimedia Commons, each resized and recompressed for the app:
 
-- University of Virginia: [The Rotunda and Lawn University of Virginia Charlottesville VA March 2011](https://commons.wikimedia.org/wiki/File:The_Rotunda_and_Lawn_University_of_Virginia_Charlottesville_VA_March_2011.jpg) by Phil Roeder, [CC BY 2.0](https://creativecommons.org/licenses/by/2.0)
-- Virginia Tech: [Virginia Tech Burruss Hall from Drillfield](https://commons.wikimedia.org/wiki/File:Virginia_Tech_Burruss_Hall_from_Drillfield.JPG) by Eric T Gunther, [CC BY 3.0](https://creativecommons.org/licenses/by/3.0)
-- William & Mary: [The Wren Building (3501325643)](https://commons.wikimedia.org/wiki/File:The_Wren_Building_(3501325643).jpg) by benuski from Richmond, VA, USA, [CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0)
-- James Madison University: [Wilson Hall closeup](https://commons.wikimedia.org/wiki/File:Wilson_Hall_closeup.JPG) by Rtcpenguin, [CC BY-SA 2.5](https://creativecommons.org/licenses/by-sa/2.5)
-- Old Dominion University: [Kaufman Mall and the Webb University Center (cropped)](https://commons.wikimedia.org/wiki/File:Kaufman_Mall_and_the_Webb_University_Center_(cropped).JPG) by Cmett003, [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0)
+- University of Virginia: [The Rotunda and Lawn University of Virginia Charlottesville VA March 2011](https://commons.wikimedia.org/wiki/File:The_Rotunda_and_Lawn_University_of_Virginia_Charlottesville_VA_March_2011.jpg) by Phil Roeder, [CC BY 2.0](https://creativecommons.org/licenses/by/2.0), resized
+- Virginia Tech: [Virginia Tech Burruss Hall from Drillfield](https://commons.wikimedia.org/wiki/File:Virginia_Tech_Burruss_Hall_from_Drillfield.JPG) by Eric T Gunther, [CC BY 3.0](https://creativecommons.org/licenses/by/3.0), resized
+- William & Mary: [The Wren Building (3501325643)](https://commons.wikimedia.org/wiki/File:The_Wren_Building_(3501325643).jpg) by benuski from Richmond, VA, USA, [CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0), resized
+- James Madison University: [Wilson Hall closeup](https://commons.wikimedia.org/wiki/File:Wilson_Hall_closeup.JPG) by Rtcpenguin, [CC BY-SA 2.5](https://creativecommons.org/licenses/by-sa/2.5), resized
+- Old Dominion University: [Kaufman Mall and the Webb University Center (cropped)](https://commons.wikimedia.org/wiki/File:Kaufman_Mall_and_the_Webb_University_Center_(cropped).JPG) by Cmett003, [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0), resized
 
 School badges are initials in each school's colors, not official logos.

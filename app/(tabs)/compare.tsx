@@ -7,13 +7,10 @@ import { SchoolBadge } from '@/components/SchoolBadge';
 import { fonts, rules, spacing, type, useTheme } from '@/constants/theme';
 import { colleges, getCollege } from '@/data/colleges';
 import { alignWithCollege } from '@/lib/admissions';
-import { formatCount, formatPercent, formatRange, TEST_POLICY_LABELS } from '@/lib/format';
+import { formatCount, formatEarlyPlan, formatPercent, formatRange, TEST_POLICY_LABELS } from '@/lib/format';
 import type { College } from '@/types/college';
 
 type Row = { label: string; value: (c: College) => string };
-
-const planText = (p: { offered: boolean; deadline: string | null } | null | undefined) =>
-  !p ? 'Not available' : !p.offered ? 'Not offered' : (p.deadline ?? 'Offered');
 
 const ROWS: Row[] = [
   { label: 'Offer rate', value: (c) => (c.offerRate ? formatPercent(c.offerRate.value) : 'Not available') },
@@ -28,8 +25,8 @@ const ROWS: Row[] = [
   { label: 'Testing', value: (c) => TEST_POLICY_LABELS[c.testPolicy] },
   { label: 'Application fee', value: (c) => (c.applying?.value.fee != null ? `$${c.applying.value.fee}` : 'Not available') },
   { label: 'Regular deadline', value: (c) => c.applying?.value.regularDeadline ?? 'Not available' },
-  { label: 'Early decision', value: (c) => planText(c.applying?.value.earlyDecision) },
-  { label: 'Early action', value: (c) => planText(c.applying?.value.earlyAction) },
+  { label: 'Early decision', value: (c) => formatEarlyPlan(c.applying?.value.earlyDecision) },
+  { label: 'Early action', value: (c) => formatEarlyPlan(c.applying?.value.earlyAction) },
   { label: 'Figures for', value: (c) => c.cycle },
 ];
 

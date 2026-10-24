@@ -82,7 +82,7 @@ export default function WelcomeScreen() {
           decided.
         </Text>
         <Text style={[styles.credit, { color: theme.heroMuted }]}>
-          Photo: {PHOTO.artist}, {PHOTO.license}, via Wikimedia Commons
+          Photo: {PHOTO.artist}, {PHOTO.license}, resized, via Wikimedia Commons
         </Text>
       </ScrollView>
     </ImageBackground>

@@ -24,15 +24,6 @@ export function validateProfile(p: StudentProfile): string[] {
     errors.push('Class rank must be a percentage above 0 and at most 100.');
   }
 
-  if (p.rigor) {
-    const { advancedTaken, advancedAvailable } = p.rigor;
-    if (!Number.isInteger(advancedTaken) || !Number.isInteger(advancedAvailable) || advancedTaken < 0 || advancedAvailable < 0) {
-      errors.push('Course counts must be whole numbers of 0 or more.');
-    } else if (advancedTaken > advancedAvailable) {
-      errors.push('Advanced courses taken cannot be more than the number your school offers.');
-    }
-  }
-
   return errors;
 }
 

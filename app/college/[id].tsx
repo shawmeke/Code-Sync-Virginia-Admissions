@@ -1,4 +1,4 @@
-import { Link, router, Stack, useLocalSearchParams } from 'expo-router';
+import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { Image, Platform, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
@@ -8,6 +8,7 @@ import { Button } from '@/components/Controls';
 import { ExternalLink } from '@/components/ExternalLink';
 import { GpaBands } from '@/components/GpaBands';
 import { Icon, type IconName } from '@/components/Icon';
+import { PromptCard } from '@/components/PromptCard';
 import { useProfile } from '@/components/ProfileContext';
 import { SchoolBadge } from '@/components/SchoolBadge';
 import { Section } from '@/components/Section';
@@ -17,7 +18,7 @@ import { fonts, radius, rules, spacing, type, useTheme } from '@/constants/theme
 import { getCollege, sourcesForCollege } from '@/data/colleges';
 import { campusPhotos } from '@/data/photos';
 import { alignWithCollege, describeAlignment, type MetricResult } from '@/lib/admissions';
-import { formatCount, formatPercent, formatRange, TEST_POLICY_LABELS } from '@/lib/format';
+import { formatCount, formatEarlyPlan, formatPercent, formatRange, TEST_POLICY_LABELS } from '@/lib/format';
 import type { ApplyingFacts, ClassRankProfile, GpaScale, Importance, Stat } from '@/types/college';
 
 const GPA_SCALE_NOTES: Record<GpaScale, string> = {
@@ -121,7 +122,7 @@ export default function CollegeScreen() {
         </Text>
         {photo && (
           <Text style={[styles.credit, { color: theme.muted }]}>
-            Photo: {photo.artist}, {photo.license}, via Wikimedia Commons
+            Photo: {photo.artist}, {photo.license}, resized, via Wikimedia Commons
           </Text>
         )}
       </View>
@@ -140,23 +141,13 @@ export default function CollegeScreen() {
           )}
         </View>
       ) : (
-        <Link href="/profile" asChild>
-          <Pressable accessibilityRole="link" style={styles.promptPress}>
-            {({ pressed }) => (
-              <View style={[styles.prompt, { backgroundColor: theme.hero, opacity: pressed ? 0.9 : 1 }]}>
-                <View style={styles.promptText}>
-                  <Text style={[styles.promptTitle, { color: theme.heroInk }]}>See how you compare</Text>
-                  <Text style={[styles.promptBody, { color: theme.heroMuted }]}>
-                    Add your profile to see where your numbers fall among {college.name}'s students.
-                  </Text>
-                </View>
-                <View style={[styles.promptArrow, { backgroundColor: theme.goldFill }]}>
-                  <Icon name="chevron" color={theme.goldInk} size={16} />
-                </View>
-              </View>
-            )}
-          </Pressable>
-        </Link>
+        <View style={styles.promptPress}>
+          <PromptCard
+            href="/profile"
+            title="See how you compare"
+            body={`Add your profile to see where your numbers fall among ${college.name}'s students.`}
+          />
+        </View>
       )}
 
       <View style={[styles.tabs, { borderBottomColor: theme.rule }]} accessibilityRole="tablist">
@@ -286,7 +277,7 @@ export default function CollegeScreen() {
             <Section title="Photo">
               <View style={styles.block}>
                 <Text style={[styles.body, { color: theme.ink2 }]}>
-                  {photo.title}, by {photo.artist}. Licensed {photo.license}.
+                  {photo.title}, by {photo.artist}. Licensed {photo.license}. Resized for the app.
                 </Text>
                 <ExternalLink href={photo.page} style={[styles.link, { color: theme.accent }]}>
                   View on Wikimedia Commons
@@ -332,9 +323,6 @@ const IMPORTANCE_LABELS: Record<Importance, string> = {
   'not considered': 'Not considered',
 };
 
-const plan = (p: { offered: boolean; deadline: string | null } | null) =>
-  p === null ? 'Not available' : !p.offered ? 'Not offered' : (p.deadline ?? 'Offered');
-
 // Practical facts from the Common Data Set: what it costs to apply, the
 // dates, and how much each part of an application counts.
 function BeforeYouApply({ applying, collegeName }: { applying: Stat<ApplyingFacts>; collegeName: string }) {
@@ -346,8 +334,8 @@ function BeforeYouApply({ applying, collegeName }: { applying: Stat<ApplyingFact
     { icon: 'dollar', label: 'Application fee', value: fee },
     { icon: 'envelope', label: 'Regular deadline', value: a.regularDeadline ?? 'Not available' },
     ...(a.priorityDate ? [{ icon: 'envelope' as const, label: 'Priority date', value: a.priorityDate }] : []),
-    { icon: 'graduation', label: 'Early decision (binding)', value: plan(a.earlyDecision) },
-    { icon: 'graduation', label: 'Early action', value: plan(a.earlyAction) },
+    { icon: 'graduation', label: 'Early decision (binding)', value: formatEarlyPlan(a.earlyDecision) },
+    { icon: 'graduation', label: 'Early action', value: formatEarlyPlan(a.earlyAction) },
   ];
   return (
     <>
@@ -418,11 +406,6 @@ const styles = StyleSheet.create({
   meta: { fontFamily: fonts.body, fontSize: type.sm, lineHeight: type.sm * 1.45, marginTop: spacing.xs },
   matchCard: { marginBottom: spacing.lg, padding: spacing.lg },
   promptPress: { marginHorizontal: spacing.lg, marginBottom: spacing.lg },
-  prompt: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, borderRadius: radius.card, padding: spacing.lg },
-  promptText: { flex: 1 },
-  promptTitle: { fontFamily: fonts.display, fontSize: type.lg },
-  promptBody: { fontFamily: fonts.body, fontSize: type.sm, lineHeight: type.sm * 1.45, marginTop: 4 },
-  promptArrow: { width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center' },
   tabs: { flexDirection: 'row', marginHorizontal: spacing.lg, marginBottom: spacing.lg, borderBottomWidth: rules.hair },
   tab: { paddingVertical: spacing.md, marginRight: spacing.xl, borderBottomWidth: 2, borderBottomColor: 'transparent', marginBottom: -1 },
   tabText: { fontFamily: fonts.control, fontSize: type.md },

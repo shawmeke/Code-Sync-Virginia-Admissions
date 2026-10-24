@@ -1,6 +1,6 @@
 import type { College, ProgramNote, ResidencyCounts, ScoreRange, Stat } from '../types/college.ts';
 import type { StudentProfile } from '../types/student.ts';
-import { formatCount, formatPercentile, formatPercentileShort } from './format.ts';
+import { formatCount, formatPercentile, formatPercentileShort, formatTopPercent } from './format.ts';
 
 // Compares a student's academic profile with a college's published figures,
 // one measure at a time. This is deliberately NOT an admission probability.
@@ -12,7 +12,7 @@ import { formatCount, formatPercentile, formatPercentileShort } from './format.t
 // The Academic Match score averages those percentiles. It describes how the
 // student's numbers compare with past enrolled students, nothing more.
 
-export type MetricKey = 'sat' | 'act' | 'gpa' | 'classRank' | 'rigor';
+export type MetricKey = 'sat' | 'act' | 'gpa' | 'classRank';
 
 // The measures Academic Match is built from. SAT and ACT count as one "test"
 // measure so a student who sends both isn't counted twice.
@@ -86,12 +86,6 @@ export type CollegeAlignment = {
   contextNotes: string[];
 };
 
-export const POSITION_LABELS: Record<Position, string> = {
-  below: 'Below the middle 50%',
-  within: 'Within the middle 50%',
-  above: 'Above the middle 50%',
-};
-
 // Placing a student is like finding where they'd fall in a line of the
 // cohort: if more than 75% of the cohort is ahead, they're below the middle
 // half; if more than 75% is behind, they're above it.
@@ -102,7 +96,7 @@ export function alignWithCollege(profile: StudentProfile, college: College): Col
   const act = compareTest(profile, college, 'ACT');
   const gpa = compareGpa(profile, college);
   const classRank = compareClassRank(profile, college);
-  const metrics = [sat, act, gpa, classRank, describeRigor(profile)];
+  const metrics = [sat, act, gpa, classRank];
 
   const measures: [MatchMeasure, MetricResult][] = [
     ['test', strongerTest(sat, act)],
@@ -145,10 +139,6 @@ function strongerTest(sat: MetricResult, act: MetricResult): MetricResult {
   if (sat.percentile === null) return act;
   if (act.percentile === null) return sat;
   return act.percentile > sat.percentile ? act : sat;
-}
-
-export function alignWithColleges(profile: StudentProfile, colleges: College[]): CollegeAlignment[] {
-  return colleges.map((c) => alignWithCollege(profile, c));
 }
 
 // A one-line, non-predictive description of an alignment for list views.
@@ -428,7 +418,7 @@ function compareClassRank(profile: StudentProfile, college: College): MetricResu
       ...base,
       status: 'college-missing',
       position: null,
-      summary: `${college.name}'s published class rank figures don't cover the top ${top}%.`,
+      summary: `${college.name}'s published class rank figures don't cover the top ${formatTopPercent(top)}%.`,
       caveats: [],
       stat: rank,
     };
@@ -448,7 +438,7 @@ function compareClassRank(profile: StudentProfile, college: College): MetricResu
     percentile = Math.round(clampPercentile(100 - yours.share + (yours.share - ahead.share) * through));
   }
 
-  const sentences = [`You're in the top ${top}% of your class${percentile === null ? '' : `, ${atPercentile(percentile)} of these students`}.`];
+  const sentences = [`You're in the top ${formatTopPercent(top)}% of your class${percentile === null ? '' : `, ${atPercentile(percentile)} of these students`}.`];
   if (ahead && ahead.limit > 0) {
     sentences.push(`${ahead.exact ? '' : 'At least '}${ahead.share}% of ${rank.cohort} were in the top ${ahead.limit}%.`);
   }
@@ -472,37 +462,6 @@ function compareClassRank(profile: StudentProfile, college: College): MetricResu
     summary: sentences.join(' '),
     caveats,
     stat: rank,
-  };
-}
-
-// Colleges don't publish a numeric benchmark for course rigor, so it is shown
-// as context and never turned into a score.
-function describeRigor(profile: StudentProfile): MetricResult {
-  const base = {
-    metric: 'rigor' as const,
-    label: 'Course rigor',
-    position: null,
-    percentile: null,
-    percentileLabel: null,
-    caveats: [],
-    stat: null,
-  };
-  if (!profile.rigor) {
-    return { ...base, status: 'student-missing', summary: "You haven't entered your advanced courses." };
-  }
-  const { advancedTaken, advancedAvailable } = profile.rigor;
-  if (advancedAvailable === 0) {
-    return {
-      ...base,
-      status: 'context-only',
-      summary: "Your school doesn't offer advanced courses. Colleges consider rigor in the context of what your school offers.",
-    };
-  }
-  const percent = Math.round((advancedTaken / advancedAvailable) * 100);
-  return {
-    ...base,
-    status: 'context-only',
-    summary: `You've taken ${advancedTaken} of the ${advancedAvailable} advanced courses your school offers (${percent}%). Colleges don't publish a number to compare this with, so it's shown for context only.`,
   };
 }
 

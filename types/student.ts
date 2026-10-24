@@ -16,7 +16,6 @@ export type StudentProfile = {
   act: number | null;
   // E.g. 8 means "top 8% of my class". Null if the school doesn't rank.
   classRankTopPercent: number | null;
-  rigor: { advancedTaken: number; advancedAvailable: number } | null;
   intendedMajor: string | null;
   residency: 'virginia' | 'out-of-state' | null;
 };

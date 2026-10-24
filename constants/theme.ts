@@ -36,7 +36,6 @@ const light = {
   focus: '#1e5537',
   warning: '#8a3b12',
   warningSurface: '#f8e9dd',
-  shadow: '#13241a',
 };
 
 const dark: typeof light = {
@@ -65,7 +64,6 @@ const dark: typeof light = {
   focus: '#e2b84a',
   warning: '#f0a46b',
   warningSurface: '#33200f',
-  shadow: '#000000',
 };
 
 export type Theme = typeof light;
@@ -101,10 +99,10 @@ export const fonts = {
   monoMedium: 'SourceSans3_700Bold',
 };
 
-export const type = { xs: 13, sm: 14, md: 16, lg: 18, xl: 21, xxl: 26, display: 30 };
+export const type = { xs: 13, sm: 14, md: 16, lg: 18, xl: 21, xxl: 26 };
 
 export const spacing = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24 };
 // One tight soft-square corner for controls, cards and chips. Circles are kept
 // for the things a screen points at: badges, rings and icon dots.
-export const radius = { none: 0, control: 6, card: 6, pill: 6 };
+export const radius = { control: 6, card: 6, pill: 6 };
 export const rules = { hair: 1, bar: 2 };

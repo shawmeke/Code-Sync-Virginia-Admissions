@@ -1,9 +1,10 @@
-import { Link, router, useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { CollegeCard } from '@/components/CollegeCard';
 import { Icon } from '@/components/Icon';
+import { PromptCard } from '@/components/PromptCard';
 import { Segmented } from '@/components/Controls';
 import { useProfile } from '@/components/ProfileContext';
 import { fonts, radius, rules, spacing, type, useTheme } from '@/constants/theme';
@@ -72,23 +73,13 @@ export default function CollegesScreen() {
             show the middle 50% of students.
           </Text>
           {!ready && (
-            <Link href="/profile" asChild>
-              <Pressable accessibilityRole="link" style={styles.promptPress}>
-                {({ pressed }) => (
-                  <View style={[styles.prompt, { backgroundColor: theme.hero, opacity: pressed ? 0.9 : 1 }]}>
-                    <View style={styles.promptText}>
-                      <Text style={[styles.promptTitle, { color: theme.heroInk }]}>See how you compare</Text>
-                      <Text style={[styles.promptBody, { color: theme.heroMuted }]}>
-                        Add your GPA, test scores or class rank to get an Academic Match for each college.
-                      </Text>
-                    </View>
-                    <View style={[styles.promptArrow, { backgroundColor: theme.goldFill }]}>
-                      <Icon name="chevron" color={theme.goldInk} size={16} />
-                    </View>
-                  </View>
-                )}
-              </Pressable>
-            </Link>
+            <View style={styles.promptPress}>
+              <PromptCard
+                href="/profile"
+                title="See how you compare"
+                body="Add your GPA, test scores or class rank to get an Academic Match for each college."
+              />
+            </View>
           )}
           <View style={[styles.searchWrap, { backgroundColor: theme.sheet, borderColor: theme.rule2 }]}>
           <Icon name="search" color={theme.muted} size={18} />
@@ -141,11 +132,6 @@ const styles = StyleSheet.create({
   content: { padding: spacing.lg, paddingBottom: spacing.xl * 2, maxWidth: 720, width: '100%', alignSelf: 'center' },
   intro: { fontFamily: fonts.body, fontSize: type.sm, lineHeight: type.sm * 1.5, marginBottom: spacing.lg },
   promptPress: { marginBottom: spacing.lg },
-  prompt: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, borderRadius: radius.card, padding: spacing.lg },
-  promptText: { flex: 1 },
-  promptTitle: { fontFamily: fonts.display, fontSize: type.lg },
-  promptBody: { fontFamily: fonts.body, fontSize: type.sm, lineHeight: type.sm * 1.45, marginTop: 4 },
-  promptArrow: { width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center' },
   searchWrap: {
     flexDirection: 'row',
     alignItems: 'center',

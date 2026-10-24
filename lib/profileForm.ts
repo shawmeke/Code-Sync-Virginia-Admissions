@@ -91,7 +91,6 @@ export function parseProfileForm(form: ProfileForm): ParsedProfile {
     sat: number(form.sat, 'SAT', 'sat'),
     act: number(form.act, 'ACT', 'act'),
     classRankTopPercent,
-    rigor: null,
     intendedMajor: form.major.trim() || null,
     residency: form.residency,
   };
@@ -105,7 +104,6 @@ export function parseProfileForm(form: ProfileForm): ParsedProfile {
   check('gpa', { gpa: profile.gpa });
   check('sat', { sat: profile.sat });
   check('act', { act: profile.act });
-  check('classRank', { classRankTopPercent: profile.classRankTopPercent });
 
   const errors = FIELD_ORDER.flatMap((f) => (fieldErrors[f] ? [fieldErrors[f]] : []));
   const blocking = FIELD_ORDER.some((f) => fieldErrors[f]);
@@ -119,7 +117,6 @@ const blankProfile: StudentProfile = {
   sat: null,
   act: null,
   classRankTopPercent: null,
-  rigor: null,
   intendedMajor: null,
   residency: null,
 };

@@ -30,7 +30,6 @@ test('typed numbers become a profile, with both tests kept', () => {
   assert.equal(profile.sat, 1450);
   assert.equal(profile.act, 33);
   assert.equal(profile.classRankTopPercent, 8);
-  assert.equal(profile.rigor, null);
   assert.equal(profile.residency, 'virginia');
   assert.equal(profile.intendedMajor, 'Biology');
 });

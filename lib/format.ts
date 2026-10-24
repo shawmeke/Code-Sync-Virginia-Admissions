@@ -39,3 +39,17 @@ function ordinal(n: number): string {
   if (tens >= 11 && tens <= 13) return `${n}th`;
   return `${n}${({ 1: 'st', 2: 'nd', 3: 'rd' } as Record<number, string>)[n % 10] ?? 'th'}`;
 }
+
+// "0.2", "3.4", "12.5": one decimal, or two under 1% so the top of a large
+// class doesn't round to zero.
+export function formatTopPercent(p: number): string {
+  return String(Number(p.toFixed(p < 1 ? 2 : 1)));
+}
+
+// An early decision or early action plan as one value: its deadline,
+// "Not offered", or "Not available" when the document doesn't say.
+export function formatEarlyPlan(plan: { offered: boolean; deadline: string | null } | null | undefined): string {
+  if (!plan) return 'Not available';
+  if (!plan.offered) return 'Not offered';
+  return plan.deadline ?? 'Offered';
+}

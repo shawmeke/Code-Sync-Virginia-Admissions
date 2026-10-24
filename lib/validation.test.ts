@@ -11,7 +11,6 @@ const blank: StudentProfile = {
   sat: null,
   act: null,
   classRankTopPercent: null,
-  rigor: null,
   intendedMajor: null,
   residency: null,
 };
@@ -57,7 +56,6 @@ test('profile checks reject impossible values', () => {
   assert.equal(validateProfile({ ...blank, sat: 1605 }).length, 1);
   assert.equal(validateProfile({ ...blank, act: 37 }).length, 1);
   assert.equal(validateProfile({ ...blank, classRankTopPercent: 0 }).length, 1);
-  assert.equal(validateProfile({ ...blank, rigor: { advancedTaken: 5, advancedAvailable: 3 } }).length, 1);
 });
 
 test('a student can enter both an SAT and an ACT score', () => {

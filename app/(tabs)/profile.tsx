@@ -7,6 +7,7 @@ import { useProfile } from '@/components/ProfileContext';
 import { ScoreRing } from '@/components/ScoreRing';
 import { Section } from '@/components/Section';
 import { fonts, radius, rules, spacing, type, useTheme } from '@/constants/theme';
+import { formatTopPercent } from '@/lib/format';
 
 export default function ProfileScreen() {
   const theme = useTheme();
@@ -200,12 +201,6 @@ export default function ProfileScreen() {
       </View>
     </View>
   );
-}
-
-// "0.2", "12.5", "33.3": one decimal, or two when under 1% so the top of a
-// large class doesn't round to zero.
-function formatTopPercent(p: number): string {
-  return String(Number(p.toFixed(p < 1 ? 2 : 1)));
 }
 
 type FieldProps = {

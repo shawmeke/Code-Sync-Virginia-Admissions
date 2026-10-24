@@ -18,7 +18,6 @@ const blank: StudentProfile = {
   sat: null,
   act: null,
   classRankTopPercent: null,
-  rigor: null,
   intendedMajor: null,
   residency: null,
 };
@@ -170,15 +169,6 @@ test('class rank is used even when only the top-tenth share is published', () =>
   assert.ok(outside.caveats.some((c) => c.includes('Only 30%')));
 });
 
-test('course rigor is context only and never earns a position', () => {
-  const a = alignWithCollege({ ...blank, rigor: { advancedTaken: 8, advancedAvailable: 8 } }, uva);
-  const m = a.metrics.find((x) => x.metric === 'rigor')!;
-  assert.equal(m.status, 'context-only');
-  assert.equal(m.position, null);
-  assert.equal(a.comparedCount, 0);
-  assert.match(describeAlignment(a), /Not enough published data/);
-});
-
 test('an engineering major sees the Virginia Tech engineering note', () => {
   const a = alignWithCollege({ ...blank, intendedMajor: 'Mechanical Engineering' }, vt);
   assert.equal(a.programNotes.length, 1);
@@ -201,7 +191,6 @@ test('no output uses chance, odds or probability language', () => {
     sat: 1500,
     act: 34,
     classRankTopPercent: 3,
-    rigor: { advancedTaken: 6, advancedAvailable: 10 },
     intendedMajor: 'Computer Engineering',
     residency: 'virginia',
   };
@@ -345,4 +334,9 @@ test('extreme percentiles read naturally ("above the 95th", not "at above the 95
   const rank = metric({ ...blank, classRankTopPercent: 0.2 }, uva, 'classRank');
   assert.match(rank.summary, /, above the 95th percentile of these students/);
   assert.doesNotMatch(rank.summary, /at (above|below) the/);
+});
+
+test('the class rank sentence rounds the top percent', () => {
+  const m = metric({ ...blank, classRankTopPercent: (12 * 100) / 350 }, uva, 'classRank');
+  assert.match(m.summary, /You're in the top 3\.4% of your class/);
 });
