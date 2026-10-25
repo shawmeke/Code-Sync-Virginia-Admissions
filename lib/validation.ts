@@ -1,3 +1,4 @@
+import { FIELDS } from './majors.ts';
 import type { College, ScoreRange } from '../types/college.ts';
 import type { StudentProfile } from '../types/student.ts';
 
@@ -35,7 +36,7 @@ export function validateCollege(c: College, sourceIds: string[]): string[] {
 
   const stats = [
     c.applicants, c.admitted, c.enrolled, c.offerRate, c.residencyOffers, c.sat, c.act,
-    c.satSubmitShare, c.actSubmitShare, c.gpaAverage, c.gpaBands, c.classRank, c.applying,
+    c.satSubmitShare, c.actSubmitShare, c.gpaAverage, c.gpaBands, c.classRank, c.degreeFields, c.applying,
   ];
   for (const stat of stats) {
     if (stat && !sourceIds.includes(stat.sourceId)) errors.push(`Unknown source "${stat.sourceId}".`);
@@ -106,6 +107,17 @@ export function validateCollege(c: College, sourceIds: string[]): string[] {
       if (known[i] < known[i - 1]) errors.push('Class rank shares must not decrease from top tenth to top half.');
     }
     if (reportedShare !== null && !isPercent(reportedShare)) errors.push('Rank reporting share must be a percentage.');
+  }
+
+  if (c.degreeFields) {
+    const fields = Object.entries(c.degreeFields.value);
+    for (const [code, share] of fields) {
+      if (!FIELDS[code]) errors.push(`Unknown field of study "${code}".`);
+      if (!isPercent(share)) errors.push('Degree field shares must be percentages.');
+    }
+    const total = fields.reduce((sum, [, share]) => sum + share, 0);
+    // Colleges round each share, and some to whole percents, so allow a little slack.
+    if (Math.abs(total - 100) > 1.5) errors.push(`Degree fields add up to ${total}%, not 100%.`);
   }
 
   return errors;

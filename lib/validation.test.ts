@@ -40,6 +40,15 @@ test('data checks catch a reversed SAT range and a mismatched offer rate', () =>
   assert.ok(errors.some((e) => e.includes('Offer rate')));
 });
 
+test('data checks catch degree fields that do not add up to 100% or use an unknown code', () => {
+  const vt = colleges.find((c) => c.id === 'vt')!;
+  const { '52': _business, ...rest } = vt.degreeFields!.value;
+  const missing = { ...vt, degreeFields: { ...vt.degreeFields!, value: rest } };
+  assert.ok(validateCollege(missing, sources.map((s) => s.id)).some((e) => e.includes('Degree fields add up')));
+  const typo = { ...vt, degreeFields: { ...vt.degreeFields!, value: { ...vt.degreeFields!.value, '99': 0 } } };
+  assert.ok(validateCollege(typo, sources.map((s) => s.id)).some((e) => e.includes('Unknown field')));
+});
+
 test('data checks catch GPA bands that do not add up to 100%', () => {
   const odu = colleges.find((c) => c.id === 'odu')!;
   const broken = { ...odu, gpaBands: { ...odu.gpaBands!, value: odu.gpaBands!.value.slice(1) } };

@@ -123,6 +123,22 @@ export const sources: Source[] = [
     academicYear: '2025–26',
     needsVerification: false,
   },
+  {
+    id: 'richmond-cds-2025-26-j',
+    title: 'University of Richmond Common Data Set 2025–26, section J',
+    publisher: 'University of Richmond',
+    url: 'https://ifx.richmond.edu/pdfs/CDS2025-2026SectionJ.pdf',
+    academicYear: '2025–26',
+    needsVerification: false,
+  },
+  {
+    id: 'regent-cds-2024-25-j',
+    title: 'Regent University Common Data Set 2024–25, section J',
+    publisher: 'Regent University',
+    url: 'https://cdn.regent.edu/wp-content/uploads/2025/08/2024_2025_CDS_J_Regent_University.pdf',
+    academicYear: '2024–25',
+    needsVerification: false,
+  },
 ];
 
 export const colleges: College[] = [
@@ -179,6 +195,11 @@ export const colleges: College[] = [
       value: { topTenth: 84, topQuarter: 97, topHalf: 99, reportedShare: 34 },
       sourceId: 'uva-cds-2024-25',
       cohort: 'Fall 2024 first-years who reported a class rank',
+    },
+    degreeFields: {
+      value: { '03': 1.6, '04': 2.7, '05': 0.3, '09': 2.7, '11': 7.7, '13': 0.8, '14': 10.1, '16': 1.4, '19': 1, '23': 2.3, '24': 16.2, '26': 6, '27': 3.3, '30': 1.5, '31': 2, '38': 0.7, '40': 3.9, '42': 4.1, '44': 2.3, '45': 12.7, '50': 1.1, '51': 4, '52': 8.9, '54': 2.7 },
+      sourceId: 'uva-cds-2024-25',
+      cohort: "Bachelor's degrees awarded July 2023 to June 2024",
     },
     applying: {
       value: {
@@ -253,6 +274,11 @@ export const colleges: College[] = [
     },
     // Virginia Tech leaves the class rank table (C10) blank.
     classRank: null,
+    degreeFields: {
+      value: { '01': 3.71, '03': 2.72, '04': 1.86, '09': 3.81, '11': 6.85, '13': 0.57, '14': 19.81, '15': 0.43, '16': 0.77, '19': 5.45, '23': 0.96, '26': 7.44, '27': 1.38, '30': 1.8, '38': 0.7, '40': 2.52, '42': 2.56, '44': 0.56, '45': 7.97, '50': 2.09, '51': 1.52, '52': 24.13, '54': 0.38 },
+      sourceId: 'vt-cds-2025-26',
+      cohort: "Bachelor's degrees awarded July 2024 to June 2025",
+    },
     applying: {
       value: {
         fee: 60,
@@ -326,6 +352,12 @@ export const colleges: College[] = [
       sourceId: 'odu-cds-2025-26',
       cohort: 'Fall 2025 enrolled first-years who reported a class rank',
     },
+    degreeFields: {
+      value: { '05': 0, '11': 12, '13': 6, '14': 6, '15': 4, '16': 0, '23': 5, '26': 5, '27': 0, '30': 6, '31': 4, '38': 0, '40': 1, '42': 8, '45': 8, '50': 3, '51': 15, '52': 15, '54': 1 },
+      sourceId: 'odu-cds-2025-26',
+      cohort: "Bachelor's degrees awarded July 2024 to June 2025",
+      note: "ODU rounds to whole percents, so a field it lists as 0% had under half a percent of degrees.",
+    },
     applying: {
       value: {
         fee: 50,
@@ -387,6 +419,8 @@ export const colleges: College[] = [
       sourceId: 'wm-cds-2025-26',
       cohort: 'Fall 2025 first-years who reported a class rank',
     },
+    // W&M leaves its degrees-by-field table (J1) blank.
+    degreeFields: null,
     applying: {
       value: {
         fee: 75,
@@ -439,6 +473,11 @@ export const colleges: College[] = [
     // JMU's class rank table (C10) doesn't add up: top quarter and top half
     // are both 34.6%, and top half plus bottom half is 43.7%, not 100%.
     classRank: null,
+    degreeFields: {
+      value: { '09': 9.69, '11': 6.61, '13': 4.25, '14': 1.6, '16': 0.27, '19': 0.53, '22': 1.11, '23': 1.56, '24': 3.55, '26': 4.43, '27': 0.57, '30': 2.55, '31': 7.19, '38': 0.18, '40': 1.58, '42': 6.47, '44': 1.87, '45': 6.96, '50': 5.11, '51': 17.53, '52': 15.11, '54': 1.27 },
+      sourceId: 'jmu-cds-2025-26',
+      cohort: "Bachelor's degrees awarded July 2024 to June 2025",
+    },
     applying: {
       value: {
         fee: 70,
@@ -509,6 +548,11 @@ export const colleges: College[] = [
       sourceId: 'gmu-cds-2025-26',
       cohort: 'Fall 2025 enrolled first-years who reported a class rank',
     },
+    degreeFields: {
+      value: { '03': 0.9, '05': 0.05, '09': 1.9, '10': 1.27, '11': 14.71, '13': 1.6, '14': 5.52, '16': 0.47, '19': 0.19, '23': 1.5, '24': 6.14, '26': 5.27, '27': 0.76, '30': 2.56, '31': 1.71, '38': 0.24, '40': 0.79, '42': 6.24, '43': 7.98, '44': 1.45, '45': 7.43, '50': 4.45, '51': 7.31, '52': 18.43, '54': 1.13 },
+      sourceId: 'gmu-cds-2025-26',
+      cohort: "Bachelor's degrees awarded July 2024 to June 2025",
+    },
     applying: {
       value: {
         fee: 70,
@@ -575,6 +619,11 @@ export const colleges: College[] = [
       value: { topTenth: 17, topQuarter: 40, topHalf: 75, reportedShare: 16 },
       sourceId: 'vcu-cds-2024-25',
       cohort: 'Fall 2024 enrolled first-years who reported a class rank',
+    },
+    degreeFields: {
+      value: { '03': 1.16, '05': 1.2, '09': 3.8, '11': 5.67, '13': 7.39, '14': 4.57, '16': 0.24, '23': 1.87, '26': 8.1, '27': 0.77, '30': 4.7, '38': 0.54, '40': 2.1, '42': 11.12, '43': 5.35, '44': 1.76, '45': 5.18, '50': 14.04, '51': 6.98, '52': 12.15, '54': 1.31 },
+      sourceId: 'vcu-cds-2024-25',
+      cohort: "Bachelor's degrees awarded July 2023 to June 2024",
     },
     applying: {
       value: {
@@ -647,6 +696,12 @@ export const colleges: College[] = [
       sourceId: 'radford-cds-2025-26',
       cohort: 'Fall 2025 enrolled first-years who reported a class rank',
     },
+    degreeFields: {
+      value: { '09': 2.2, '11': 3.6, '13': 1.8, '16': 0.2, '19': 0.2, '23': 0.9, '26': 3.7, '27': 0.3, '30': 7.4, '31': 3.6, '38': 0.1, '40': 1.9, '42': 6.9, '43': 6, '44': 2, '45': 5.3, '50': 6.3, '51': 30.5, '52': 15.5, '54': 1.5 },
+      sourceId: 'radford-cds-2025-26',
+      cohort: "Bachelor's degrees awarded July 2024 to June 2025",
+      note: "Bachelor's degrees only; Radford also reports certificates separately.",
+    },
     applying: {
       value: {
         fee: 0,
@@ -717,6 +772,12 @@ export const colleges: College[] = [
       sourceId: 'richmond-cds-2025-26',
       cohort: 'Fall 2025 enrolled first-years who reported a class rank',
     },
+    degreeFields: {
+      value: { '03': 1.01, '05': 2.68, '09': 1.38, '11': 3.97, '13': 0.55, '16': 2.58, '22': 0.18, '23': 4.43, '24': 0.74, '26': 8.3, '27': 2.4, '30': 9.13, '38': 0.46, '40': 1.75, '42': 4.98, '45': 10.33, '50': 3.41, '51': 4.98, '52': 34.59, '54': 2.12 },
+      sourceId: 'richmond-cds-2025-26-j',
+      cohort: "Bachelor's degrees awarded July 2024 to June 2025",
+      note: "Bachelor's degrees only; Richmond also reports certificates separately.",
+    },
     applying: {
       value: {
         fee: 50,
@@ -770,6 +831,11 @@ export const colleges: College[] = [
       value: { topTenth: 85.26, topQuarter: 98.72, topHalf: 100, reportedShare: 31.26 },
       sourceId: 'wlu-cds-2025-26',
       cohort: 'Fall 2025 enrolled first-years who reported a class rank',
+    },
+    degreeFields: {
+      value: { '03': 2.39, '05': 0.64, '09': 3.03, '11': 4.47, '14': 4.15, '16': 6.38, '23': 2.87, '26': 9.25, '27': 2.87, '38': 2.71, '40': 3.99, '42': 5.9, '45': 18.18, '50': 3.67, '52': 25.68, '54': 3.83 },
+      sourceId: 'wlu-cds-2025-26',
+      cohort: "Bachelor's degrees awarded July 2024 to June 2025",
     },
     applying: {
       value: {
@@ -838,6 +904,12 @@ export const colleges: College[] = [
       value: { topTenth: 6.44, topQuarter: 28.41, topHalf: 65.91, reportedShare: 56.53 },
       sourceId: 'vmi-cds-2024-25',
       cohort: 'Fall 2024 enrolled first-years who reported a class rank',
+    },
+    degreeFields: {
+      value: { '11': 6.45, '14': 21.09, '16': 3.97, '23': 5.96, '26': 7.44, '27': 4.47, '40': 3.72, '42': 10.67, '45': 25.06, '54': 11.17 },
+      sourceId: 'vmi-cds-2024-25',
+      cohort: "Bachelor's degrees awarded July 2023 to June 2024",
+      note: "VMI counts its Economics and Business major under Social sciences.",
     },
     applying: {
       value: {
@@ -909,6 +981,12 @@ export const colleges: College[] = [
       sourceId: 'regent-cds-2024-25',
       cohort: 'Fall 2024 enrolled first-years who reported a class rank',
     },
+    degreeFields: {
+      value: { '09': 9.3, '10': 3.4, '11': 4.2, '13': 4.4, '14': 0.5, '22': 3.6, '23': 3.5, '27': 0.4, '30': 1.4, '39': 11, '42': 17.3, '43': 7, '44': 3.6, '45': 1.5, '50': 2.5, '51': 2.8, '52': 21, '54': 2.6 },
+      sourceId: 'regent-cds-2024-25-j',
+      cohort: "Bachelor's degrees awarded July 2023 to June 2024",
+      note: "Bachelor's degrees only; Regent also reports certificates and associate degrees separately.",
+    },
     applying: {
       value: {
         fee: 50,
@@ -978,6 +1056,11 @@ export const colleges: College[] = [
       sourceId: 'umw-cds-2025-26',
       cohort: 'Fall 2025 enrolled first-years who reported a class rank',
     },
+    degreeFields: {
+      value: { '09': 5, '11': 9, '13': 4, '16': 2, '23': 5, '24': 6, '26': 8, '27': 1, '30': 4, '38': 2, '40': 5, '42': 8, '45': 11, '50': 7, '51': 5, '52': 16, '54': 2 },
+      sourceId: 'umw-cds-2025-26',
+      cohort: "Bachelor's degrees awarded July 2024 to June 2025",
+    },
     applying: {
       value: {
         fee: 50,
@@ -1046,6 +1129,11 @@ export const colleges: College[] = [
       value: { topTenth: 10.42, topQuarter: 25.41, topHalf: 42.6, reportedShare: 61.1 },
       sourceId: 'shenandoah-cds-2024-25',
       cohort: 'Fall 2024 enrolled first-years who reported a class rank',
+    },
+    degreeFields: {
+      value: { '03': 0.58, '09': 1.54, '11': 2.5, '13': 5.37, '16': 0.38, '23': 0.96, '24': 0.38, '26': 15.74, '27': 0.58, '30': 0.19, '31': 2.69, '39': 0.19, '40': 1.15, '42': 5.57, '43': 3.65, '45': 0.57, '50': 18.61, '51': 25.91, '52': 11.9, '54': 1.54 },
+      sourceId: 'shenandoah-cds-2024-25',
+      cohort: "Bachelor's degrees awarded July 2023 to June 2024",
     },
     applying: {
       value: {
@@ -1117,6 +1205,11 @@ export const colleges: College[] = [
       value: { topTenth: 10, topQuarter: 23, topHalf: 56, reportedShare: 17 },
       sourceId: 'vsu-cds-2025-26',
       cohort: 'Fall 2025 enrolled first-years who reported a class rank',
+    },
+    degreeFields: {
+      value: { '01': 3.99, '09': 7.55, '11': 3.85, '13': 9.69, '14': 1.85, '15': 5.41, '19': 2.71, '23': 0.71, '24': 0.43, '26': 5.41, '27': 0.29, '30': 5.84, '40': 0.86, '42': 9.12, '43': 9.97, '44': 4.13, '45': 4.13, '50': 3.85, '51': 0.71, '52': 18.52, '54': 1 },
+      sourceId: 'vsu-cds-2025-26',
+      cohort: "Bachelor's degrees awarded July 2024 to June 2025",
     },
     applying: {
       value: {

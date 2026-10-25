@@ -9,46 +9,7 @@ import { ScoreRing } from '@/components/ScoreRing';
 import { Section } from '@/components/Section';
 import { fonts, radius, rules, shadow, spacing, type, useTheme } from '@/constants/theme';
 import { formatTopPercent } from '@/lib/format';
-
-// The fields of study the Common Data Set uses to count each college's
-// degrees (section J1), minus trade programs four-year colleges rarely offer,
-// plus "Undecided". "Engineering" also matches program notes keyed on that
-// word (see matchProgramNotes).
-const MAJORS = [
-  'Agriculture',
-  'Architecture',
-  'Area, ethnic and gender studies',
-  'Biology and life sciences',
-  'Business and marketing',
-  'Communication and journalism',
-  'Communication technologies',
-  'Computer and information sciences',
-  'Education',
-  'Engineering',
-  'Engineering technologies',
-  'English',
-  'Family and consumer sciences',
-  'Foreign languages and linguistics',
-  'Health professions and nursing',
-  'History',
-  'Homeland security, law enforcement and firefighting',
-  'Interdisciplinary studies',
-  'Law and legal studies',
-  'Liberal arts and general studies',
-  'Mathematics and statistics',
-  'Military science',
-  'Natural resources and conservation',
-  'Parks and recreation',
-  'Philosophy and religious studies',
-  'Physical sciences',
-  'Psychology',
-  'Public administration and social services',
-  'Science technologies',
-  'Social sciences',
-  'Theology',
-  'Undecided',
-  'Visual and performing arts',
-].sort((a, b) => a.localeCompare(b));
+import { MAJORS } from '@/lib/majors';
 
 export default function ProfileScreen() {
   const theme = useTheme();

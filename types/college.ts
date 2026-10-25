@@ -120,6 +120,11 @@ export type College = {
 
   classRank: Stat<ClassRankProfile> | null;
 
+  // Percent of bachelor's degrees in each field of study (Common Data Set J1),
+  // keyed by CIP 2020 code (names in lib/majors.ts). A missing code means the
+  // college left that field blank: no degrees. Null when J1 is blank.
+  degreeFields: Stat<Record<string, number>> | null;
+
   applying: Stat<ApplyingFacts> | null;
 
   programNotes: ProgramNote[];
