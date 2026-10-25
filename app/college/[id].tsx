@@ -5,6 +5,7 @@ import { Image, Platform, Pressable, ScrollView, StyleSheet, Text, useWindowDime
 import { AlignmentDots } from '@/components/AlignmentDots';
 import { MatchScore, MetricRow } from '@/components/Comparison';
 import { Button } from '@/components/Controls';
+import { DegreeFields } from '@/components/DegreeFields';
 import { ExternalLink } from '@/components/ExternalLink';
 import { GpaBands } from '@/components/GpaBands';
 import { Icon, type IconName } from '@/components/Icon';
@@ -193,6 +194,7 @@ export default function CollegeScreen() {
             <StatRow label="ACT middle 50%" stat={college.act} format={formatRange} icon="pencil" last />
           </Section>
         ))}
+      {tab === 'overview' && <DegreeFields college={college} major={profile.intendedMajor} />}
 
       {tab === 'admissions' && (
         <>

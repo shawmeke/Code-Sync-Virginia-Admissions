@@ -8,6 +8,7 @@ import { fonts, radius, rules, schoolBadges, shadow, spacing, type, useTheme } f
 import { colleges, getCollege } from '@/data/colleges';
 import { alignWithCollege } from '@/lib/admissions';
 import { formatCount, formatEarlyPlan, formatPercent, formatRange, TEST_POLICY_LABELS } from '@/lib/format';
+import { formatShare, majorShare, topFields } from '@/lib/majors';
 import type { College } from '@/types/college';
 
 type Row = { label: string; value: (c: College) => string };
@@ -21,6 +22,13 @@ const ROWS: Row[] = [
   {
     label: 'In top 10% of class',
     value: (c) => (c.classRank?.value.topTenth != null ? formatPercent(c.classRank.value.topTenth) : 'Not available'),
+  },
+  {
+    label: 'Most common field',
+    value: (c) => {
+      const [top] = topFields(c, 1);
+      return top ? `${top.label}, ${formatShare(top.percent)}` : 'Not available';
+    },
   },
   { label: 'Testing', value: (c) => TEST_POLICY_LABELS[c.testPolicy] },
   { label: 'Application fee', value: (c) => (c.applying?.value.fee == null ? 'Not available' : c.applying.value.fee === 0 ? 'No fee' : `$${c.applying.value.fee}`) },
@@ -72,6 +80,20 @@ export default function CompareScreen() {
             schools={[a.name, b.name]}
             values={[a, b].map((c) => (match(c) === null ? 'Not enough data' : String(match(c))))}
             highlight
+          />
+        )}
+        {majorShare(a, profile.intendedMajor) && (
+          <CompareRow
+            label={`Degrees in ${profile.intendedMajor}`}
+            schools={[a.name, b.name]}
+            values={[a, b].map((c) => {
+              const share = majorShare(c, profile.intendedMajor)!;
+              return share.status === 'reported'
+                ? formatShare(share.percent)
+                : share.status === 'none'
+                  ? 'None reported'
+                  : 'Not available';
+            })}
           />
         )}
         {ROWS.map((r, i) => (
