@@ -89,6 +89,9 @@ export const schoolBadges: Record<string, { initials: string; fill: string; rim:
   wlu: { initials: 'W&L', fill: '#00285e', rim: '#a7a8aa' },
   vmi: { initials: 'VMI', fill: '#ae122a', rim: '#ffd619' },
   regent: { initials: 'REG', fill: '#002856', rim: '#c5a467' },
+  umw: { initials: 'UMW', fill: '#002855', rim: '#a2aaad' },
+  shenandoah: { initials: 'SU', fill: '#b31b34', rim: '#002d72' },
+  vsu: { initials: 'VSU', fill: '#003087', rim: '#f37021' },
 };
 export const badgeInk = '#ffffff';
 

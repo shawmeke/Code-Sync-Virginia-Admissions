@@ -26,5 +26,5 @@ test('"public" and "private" filter by control', () => {
 
 test('search matches name or city, ignoring case and outer spaces', () => {
   assert.deepEqual(ids(filterColleges(colleges, { query: '  NORFOLK ', filter: 'all', saved: [] })), ['odu']);
-  assert.deepEqual(ids(filterColleges(colleges, { query: 'mary', filter: 'all', saved: [] })), ['wm']);
+  assert.deepEqual(ids(filterColleges(colleges, { query: 'mary', filter: 'all', saved: [] })), ['umw', 'wm']);
 });
