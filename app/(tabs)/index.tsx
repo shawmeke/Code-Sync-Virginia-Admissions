@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
   sectionTitle: { fontFamily: fonts.display, fontSize: type.lg, marginBottom: spacing.md },
   actions: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: spacing.xl },
   action: { width: '23%', alignItems: 'center' },
-  actionIcon: { width: 56, height: 56, borderRadius: 28, alignItems: 'center', justifyContent: 'center' },
+  actionIcon: { width: 56, height: 56, borderRadius: 28, alignItems: 'center', justifyContent: 'center', boxShadow: shadow.soft },
   actionLabel: { fontFamily: fonts.bodyMedium, fontSize: 12, textAlign: 'center', marginTop: spacing.sm },
   listHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.xs },
   listTitle: { marginBottom: 0 },

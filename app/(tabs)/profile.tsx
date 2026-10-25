@@ -2,28 +2,53 @@ import { router } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View, type KeyboardTypeOptions } from 'react-native';
 
 import { Button, Segmented } from '@/components/Controls';
+import { Dropdown } from '@/components/Dropdown';
 import { Icon, type IconName } from '@/components/Icon';
 import { useProfile } from '@/components/ProfileContext';
 import { ScoreRing } from '@/components/ScoreRing';
 import { Section } from '@/components/Section';
-import { fonts, radius, rules, spacing, type, useTheme } from '@/constants/theme';
+import { fonts, radius, rules, shadow, spacing, type, useTheme } from '@/constants/theme';
 import { formatTopPercent } from '@/lib/format';
 
-// Broad fields, so a student picks instead of typing. "Engineering" also
-// matches program notes keyed on that word (see matchProgramNotes).
+// The fields of study the Common Data Set uses to count each college's
+// degrees (section J1), minus trade programs four-year colleges rarely offer,
+// plus "Undecided". "Engineering" also matches program notes keyed on that
+// word (see matchProgramNotes).
 const MAJORS = [
-  'Engineering',
-  'Computer science',
-  'Business',
-  'Biology',
-  'Health & nursing',
-  'Math & physical sciences',
-  'Social sciences',
-  'Humanities',
-  'Arts',
+  'Agriculture',
+  'Architecture',
+  'Area, ethnic and gender studies',
+  'Biology and life sciences',
+  'Business and marketing',
+  'Communication and journalism',
+  'Communication technologies',
+  'Computer and information sciences',
   'Education',
+  'Engineering',
+  'Engineering technologies',
+  'English',
+  'Family and consumer sciences',
+  'Foreign languages and linguistics',
+  'Health professions and nursing',
+  'History',
+  'Homeland security, law enforcement and firefighting',
+  'Interdisciplinary studies',
+  'Law and legal studies',
+  'Liberal arts and general studies',
+  'Mathematics and statistics',
+  'Military science',
+  'Natural resources and conservation',
+  'Parks and recreation',
+  'Philosophy and religious studies',
+  'Physical sciences',
+  'Psychology',
+  'Public administration and social services',
+  'Science technologies',
+  'Social sciences',
+  'Theology',
   'Undecided',
-];
+  'Visual and performing arts',
+].sort((a, b) => a.localeCompare(b));
 
 export default function ProfileScreen() {
   const theme = useTheme();
@@ -176,11 +201,12 @@ export default function ProfileScreen() {
             onSelect={(k) => updateForm({ residency: form.residency === k ? null : (k as 'virginia' | 'out-of-state') })}
           />
           <Help>Virginia's public universities admit in-state and out-of-state students at different rates.</Help>
-          <Choices
+          <Dropdown
             label="Intended major"
-            options={MAJORS.map((m) => ({ key: m, label: m }))}
+            placeholder="Choose a major"
+            options={MAJORS}
             selected={form.major || null}
-            onSelect={(k) => updateForm({ major: form.major === k ? '' : k })}
+            onSelect={(major) => updateForm({ major: major ?? '' })}
           />
         </Section>
 
@@ -299,6 +325,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.card,
     padding: spacing.lg,
     marginBottom: spacing.lg,
+    boxShadow: shadow.card,
   },
   heroCount: { fontFamily: fonts.display, fontSize: type.lg, fontVariant: ['tabular-nums'] },
   heroText: { flex: 1 },
@@ -322,11 +349,12 @@ const styles = StyleSheet.create({
     fontSize: type.md,
     textAlign: 'right',
     fontVariant: ['tabular-nums'],
+    boxShadow: shadow.soft,
   },
   inputWide: { width: '100%', textAlign: 'left', fontFamily: fonts.body, marginTop: spacing.sm },
   error: { fontFamily: fonts.bodyMedium, fontSize: type.xs, lineHeight: type.xs * 1.4, marginTop: spacing.sm },
   help: { fontFamily: fonts.body, fontSize: type.sm, lineHeight: type.sm * 1.45, paddingVertical: spacing.md },
   clear: { alignItems: 'center', paddingVertical: spacing.lg },
   clearText: { fontFamily: fonts.control, fontSize: type.md, textDecorationLine: 'underline' },
-  footer: { paddingHorizontal: spacing.lg, paddingVertical: spacing.md, borderTopWidth: rules.hair },
+  footer: { paddingHorizontal: spacing.lg, paddingVertical: spacing.md, borderTopWidth: rules.hair, boxShadow: shadow.bar },
 });

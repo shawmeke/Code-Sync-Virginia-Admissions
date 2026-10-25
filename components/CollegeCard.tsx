@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
   name: { fontFamily: fonts.display, fontSize: type.lg + 2, lineHeight: (type.lg + 2) * 1.2 },
   metaRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 3 },
   meta: { fontFamily: fonts.body, fontSize: type.xs, flexShrink: 1 },
-  matchPill: { borderRadius: radius.control, paddingHorizontal: 10, paddingVertical: 4, alignItems: 'center', minWidth: 52 },
+  matchPill: { borderRadius: radius.control, paddingHorizontal: 10, paddingVertical: 4, alignItems: 'center', minWidth: 52, boxShadow: shadow.soft },
   matchNumber: { fontFamily: fonts.monoMedium, fontSize: type.xl, fontVariant: ['tabular-nums'], lineHeight: type.xl * 1.1 },
   matchLabel: { fontFamily: fonts.control, fontSize: 11 },
   figures: { marginTop: spacing.md, lineHeight: type.sm * 1.5 },

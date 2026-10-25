@@ -2,7 +2,7 @@ import { Tabs } from 'expo-router';
 
 import { Icon } from '@/components/Icon';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
-import { fonts, rules, useTheme } from '@/constants/theme';
+import { fonts, rules, shadow, useTheme } from '@/constants/theme';
 
 export default function TabLayout() {
   const theme = useTheme();
@@ -12,7 +12,7 @@ export default function TabLayout() {
       screenOptions={{
         tabBarActiveTintColor: theme.accent,
         tabBarInactiveTintColor: theme.muted,
-        tabBarStyle: { backgroundColor: theme.sheet, borderTopColor: theme.rule, borderTopWidth: rules.hair },
+        tabBarStyle: { backgroundColor: theme.sheet, borderTopColor: theme.rule, borderTopWidth: rules.hair, boxShadow: shadow.bar },
         tabBarLabelStyle: { fontFamily: fonts.bodyMedium, fontSize: 11 },
         headerStyle: { backgroundColor: theme.paper },
         headerTintColor: theme.ink,

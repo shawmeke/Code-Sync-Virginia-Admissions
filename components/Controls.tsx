@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { fonts, radius, rules, spacing, type, useTheme } from '@/constants/theme';
+import { fonts, radius, rules, shadow, spacing, type, useTheme } from '@/constants/theme';
 
 type ButtonProps = {
   label: string;
@@ -81,9 +81,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     alignItems: 'center',
     justifyContent: 'center',
+    boxShadow: shadow.soft,
   },
   buttonText: { fontFamily: fonts.control, fontSize: type.md },
   pills: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
-  pill: { minHeight: 44, borderWidth: rules.hair, borderRadius: radius.pill, paddingHorizontal: 16, justifyContent: 'center' },
+  pill: { minHeight: 44, borderWidth: rules.hair, borderRadius: radius.pill, paddingHorizontal: 16, justifyContent: 'center', boxShadow: shadow.soft },
   pillText: { fontFamily: fonts.control, fontSize: type.sm },
 });

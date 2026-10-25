@@ -121,4 +121,10 @@ export const rules = { hair: 1, bar: 2 };
 export const shadow = {
   card: '0px 1px 2px rgba(19, 36, 26, 0.06), 0px 6px 16px rgba(19, 36, 26, 0.08)',
   photo: '0px 0px 0px 1px rgba(19, 36, 26, 0.16), 0px 2px 4px rgba(19, 36, 26, 0.16)',
+  // Small controls: buttons, pills, inputs, icon circles.
+  soft: '0px 1px 3px rgba(19, 36, 26, 0.10)',
+  // Bars pinned to the bottom of the screen cast upward.
+  bar: '0px -2px 10px rgba(19, 36, 26, 0.07)',
+  // A popup floating over the page.
+  pop: '0px 12px 32px rgba(19, 36, 26, 0.22)',
 };

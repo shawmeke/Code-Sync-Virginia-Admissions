@@ -7,7 +7,7 @@ import { Icon } from '@/components/Icon';
 import { PromptCard } from '@/components/PromptCard';
 import { Segmented } from '@/components/Controls';
 import { useProfile } from '@/components/ProfileContext';
-import { fonts, radius, rules, spacing, type, useTheme } from '@/constants/theme';
+import { fonts, radius, rules, shadow, spacing, type, useTheme } from '@/constants/theme';
 import { colleges } from '@/data/colleges';
 import { alignWithCollege } from '@/lib/admissions';
 import { filterColleges, type CollegeFilter } from '@/lib/collegeFilter';
@@ -139,6 +139,7 @@ const styles = StyleSheet.create({
     borderWidth: rules.hair,
     borderRadius: radius.pill,
     paddingHorizontal: spacing.lg,
+    boxShadow: shadow.soft,
   },
   search: { flex: 1, paddingVertical: 12, fontFamily: fonts.body, fontSize: type.md },
   controls: { gap: spacing.sm, marginTop: spacing.md },
