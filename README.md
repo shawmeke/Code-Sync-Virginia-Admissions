@@ -1,108 +1,73 @@
-# Code-Sync: Virginia Admissions
+# Code-Sync
 
-A mobile app that aids Virginia high school students understand how their
-academic profile compares with what Virginia universities publish about the
-students they admit. Built for the Congressional App Challenge.
+Code-Sync shows Virginia high school students how their GPA, test scores and class rank compare with the students who enrolled at 15 Virginia colleges. Every number comes from the college's own Common Data Set. We built it for the 2026 Congressional App Challenge.
 
-## The problem
+## Why we made it
 
-Students hear "acceptance rates" and "average GPAs" without knowing where those
-numbers come from, which students they describe, or what's missing. Many
-admissions calculators turn this into a single "% chance" that the data can't
-actually support. That can scare off qualified students or give false
-confidence.
+Most college "chance" calculators give you one percentage and never say where it came from. The data colleges publish can't back up a number like that, since it only describes the students who got in. We wanted an app that shows the real published numbers, says which students they describe, and admits when a number is missing.
 
-## What the app does
+## What it does
 
-- **Uses only official data.** Every number comes from the university's own
-  Common Data Set (CDS), and the app shows the source, year, and the group of
-  students each number describes.
-- **Compares one measure at a time.** For SAT, ACT, GPA, and class rank, it
-  says whether a student is below, within, or above the published middle 50%,
-  and estimates their percentile among the college's enrolled students.
-- **Gives an Academic Match score.** The average of those percentiles, from 0
-  to 100: "on average, your numbers are higher than about 60% of this
-  college's students." Every input traces back to published data; the app
-  invents no weights.
-- **Never predicts admission.** Academic Match describes how a student's
-  numbers compare with past students. It isn't a chance of admission, because
-  the Common Data Set only describes students who were admitted, not those who
-  weren't.
-- **Explains instead of guessing.** If a college hasn't published a figure, or
-  the student's GPA is on a different scale than the college's, the app says so
-  instead of filling in a guess.
-- **Highlights Virginia residency.** Virginia's public universities admit
-  in-state and out-of-state students at very different rates (for example, UVA
-  admitted about 26% of Virginia applicants and 14% of out-of-state applicants
-  for Fall 2024). The app shows the rate for the student's own residency.
-- **Keeps student data private.** Nothing a student enters is saved or sent
-  anywhere.
-- **Shows alignment at a glance.** Each school gets a dotted bar from "Below
-  typical" to "Above typical", with a gold mark at the student's match.
-- **Shows what students study.** Each school's page lists its most common
-  fields of study, from the share of bachelor's degrees in each field (CDS
-  section J1). Pick a major and the app shows how big that field is at every
-  school.
-- **Compares and saves schools.** A Compare tab puts two schools side by side,
-  and students can save schools while they browse.
+You enter your GPA, an SAT or ACT score, and your class rank (your rank and your class size; the app works out the percent). For each college, Code-Sync checks each measure against the middle 50% the college published and estimates your percentile among its enrolled students. The average of those percentiles is your Academic Match, from 0 to 100. A match of 60 means your numbers are higher than about 60% of that college's students. It isn't a chance of getting in, and the app never calls it one.
 
-## Universities included
+When something can't be compared, the app tells you why. A college might not publish a figure, or it might report weighted GPAs when you entered an unweighted one. Test-blind schools like Radford leave test scores out of the match.
 
-| University | Data source | Cycle |
+It also shows:
+
+- admit rates for Virginia and out-of-state applicants, which are far apart at schools like UVA (26% and 14% for Fall 2024)
+- application fees, deadlines, and early decision and early action dates
+- what students study at each school, from its share of bachelor's degrees in each field, and how big your intended major is there
+- a Compare tab for two schools side by side, and a saved list
+
+Nothing you type is saved or sent anywhere.
+
+## Schools
+
+| School | Common Data Set | Admissions figures for |
 |---|---|---|
-| University of Virginia | Common Data Set 2024–25 | Fall 2024 |
-| Virginia Tech | Common Data Set 2025–26 | Fall 2025 |
-| William & Mary | Common Data Set 2025–26 | Fall 2025 |
-| James Madison University | Common Data Set 2025–26 | Fall 2025 |
-| Old Dominion University | Common Data Set 2025–26 | Fall 2025 |
+| George Mason University | 2025–26 | Fall 2025 |
+| James Madison University | 2025–26 | Fall 2025 |
+| Old Dominion University | 2025–26 | Fall 2025 |
+| Radford University | 2025–26 | Fall 2025 |
+| Regent University | 2024–25 | Fall 2024 |
+| Shenandoah University | 2024–25 | Fall 2024 |
+| University of Mary Washington | 2025–26 | Fall 2025 |
+| University of Richmond | 2025–26 | Fall 2025 |
+| University of Virginia | 2024–25 | Fall 2024 |
+| Virginia Commonwealth University | 2024–25 | Fall 2024 |
+| Virginia Military Institute | 2024–25 | Fall 2024 |
+| Virginia State University | 2025–26 | Fall 2025 |
+| Virginia Tech | 2025–26 | Fall 2025 |
+| Washington and Lee University | 2025–26 | Fall 2025 |
+| William & Mary | 2025–26 | Fall 2025 |
 
-Links to each source document are in [`data/colleges.ts`](data/colleges.ts) and
-on the app's About screen.
+Links to every source document are in [`data/colleges.ts`](data/colleges.ts) and on the app's About screen.
 
-## How it's built
-
-- [Expo](https://expo.dev) and React Native with TypeScript, so it runs on iOS,
-  Android, and the web from one codebase
-- `lib/admissions.ts`: the comparison logic, percentile estimates, and
-  Academic Match
-- `lib/profileForm.ts`: turns what the student types into a checked profile
-- `lib/validation.ts`: checks on student input and on the college data itself,
-  so a typo in the data fails a test instead of showing a wrong number
-- `data/colleges.ts`: every figure stored with its source, year, and cohort;
-  missing data is stored as "not published," never as zero
-
-## Run it
+## Running it
 
 ```bash
 npm install
-npx expo start      # then press w for web, or scan the QR code with Expo Go
-npm test            # run the tests
+npx expo start   # press w to open it in a browser, or scan the QR code with Expo Go
+npm test
 ```
+
+## How it's built
+
+It's TypeScript with React Native and Expo, so the same code runs on iPhone, Android and the web. The comparison math is in `lib/admissions.ts`. `lib/validation.ts` checks what students type and also checks the college data itself, so a typo in `data/colleges.ts` fails a test instead of reaching a student as a wrong number. Missing figures are stored as `null`, never as zero, because "not published" and "zero" mean different things.
 
 ## Limits
 
-- The figures describe past admitted or enrolled students. They can't tell
-  you how your own application will be decided.
-- Percentiles are estimates. Between the published percentiles the app draws
-  straight lines, and within a GPA or class rank group it assumes students are
-  spread evenly.
-- UVA's data is one year older than the other schools' because its 2025–26
-  Common Data Set wasn't available yet.
-- Some colleges don't publish every figure. JMU publishes no GPA data, and its
-  class rank table doesn't add up, so the app leaves both out. William & Mary
-  leaves its in-state and out-of-state table blank.
-- The Common Data Set doesn't say whether GPAs are weighted. Virginia Tech,
-  William & Mary and UVA report averages above 4.0 or most students in the
-  4.0 group, so the app treats their GPAs as weighted. That's my inference.
-- Figures combine in-state and out-of-state students. At UVA and William &
-  Mary, the two groups are admitted at very different rates.
-- My copy of UVA's Common Data Set lost its table layout in the section on
-  what the school weighs, so those factors and its early decision answer are
-  left blank.
+- These numbers describe past students. They can't tell you how your own application will be decided.
+- Percentiles are estimates. Between published percentiles the app draws straight lines, and inside a GPA or class rank group it assumes students are spread evenly.
+- UVA, VCU, VMI, Regent and Shenandoah use their 2024–25 Common Data Sets, a year older than the rest, because newer ones weren't posted yet.
+- Colleges leave things out. JMU publishes no GPA data and its class rank table doesn't add up, so we left both out. Washington and Lee publishes no GPA data either. William & Mary leaves its in-state and out-of-state table and its degrees-by-field table blank.
+- The Common Data Set doesn't say whether GPAs are weighted. Virginia Tech, William & Mary and UVA report averages above 4.0 or most students at 4.0, so we treat their GPAs as weighted. That's our reading of their numbers.
+- Most figures combine in-state and out-of-state students, even at schools where the two groups get in at very different rates.
+- Our copy of UVA's Common Data Set lost its table layout in the section on what the school weighs, so those factors and its early decision answer are blank.
 
 ## Photo credits
 
-Campus photographs from Wikimedia Commons, each resized and recompressed for the app:
+Campus photos are from Wikimedia Commons, resized for the app. We use photos instead of school logos because logos are trademarks.
 
 - University of Virginia: [The Rotunda and Lawn University of Virginia Charlottesville VA March 2011](https://commons.wikimedia.org/wiki/File:The_Rotunda_and_Lawn_University_of_Virginia_Charlottesville_VA_March_2011.jpg) by Phil Roeder, [CC BY 2.0](https://creativecommons.org/licenses/by/2.0), resized
 - Virginia Tech: [Virginia Tech Burruss Hall from Drillfield](https://commons.wikimedia.org/wiki/File:Virginia_Tech_Burruss_Hall_from_Drillfield.JPG) by Eric T Gunther, [CC BY 3.0](https://creativecommons.org/licenses/by/3.0), resized
@@ -119,5 +84,3 @@ Campus photographs from Wikimedia Commons, each resized and recompressed for the
 - University of Mary Washington: [Monroe Hall UMW](https://commons.wikimedia.org/wiki/File:Monroe_Hall_UMW.jpg) by Jte288, [Public domain](https://commons.wikimedia.org/wiki/File:Monroe_Hall_UMW.jpg), resized
 - Shenandoah University: [Shenandoah U; Ohrstrom-Bryant Theatre](https://commons.wikimedia.org/wiki/File:Shenandoah_U;_Ohrstrom-Bryant_Theatre.JPG) by Eruditefello, [CC BY-SA 3.0](http://creativecommons.org/licenses/by-sa/3.0/), resized
 - Virginia State University: [Vawter Hall at VSU](https://commons.wikimedia.org/wiki/File:Vawter_Hall_at_VSU.jpg) by Jweaver28, [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0), resized
-
-Each school appears as a small campus photo, never an official logo (logos are trademarks). On a college's own page, where the photo is already the header, it shows the school's initials in its colors instead.
