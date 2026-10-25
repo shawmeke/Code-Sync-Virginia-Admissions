@@ -39,6 +39,10 @@ confidence.
   anywhere.
 - **Shows alignment at a glance.** Each school gets a dotted bar from "Below
   typical" to "Above typical", with a gold mark at the student's match.
+- **Shows what students study.** Each school's page lists its most common
+  fields of study, from the share of bachelor's degrees in each field (CDS
+  section J1). Pick a major and the app shows how big that field is at every
+  school.
 - **Compares and saves schools.** A Compare tab puts two schools side by side,
   and students can save schools while they browse.
 
