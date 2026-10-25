@@ -112,7 +112,7 @@ export default function CollegeScreen() {
 
       <View style={[styles.hero, photo && styles.heroOverlap]}>
         <View style={[styles.badgeRing, { backgroundColor: theme.paper }]}>
-          <SchoolBadge collegeId={college.id} size={64} />
+          <SchoolBadge collegeId={college.id} size={64} photo={!photo} />
         </View>
         <Text style={[styles.name, { color: theme.ink }]} accessibilityRole="header">
           {college.name}

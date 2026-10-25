@@ -1,11 +1,26 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 
-import { badgeInk, fonts, schoolBadges, useTheme } from '@/constants/theme';
+import { badgeInk, fonts, radius, rules, schoolBadges, useTheme } from '@/constants/theme';
+import { campusPhotos } from '@/data/photos';
 
-// A round initials badge in the school's colors. Initials, not a logo:
-// school seals and logos are trademarks.
-export function SchoolBadge({ collegeId, size = 44 }: { collegeId: string; size?: number }) {
+// A small square of the school's campus photo, or a round initials badge in
+// the school's colors when there's no photo (or `photo` is off, e.g. under
+// the same photo's header). Never a logo: school seals and logos are
+// trademarks.
+export function SchoolBadge({ collegeId, size = 44, photo = true }: { collegeId: string; size?: number; photo?: boolean }) {
   const theme = useTheme();
+  const campus = photo ? campusPhotos[collegeId] : undefined;
+  if (campus) {
+    return (
+      <Image
+        source={campus.image}
+        accessibilityElementsHidden
+        importantForAccessibility="no"
+        resizeMode="cover"
+        style={{ width: size, height: size, borderRadius: radius.card, borderWidth: rules.hair, borderColor: theme.rule }}
+      />
+    );
+  }
   const badge = schoolBadges[collegeId];
   const initials = badge?.initials ?? collegeId.slice(0, 3).toUpperCase();
   return (

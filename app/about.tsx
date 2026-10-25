@@ -1,9 +1,11 @@
 import { ScrollView, StyleSheet, Text } from 'react-native';
 
+import { ExternalLink } from '@/components/ExternalLink';
 import { Section } from '@/components/Section';
 import { SourceList } from '@/components/SourceList';
 import { fonts, spacing, type, useTheme } from '@/constants/theme';
-import { sources } from '@/data/colleges';
+import { colleges, sources } from '@/data/colleges';
+import { campusPhotos } from '@/data/photos';
 
 export default function AboutScreen() {
   const theme = useTheme();
@@ -31,7 +33,7 @@ export default function AboutScreen() {
         <Text style={body}>
           Academic Match is the average of those percentiles. If you enter both an SAT and an ACT, only the stronger one
           counts. A score of 60 means that, on average, your numbers are higher than about 60% of that college's
-          students.
+          students. At a test-blind college, which doesn't use test scores, they're left out.
         </Text>
         <Text style={body}>
           Course rigor, essays, activities and recommendations matter too, but colleges don't publish numbers for them,
@@ -52,6 +54,22 @@ export default function AboutScreen() {
       <Section title="Sources">
         <SourceList sources={sources} />
       </Section>
+
+      <Section title="Photo credits">
+        <Text style={body}>Campus photos come from Wikimedia Commons. Each one is resized for the app.</Text>
+        {colleges.map((c) => {
+          const photo = campusPhotos[c.id];
+          return photo ? (
+            <Text key={c.id} style={[styles.credit, { color: theme.muted }]}>
+              {c.name}:{' '}
+              <ExternalLink href={photo.page} style={[styles.creditLink, { color: theme.ink, textDecorationColor: theme.accent }]}>
+                {photo.title}
+              </ExternalLink>{' '}
+              by {photo.artist}, {photo.license}
+            </Text>
+          ) : null;
+        })}
+      </Section>
     </ScrollView>
   );
 }
@@ -59,4 +77,6 @@ export default function AboutScreen() {
 const styles = StyleSheet.create({
   content: { padding: spacing.lg, paddingBottom: spacing.xl * 2, maxWidth: 680, width: '100%', alignSelf: 'center' },
   body: { fontFamily: fonts.body, fontSize: type.md, lineHeight: type.md * 1.55, paddingTop: spacing.md },
+  credit: { fontFamily: fonts.body, fontSize: type.sm, lineHeight: type.sm * 1.45, paddingTop: spacing.sm },
+  creditLink: { textDecorationLine: 'underline' },
 });

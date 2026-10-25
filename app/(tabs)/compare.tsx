@@ -4,7 +4,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { useProfile } from '@/components/ProfileContext';
 import { SchoolBadge } from '@/components/SchoolBadge';
-import { fonts, rules, spacing, type, useTheme } from '@/constants/theme';
+import { fonts, radius, rules, schoolBadges, spacing, type, useTheme } from '@/constants/theme';
 import { colleges, getCollege } from '@/data/colleges';
 import { alignWithCollege } from '@/lib/admissions';
 import { formatCount, formatEarlyPlan, formatPercent, formatRange, TEST_POLICY_LABELS } from '@/lib/format';
@@ -97,7 +97,14 @@ function Picker({ label, value, other, onChange }: { label: string; value: strin
   return (
     <View style={styles.picker}>
       <Text style={[styles.pickerLabel, { color: theme.muted }]}>{label}</Text>
-      <View style={styles.pickerRow} accessibilityRole="radiogroup" accessibilityLabel={label}>
+      {/* Scrolls sideways: fifteen schools don't fit across a phone. */}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.pickerScroll}
+        contentContainerStyle={styles.pickerRow}
+        accessibilityRole="radiogroup"
+        accessibilityLabel={label}>
         {colleges.map((c) => {
           const selected = c.id === value;
           const disabled = c.id === other;
@@ -114,10 +121,13 @@ function Picker({ label, value, other, onChange }: { label: string; value: strin
                 { borderColor: selected ? theme.accent : 'transparent', opacity: disabled ? 0.35 : 1 },
               ]}>
               <SchoolBadge collegeId={c.id} size={40} />
+              <Text style={[styles.pickerName, { color: selected ? theme.accent : theme.muted }]} numberOfLines={1}>
+                {schoolBadges[c.id]?.initials ?? c.id.toUpperCase()}
+              </Text>
             </Pressable>
           );
         })}
-      </View>
+      </ScrollView>
     </View>
   );
 }
@@ -153,8 +163,11 @@ const styles = StyleSheet.create({
   content: { padding: spacing.lg, paddingBottom: spacing.xl * 2, maxWidth: 720, width: '100%', alignSelf: 'center' },
   picker: { marginBottom: spacing.md },
   pickerLabel: { fontFamily: fonts.bodyMedium, fontSize: type.sm, marginBottom: spacing.xs },
-  pickerRow: { flexDirection: 'row', gap: spacing.sm },
-  pickerItem: { borderWidth: 2, borderRadius: 26, padding: 2 },
+  // Runs to the screen edges so the next school peeks out, showing the row scrolls.
+  pickerScroll: { marginHorizontal: -spacing.lg },
+  pickerRow: { flexDirection: 'row', gap: spacing.sm, paddingHorizontal: spacing.lg },
+  pickerItem: { borderWidth: 2, borderRadius: radius.card + 2, padding: 2, alignItems: 'center', width: 52 },
+  pickerName: { fontFamily: fonts.control, fontSize: 11, marginTop: 2 },
   // A full-width white band; rows split by faint lines.
   table: { marginHorizontal: -spacing.lg, marginTop: spacing.md },
   headRow: { flexDirection: 'row', paddingVertical: spacing.lg, borderBottomWidth: rules.hair },
