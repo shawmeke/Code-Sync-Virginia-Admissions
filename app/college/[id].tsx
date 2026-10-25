@@ -329,7 +329,7 @@ function BeforeYouApply({ applying, collegeName }: { applying: Stat<ApplyingFact
   const theme = useTheme();
   const a = applying.value;
   const fee =
-    a.fee === null ? 'Not available' : `$${a.fee}${a.feeWaivable ? ', can be waived for need' : ''}`;
+    a.fee === null ? 'Not available' : a.fee === 0 ? 'No fee' : `$${a.fee}${a.feeWaivable ? ', can be waived for need' : ''}`;
   const rows: { icon: IconName; label: string; value: string }[] = [
     { icon: 'dollar', label: 'Application fee', value: fee },
     { icon: 'envelope', label: 'Regular deadline', value: a.regularDeadline ?? 'Not available' },

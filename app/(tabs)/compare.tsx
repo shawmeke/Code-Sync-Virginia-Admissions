@@ -23,7 +23,7 @@ const ROWS: Row[] = [
     value: (c) => (c.classRank?.value.topTenth != null ? formatPercent(c.classRank.value.topTenth) : 'Not available'),
   },
   { label: 'Testing', value: (c) => TEST_POLICY_LABELS[c.testPolicy] },
-  { label: 'Application fee', value: (c) => (c.applying?.value.fee != null ? `$${c.applying.value.fee}` : 'Not available') },
+  { label: 'Application fee', value: (c) => (c.applying?.value.fee == null ? 'Not available' : c.applying.value.fee === 0 ? 'No fee' : `$${c.applying.value.fee}`) },
   { label: 'Regular deadline', value: (c) => c.applying?.value.regularDeadline ?? 'Not available' },
   { label: 'Early decision', value: (c) => formatEarlyPlan(c.applying?.value.earlyDecision) },
   { label: 'Early action', value: (c) => formatEarlyPlan(c.applying?.value.earlyAction) },

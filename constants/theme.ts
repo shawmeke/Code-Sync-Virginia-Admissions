@@ -82,6 +82,11 @@ export const schoolBadges: Record<string, { initials: string; fill: string; rim:
   wm: { initials: 'W&M', fill: '#115740', rim: '#b9975b' },
   jmu: { initials: 'JMU', fill: '#450084', rim: '#cbb677' },
   odu: { initials: 'ODU', fill: '#003057', rim: '#7c878e' },
+  gmu: { initials: 'GMU', fill: '#006633', rim: '#ffcc33' },
+  vcu: { initials: 'VCU', fill: '#000000', rim: '#f8b300' },
+  radford: { initials: 'RU', fill: '#c2011b', rim: '#a7a9ac' },
+  richmond: { initials: 'UR', fill: '#00205b', rim: '#c8102e' },
+  wlu: { initials: 'W&L', fill: '#00285e', rim: '#a7a8aa' },
 };
 export const badgeInk = '#ffffff';
 

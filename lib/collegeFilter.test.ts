@@ -17,8 +17,11 @@ test('"saved" keeps only saved colleges, and none when nothing is saved', () => 
 });
 
 test('"public" and "private" filter by control', () => {
-  assert.equal(filterColleges(colleges, { query: '', filter: 'public', saved: [] }).length, colleges.length);
-  assert.deepEqual(filterColleges(colleges, { query: '', filter: 'private', saved: [] }), []);
+  const publics = filterColleges(colleges, { query: '', filter: 'public', saved: [] });
+  const privates = filterColleges(colleges, { query: '', filter: 'private', saved: [] });
+  assert.ok(publics.every((c) => c.control === 'public'));
+  assert.ok(privates.some((c) => c.id === 'richmond') && privates.every((c) => c.control === 'private'));
+  assert.equal(publics.length + privates.length, colleges.length);
 });
 
 test('search matches name or city, ignoring case and outer spaces', () => {

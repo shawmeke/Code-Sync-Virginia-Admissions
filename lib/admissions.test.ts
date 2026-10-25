@@ -185,6 +185,15 @@ test('summary line counts positions without predicting admission', () => {
   assert.equal(describeAlignment(a), 'Compared on 3 of 3 measures: 2 above, 1 within the middle 50%.');
 });
 
+test('a test-blind college leaves test scores out of the match', () => {
+  const radford = getCollege('radford')!;
+  const p = { ...blank, sat: 1500, gpa: { value: 3.6, scale: 4, weighted: false } };
+  const a = alignWithCollege(p, radford);
+  assert.deepEqual(a.match?.measures, ['gpa']);
+  assert.match(describeAlignment(a), /of 2 measures/);
+  assert.match(metric(p, radford, 'sat').caveats[0], /doesn't use test scores/);
+});
+
 test('no output uses chance, odds or probability language', () => {
   const full: StudentProfile = {
     gpa: { value: 3.9, scale: 4, weighted: false },

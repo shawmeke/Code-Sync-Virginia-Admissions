@@ -78,7 +78,8 @@ export type ApplyingFacts = {
   };
 };
 
-export type TestPolicy = 'required' | 'optional' | 'blind' | 'unknown';
+// 'some': required of some applicants, e.g. by age or high school GPA.
+export type TestPolicy = 'required' | 'some' | 'optional' | 'blind' | 'unknown';
 
 // A note that applies only to one school or major, so it is never shown as
 // if it described the whole university.

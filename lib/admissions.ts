@@ -80,6 +80,8 @@ export type CollegeAlignment = {
   // Counted over the match measures, with the stronger test standing for both.
   positions: Record<Position, number>;
   comparedCount: number;
+  // 3, or 2 at a test-blind college.
+  measureCount: number;
   match: AcademicMatch | null;
   // Notes for a specific program that matches the student's intended major.
   programNotes: ProgramNote[];
@@ -99,10 +101,11 @@ export function alignWithCollege(profile: StudentProfile, college: College): Col
   const metrics = [sat, act, gpa, classRank];
 
   const measures: [MatchMeasure, MetricResult][] = [
-    ['test', strongerTest(sat, act)],
     ['gpa', gpa],
     ['classRank', classRank],
   ];
+  // A test-blind college ignores scores, so they don't count toward its match.
+  if (college.testPolicy !== 'blind') measures.unshift(['test', strongerTest(sat, act)]);
 
   const positions: Record<Position, number> = { below: 0, within: 0, above: 0 };
   for (const [, m] of measures) {
@@ -124,6 +127,7 @@ export function alignWithCollege(profile: StudentProfile, college: College): Col
     metrics,
     positions,
     comparedCount: measures.filter(([, m]) => m.status === 'compared').length,
+    measureCount: measures.length,
     match,
     programNotes: matchProgramNotes(profile.intendedMajor, college.programNotes),
     contextNotes: contextNotes(profile, college),
@@ -143,8 +147,7 @@ function strongerTest(sat: MetricResult, act: MetricResult): MetricResult {
 
 // A one-line, non-predictive description of an alignment for list views.
 export function describeAlignment(a: CollegeAlignment): string {
-  // Test, GPA and class rank. Rigor is never compared, so it doesn't count.
-  const total = 3;
+  const total = a.measureCount;
   if (a.comparedCount === 0) return `Not enough published data to compare your profile with ${a.collegeName}.`;
   const parts = (['above', 'within', 'below'] as const)
     .filter((p) => a.positions[p] > 0)
@@ -214,6 +217,8 @@ function compareTest(profile: StudentProfile, college: College, type: 'SAT' | 'A
             ? `${college.name} requires a test score, and you haven't entered one.`
             : college.testPolicy === 'unknown'
               ? `You aren't submitting a test score. Check ${college.name}'s current testing policy.`
+              : college.testPolicy === 'some'
+                ? `${college.name} requires a test score from some applicants. Check whether that includes you.`
               : `You aren't submitting a test score. ${college.name} is test-${college.testPolicy}, so this isn't counted against you here.`;
     return { ...base, status: 'student-missing', position: null, summary, caveats: [], stat: null };
   }
@@ -236,6 +241,9 @@ function compareTest(profile: StudentProfile, college: College, type: 'SAT' | 'A
   const position = rangePosition(score, range.value);
   const percentile = Math.round(estimateRangePercentile(score, range.value));
   const caveats: string[] = [];
+  if (college.testPolicy === 'blind') {
+    caveats.push(`${college.name} doesn't use test scores in admission, so this isn't part of your Academic Match.`);
+  }
   if (submitShare && submitShare.value < 50) {
     caveats.push(
       `Only ${submitShare.value}% of ${submitShare.cohort} submitted the ${type}, so this range describes a small group.`,

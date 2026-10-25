@@ -14,6 +14,7 @@ export function formatRange(r: ScoreRange): string {
 
 export const TEST_POLICY_LABELS: Record<TestPolicy, string> = {
   required: 'Test required',
+  some: 'Test required for some',
   optional: 'Test-optional',
   blind: 'Test-blind',
   unknown: 'Test policy not recorded',
