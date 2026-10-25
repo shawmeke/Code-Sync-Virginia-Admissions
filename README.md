@@ -45,11 +45,16 @@ Links to every source document are in [`data/colleges.ts`](data/colleges.ts) and
 
 ## Running it
 
+You need [Node.js](https://nodejs.org). In Terminal:
+
 ```bash
+git clone https://github.com/shawmeke/Code-Sync-Virginia-Admissions.git
+cd Code-Sync-Virginia-Admissions
 npm install
-npx expo start   # press w to open it in a browser, or scan the QR code with Expo Go
-npm test
+npx expo start
 ```
+
+When it's ready, press `w` to open the app in your browser, or scan the QR code with the Expo Go app on your phone. To run the tests, use `npm test` in the same folder.
 
 ## How it's built
 
