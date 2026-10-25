@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { fonts, spacing, type, useTheme } from '@/constants/theme';
+import { fonts, shadow, spacing, type, useTheme } from '@/constants/theme';
 
 // A heading over a full-width white band holding the rows. Sections are told
 // apart by the shift from page color to white, not by boxes or borders.
@@ -23,5 +23,5 @@ const styles = StyleSheet.create({
   section: { marginBottom: spacing.xl },
   title: { fontFamily: fonts.display, fontSize: type.lg, marginBottom: spacing.sm },
   // Bleeds past the screen's side padding so the band runs edge to edge.
-  band: { marginHorizontal: -spacing.lg, paddingHorizontal: spacing.lg, paddingVertical: spacing.xs },
+  band: { marginHorizontal: -spacing.lg, paddingHorizontal: spacing.lg, paddingVertical: spacing.xs, boxShadow: shadow.card },
 });

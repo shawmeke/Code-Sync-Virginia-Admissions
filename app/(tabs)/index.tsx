@@ -7,7 +7,7 @@ import { Icon, type IconName } from '@/components/Icon';
 import { PromptCard } from '@/components/PromptCard';
 import { useProfile } from '@/components/ProfileContext';
 import { SchoolBadge } from '@/components/SchoolBadge';
-import { fonts, radius, rules, spacing, type, useTheme } from '@/constants/theme';
+import { fonts, radius, rules, shadow, spacing, type, useTheme } from '@/constants/theme';
 import { colleges } from '@/data/colleges';
 import { alignWithCollege, matchBasis } from '@/lib/admissions';
 
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
   listTitle: { marginBottom: 0 },
   seeAll: { fontFamily: fonts.control, fontSize: type.sm, paddingVertical: 14, paddingLeft: spacing.lg },
   // A full-width white band, rows split by faint lines.
-  list: { marginHorizontal: -spacing.lg },
+  list: { marginHorizontal: -spacing.lg, boxShadow: shadow.card },
   row: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, paddingHorizontal: spacing.lg, paddingVertical: spacing.md },
   rowText: { flex: 1 },
   rowName: { fontFamily: fonts.control, fontSize: type.md },

@@ -5,7 +5,7 @@ import { AlignmentDots } from '@/components/AlignmentDots';
 import { Icon } from '@/components/Icon';
 import { useProfile } from '@/components/ProfileContext';
 import { SchoolBadge } from '@/components/SchoolBadge';
-import { fonts, radius, rules, spacing, type, useTheme } from '@/constants/theme';
+import { fonts, radius, rules, shadow, spacing, type, useTheme } from '@/constants/theme';
 import { alignWithCollege, describeAlignment, matchBasis } from '@/lib/admissions';
 import { formatPercent, formatRange } from '@/lib/format';
 import type { College } from '@/types/college';
@@ -135,7 +135,7 @@ function Action({ label, color, onPress, icon, active, a11yLabel }: ActionProps)
 }
 
 const styles = StyleSheet.create({
-  card: { marginHorizontal: -spacing.lg, borderBottomWidth: rules.hair, marginBottom: spacing.sm },
+  card: { marginHorizontal: -spacing.lg, borderBottomWidth: rules.hair, marginBottom: spacing.md, boxShadow: shadow.card },
   main: { paddingTop: spacing.lg, paddingBottom: spacing.md, paddingHorizontal: spacing.lg },
   top: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   title: { flex: 1 },

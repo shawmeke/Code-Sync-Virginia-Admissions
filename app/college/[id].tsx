@@ -14,7 +14,7 @@ import { SchoolBadge } from '@/components/SchoolBadge';
 import { Section } from '@/components/Section';
 import { SourceList } from '@/components/SourceList';
 import { StatRow } from '@/components/StatRow';
-import { fonts, radius, rules, spacing, type, useTheme } from '@/constants/theme';
+import { fonts, radius, rules, shadow, spacing, type, useTheme } from '@/constants/theme';
 import { getCollege, sourcesForCollege } from '@/data/colleges';
 import { campusPhotos } from '@/data/photos';
 import { alignWithCollege, describeAlignment, type MetricResult } from '@/lib/admissions';
@@ -404,7 +404,7 @@ const styles = StyleSheet.create({
   badgeRing: { alignSelf: 'flex-start', borderRadius: 40, padding: 4 },
   name: { fontFamily: fonts.display, fontSize: type.xxl, letterSpacing: -0.5, marginTop: spacing.sm },
   meta: { fontFamily: fonts.body, fontSize: type.sm, lineHeight: type.sm * 1.45, marginTop: spacing.xs },
-  matchCard: { marginBottom: spacing.lg, padding: spacing.lg },
+  matchCard: { marginBottom: spacing.lg, padding: spacing.lg, boxShadow: shadow.card },
   promptPress: { marginHorizontal: spacing.lg, marginBottom: spacing.lg },
   tabs: { flexDirection: 'row', marginHorizontal: spacing.lg, marginBottom: spacing.lg, borderBottomWidth: rules.hair },
   tab: { paddingVertical: spacing.md, marginRight: spacing.xl, borderBottomWidth: 2, borderBottomColor: 'transparent', marginBottom: -1 },

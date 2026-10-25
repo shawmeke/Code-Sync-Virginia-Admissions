@@ -4,7 +4,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { useProfile } from '@/components/ProfileContext';
 import { SchoolBadge } from '@/components/SchoolBadge';
-import { fonts, radius, rules, schoolBadges, spacing, type, useTheme } from '@/constants/theme';
+import { fonts, radius, rules, schoolBadges, shadow, spacing, type, useTheme } from '@/constants/theme';
 import { colleges, getCollege } from '@/data/colleges';
 import { alignWithCollege } from '@/lib/admissions';
 import { formatCount, formatEarlyPlan, formatPercent, formatRange, TEST_POLICY_LABELS } from '@/lib/format';
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
   pickerItem: { borderWidth: 2, borderRadius: radius.card + 2, padding: 2, alignItems: 'center', width: 52 },
   pickerName: { fontFamily: fonts.control, fontSize: 11, marginTop: 2 },
   // A full-width white band; rows split by faint lines.
-  table: { marginHorizontal: -spacing.lg, marginTop: spacing.md },
+  table: { marginHorizontal: -spacing.lg, marginTop: spacing.md, boxShadow: shadow.card },
   headRow: { flexDirection: 'row', paddingVertical: spacing.lg, borderBottomWidth: rules.hair },
   headCell: { flex: 1, alignItems: 'center', gap: spacing.sm, paddingHorizontal: spacing.xs },
   headName: { fontFamily: fonts.control, fontSize: type.sm, textAlign: 'center' },

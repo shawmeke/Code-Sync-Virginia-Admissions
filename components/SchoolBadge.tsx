@@ -1,6 +1,6 @@
 import { Image, StyleSheet, Text, View } from 'react-native';
 
-import { badgeInk, fonts, radius, rules, schoolBadges, useTheme } from '@/constants/theme';
+import { badgeInk, fonts, radius, schoolBadges, shadow, useTheme } from '@/constants/theme';
 import { campusPhotos } from '@/data/photos';
 
 // A small square of the school's campus photo, or a round initials badge in
@@ -17,7 +17,8 @@ export function SchoolBadge({ collegeId, size = 44, photo = true }: { collegeId:
         accessibilityElementsHidden
         importantForAccessibility="no"
         resizeMode="cover"
-        style={{ width: size, height: size, borderRadius: radius.card, borderWidth: rules.hair, borderColor: theme.rule }}
+        // A white mat and a small shadow frame the photo on any background.
+        style={{ width: size, height: size, borderRadius: radius.card, borderWidth: 2, borderColor: theme.sheet, boxShadow: shadow.photo }}
       />
     );
   }

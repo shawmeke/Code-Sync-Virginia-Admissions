@@ -116,3 +116,9 @@ export const spacing = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24 };
 // for the things a screen points at: badges, rings and icon dots.
 export const radius = { control: 6, card: 6, pill: 6 };
 export const rules = { hair: 1, bar: 2 };
+// A soft lift for white boxes on the green-gray page, tinted with the ink
+// green so it doesn't read as gray smudge. `photo` frames campus thumbnails.
+export const shadow = {
+  card: '0px 1px 2px rgba(19, 36, 26, 0.06), 0px 6px 16px rgba(19, 36, 26, 0.08)',
+  photo: '0px 0px 0px 1px rgba(19, 36, 26, 0.16), 0px 2px 4px rgba(19, 36, 26, 0.16)',
+};

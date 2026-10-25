@@ -2,7 +2,7 @@ import { Link, type Href } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Icon } from '@/components/Icon';
-import { fonts, radius, spacing, type, useTheme } from '@/constants/theme';
+import { fonts, radius, shadow, spacing, type, useTheme } from '@/constants/theme';
 
 // The deep-green card that leads somewhere: a title, one sentence and a gold
 // arrow. Used on Home, in Search and on college pages.
@@ -28,7 +28,7 @@ export function PromptCard({ href, title, body }: { href: Href; title: string; b
 }
 
 const styles = StyleSheet.create({
-  card: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, borderRadius: radius.card, padding: spacing.lg },
+  card: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, borderRadius: radius.card, padding: spacing.lg, boxShadow: shadow.card },
   text: { flex: 1 },
   title: { fontFamily: fonts.display, fontSize: type.lg },
   body: { fontFamily: fonts.body, fontSize: type.sm, lineHeight: type.sm * 1.45, marginTop: 4 },
