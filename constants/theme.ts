@@ -87,6 +87,8 @@ export const schoolBadges: Record<string, { initials: string; fill: string; rim:
   radford: { initials: 'RU', fill: '#c2011b', rim: '#a7a9ac' },
   richmond: { initials: 'UR', fill: '#00205b', rim: '#c8102e' },
   wlu: { initials: 'W&L', fill: '#00285e', rim: '#a7a8aa' },
+  vmi: { initials: 'VMI', fill: '#ae122a', rim: '#ffd619' },
+  regent: { initials: 'REG', fill: '#002856', rim: '#c5a467' },
 };
 export const badgeInk = '#ffffff';
 
