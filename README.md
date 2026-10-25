@@ -1,6 +1,6 @@
 # Code-Sync: Virginia Admissions
 
-A mobile app that helps Virginia high school students understand how their
+A mobile app that aids Virginia high school students understand how their
 academic profile compares with what Virginia universities publish about the
 students they admit. Built for the Congressional App Challenge.
 
