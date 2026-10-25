@@ -9,6 +9,22 @@ import { Section } from '@/components/Section';
 import { fonts, radius, rules, spacing, type, useTheme } from '@/constants/theme';
 import { formatTopPercent } from '@/lib/format';
 
+// Broad fields, so a student picks instead of typing. "Engineering" also
+// matches program notes keyed on that word (see matchProgramNotes).
+const MAJORS = [
+  'Engineering',
+  'Computer science',
+  'Business',
+  'Biology',
+  'Health & nursing',
+  'Math & physical sciences',
+  'Social sciences',
+  'Humanities',
+  'Arts',
+  'Education',
+  'Undecided',
+];
+
 export default function ProfileScreen() {
   const theme = useTheme();
   const { form, updateForm, resetForm, profile, fieldErrors, ready, hasData } = useProfile();
@@ -159,17 +175,13 @@ export default function ProfileScreen() {
             selected={form.residency}
             onSelect={(k) => updateForm({ residency: form.residency === k ? null : (k as 'virginia' | 'out-of-state') })}
           />
-          <Field
-            icon="graduation"
-            label="Intended major"
-            value={form.major}
-            onChangeText={(major) => updateForm({ major })}
-            placeholder="e.g. Engineering"
-            keyboardType="default"
-            maxLength={60}
-            wide
-          />
           <Help>Virginia's public universities admit in-state and out-of-state students at different rates.</Help>
+          <Choices
+            label="Intended major"
+            options={MAJORS.map((m) => ({ key: m, label: m }))}
+            selected={form.major || null}
+            onSelect={(k) => updateForm({ major: form.major === k ? '' : k })}
+          />
         </Section>
 
         {hasData && (

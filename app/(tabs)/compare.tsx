@@ -84,10 +84,6 @@ export default function CompareScreen() {
           />
         ))}
       </View>
-      <Text style={[styles.note, { color: theme.muted }]}>
-        Figures come from each school's Common Data Set and may describe different years; see each college's page for
-        the sources.
-      </Text>
     </ScrollView>
   );
 }
@@ -177,5 +173,4 @@ const styles = StyleSheet.create({
   labelCell: { width: '34%' },
   rowLabel: { fontFamily: fonts.bodyMedium, fontSize: type.xs },
   valueCell: { flex: 1, textAlign: 'center', fontFamily: fonts.monoMedium, fontSize: type.sm, fontVariant: ['tabular-nums'] },
-  note: { fontFamily: fonts.body, fontSize: type.xs, lineHeight: type.xs * 1.45, marginTop: spacing.md },
 });

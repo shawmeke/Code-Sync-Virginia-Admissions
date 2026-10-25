@@ -85,7 +85,7 @@ export default function HomeScreen() {
 
       <View style={styles.listHead}>
         <Text style={[styles.sectionTitle, styles.listTitle, { color: theme.ink }]}>
-          {ready ? 'Your top matches' : 'Virginia schools'}
+          {ready ? 'Your top matches' : 'Colleges'}
         </Text>
         <Link href="/search" style={[styles.seeAll, { color: theme.accent }]}>
           See all
