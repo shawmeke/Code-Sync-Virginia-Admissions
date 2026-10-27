@@ -54,7 +54,7 @@ export default function WelcomeScreen() {
         <View style={styles.hero}>
           <BrandMark size={96} color={theme.goldFill} trackColor={theme.heroMuted} ink={theme.heroInk} />
           <Text style={[styles.title, { color: theme.heroInk }]} accessibilityRole="header">
-            Code-Sync
+            Middle Fifty
           </Text>
           <Text style={[styles.tagline, { color: theme.heroMuted }]}>
             See how your grades and scores compare at Virginia's universities.

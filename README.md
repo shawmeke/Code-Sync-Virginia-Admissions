@@ -1,6 +1,6 @@
-# Code-Sync
+# Middle Fifty
 
-Code-Sync shows Virginia high school students how their GPA, test scores and class rank compare with the students who enrolled at 15 Virginia colleges. Every number comes from the college's own Common Data Set. We built it for the 2026 Congressional App Challenge.
+Middle Fifty shows Virginia high school students how their GPA, test scores and class rank compare with the students who enrolled at 15 Virginia colleges. Every number comes from the college's own Common Data Set. The name comes from the middle 50% range colleges publish for their students, which is what the app compares you to. We're team Code-Sync, and we built it for the 2026 Congressional App Challenge.
 
 ## Why we made it
 
@@ -8,7 +8,7 @@ Most college "chance" calculators give you one percentage and never say where it
 
 ## What it does
 
-You enter your GPA, an SAT or ACT score, and your class rank (your rank and your class size; the app works out the percent). For each college, Code-Sync checks each measure against the middle 50% the college published and estimates your percentile among its enrolled students. The average of those percentiles is your Academic Match, from 0 to 100. A match of 60 means your numbers are higher than about 60% of that college's students. It isn't a chance of getting in, and the app never calls it one.
+You enter your GPA, an SAT or ACT score, and your class rank (your rank and your class size; the app works out the percent). For each college, Middle Fifty checks each measure against the middle 50% the college published and estimates your percentile among its enrolled students. The average of those percentiles is your Academic Match, from 0 to 100. A match of 60 means your numbers are higher than about 60% of that college's students. It isn't a chance of getting in, and the app never calls it one.
 
 When something can't be compared, the app tells you why. A college might not publish a figure, or it might report weighted GPAs when you entered an unweighted one. Test-blind schools like Radford leave test scores out of the match.
 

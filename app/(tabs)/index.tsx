@@ -42,7 +42,7 @@ export default function HomeScreen() {
       <View style={styles.header}>
         <View style={styles.headerText}>
           <Text style={[styles.hello, { color: theme.ink }]} accessibilityRole="header">
-            Code-Sync
+            Middle Fifty
           </Text>
           <Text style={[styles.sub, { color: theme.muted }]}>Virginia college admissions, from official data</Text>
         </View>

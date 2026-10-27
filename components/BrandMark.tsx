@@ -3,7 +3,7 @@ import Svg, { Path, Rect } from 'react-native-svg';
 
 import { ScoreRing } from '@/components/ScoreRing';
 
-// The Code-Sync logo: the app icon's column building inside a match ring.
+// The Middle Fifty logo: the app icon's column building inside a match ring.
 // Drawn in the same coordinates as assets/images/icon.png so the two match.
 export function BrandMark({ size, color, trackColor, ink }: { size: number; color: string; trackColor: string; ink: string }) {
   const glyph = size * 0.48;
