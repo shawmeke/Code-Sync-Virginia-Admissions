@@ -19,7 +19,7 @@ It also shows:
 - what students study at each school, from its share of bachelor's degrees in each field, and how big your intended major is there
 - a Compare tab for two schools side by side, and a saved list
 
-Nothing you type is saved or sent anywhere.
+Nothing you type is saved or sent anywhere. blehhhhhhhhhhhhhhhhħ
 
 ## Schools
 
